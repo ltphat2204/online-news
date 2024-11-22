@@ -1,0 +1,44 @@
+body {
+    background-image: url("/statics/assets/Background.png");
+    background-repeat: repeat;
+}
+.nav-item-group {
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease-in-out;
+}
+
+.search-form {
+    margin-left: 0;
+    transition: margin 0.3s ease-in-out;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+}
+
+.search-input {
+    width: 0;
+    border: none;
+    padding: 0;
+    border-bottom: 1px solid #ccc;
+    outline: none;
+    transition: all 0.3s ease-in-out;
+    margin-right: 0;
+}
+
+.search-input.active {
+    width: 200px;
+    padding: 5px;
+    margin-right: 8px;
+}
+
+.navbar-nav .nav-item:not(:last-child) {
+    border-right: 1px solid #ccc;
+}
+
+.nav-bottom .nav-item a {
+    color: black;
+    font-weight: 500;
+}
