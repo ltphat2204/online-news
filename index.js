@@ -6,11 +6,15 @@ import IndexRoutes from './routes/index.js';
 import ArticleRoutes from './routes/articles.js';
 import './config/environment.js';
 import database from './config/database.js';
+import AdminRoutes from './routes/admin/index.js';
+import AuthRoutes from './routes/auth/index.js';
+import setLayout from './middlewares/setLayout.js';
 
 // Setup
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 setupViewEngine(app, __dirname);
+app.use(setLayout);
 
 // Config route for static files
 app.use('/statics', express.static(join(__dirname, 'public')));
@@ -18,6 +22,8 @@ app.use('/statics', express.static(join(__dirname, 'public')));
 // Config routes
 app.use('/', IndexRoutes);
 app.use('/articles', ArticleRoutes);
+app.use('/admin', AdminRoutes);
+app.use('/auth', AuthRoutes);
 
 // Run app
 const PORT = process.env.PORT || 3000;
