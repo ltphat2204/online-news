@@ -29,17 +29,28 @@
                     {{ today }}
                 </span>
             </div>
-            <!-- User Dropdown -->
-            <div class="d-flex align-items-center">
-                <i class="bi bi-bell mr-1"></i></a>
-                <div class="dropdown">
+            <div class="d-flex align-items-center position-relative">
+                <!-- Notification Panel -->
+                <div class="position-relative">
+                    <a class="nav-link text-dark" href="#" id="notificationBell">
+                        <i class="bi bi-bell"></i>
+                    </a>
+                    <div id="notificationPanel" class="notification-panel position-absolute bg-white shadow-sm p-3 m-0"
+                        style="display: none;">
+                        <a class="dropdown-item" href="#">Thông báo 1</a>
+                        <a class="dropdown-item" href="#">Thông báo 2</a>
+                        <a class="dropdown-item" href="#">Thông báo 3</a>
+                    </div>
+                </div>
+                <div class="dropdown ml-3 position-relative">
                     <a class="nav-link dropdown-toggle user-info d-flex align-items-center text-dark" href="#"
                         role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
                         aria-expanded="false">
                         <span>Nguyễn Văn A</span>
                         <i class="bi bi-person-circle ml-2"></i>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+                    <div class="dropdown-menu dropdown-menu-right position-absolute m-0"
+                        aria-labelledby="dropdownMenuLink">
                         <a class="dropdown-item" href="#">Thông tin tài khoản</a>
                         <a class="dropdown-item" href="#">Đổi mật khẩu</a>
                         <div class="dropdown-divider"></div>
@@ -50,40 +61,39 @@
         </div>
     </nav>
     <!-- Sidebar -->
-    <!-- Sidebar -->
     <div id="sidebar" class="bg-dark text-white position-fixed d-flex flex-column justify-content-between">
-        <ul class="list-unstyled p-0 m-0 flex-grow-1">
+        <ul class="list-unstyled p-0 m-0 flex-grow-1 text-white text-decoration-none">
             <li class="p-3 border-bottom">
-                <a href="#" class="text-white text-decoration-none d-flex align-items-center">
+                <a href="#" class="d-flex align-items-center">
                     <i class="bi bi-house-door mr-2"> </i>
                     Bảng tin
                 </a>
             </li>
             <li class="p-3 border-bottom">
-                <a href="#" class="text-white text-decoration-none d-flex align-items-center">
+                <a href="#" class="d-flex align-items-center">
                     <i class="bi bi-file-earmark-text mr-2"></i>
                     Bài viết
                 </a>
             </li>
-            <li class="p-3 border-bottom"><a href="#" class="text-white text-decoration-none d-flex align-items-center">
+            <li class="p-3 border-bottom"><a href="#" class="d-flex align-items-center">
                     <i class="bi bi-bookmarks mr-2"></i>
                     Chuyên mục
                 </a>
             </li>
-            <li class="p-3 border-bottom"><a href="#" class="text-white text-decoration-none d-flex align-items-center">
+            <li class="p-3 border-bottom"><a href="#" class="d-flex align-items-center">
                     <i class="bi bi-tags mr-2"></i>
                     Nhãn tag
                 </a>
             </li>
-            <li class="p-3 border-bottom"><a href="#" class="text-white text-decoration-none d-flex align-items-center">
+            <li class="p-3 border-bottom"><a href="#" class="d-flex align-items-center">
                     <i class="bi bi-people mr-2"></i>
                     Người dùng
                 </a>
             </li>
         </ul>
-        <ul class="list-unstyled p-0 m-0">
+        <ul class="list-unstyled p-0 m-0 text-white text-decoration-none">
             <li class="p-3 border-top">
-                <a href="#" class="text-white text-decoration-none d-flex align-items-center">
+                <a href="#" class="d-flex align-items-center">
                     <i class="bi bi-gear mr-2"></i>
                     Cài đặt
                 </a>
@@ -101,6 +111,9 @@
         integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
         crossorigin="anonymous"></script>
     <script src="/statics/scripts/global.js"></script>
+
+    <!-- Script for admin page -->
+    <script src="/statics/scripts/admin.js"></script>
 </body>
 
 </html>

@@ -67,3 +67,25 @@
     border-radius: 50%;
     margin-right: 10px;
 }
+
+.notification-panel {
+    width: 300px;
+    right: 0;
+    top: calc(100% + 13px);
+    z-index: 1000;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.dropdown-menu {
+    width: 200px;
+    right: 0;
+    top: calc(100% + 13px);
+    z-index: 1000;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.user-info:hover {
+    opacity: 0.7;
+}
