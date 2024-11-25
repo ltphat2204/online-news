@@ -1,0 +1,90 @@
+.login-logo img {
+  max-width: 200px;
+  display: block;
+  padding-top: 25px;
+  padding-bottom: 25px;
+  margin: 0 auto 0;
+}
+
+.login-container {
+  max-width: 800px;
+  margin: 0 auto 0;
+  background: white;
+  padding: 25px;
+  border-radius: 50px;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.5);
+}
+
+.form-login {
+  max-width: 388px;
+  margin: 0 auto 0;
+}
+
+.form-control {
+  flood-color: #f7fbff;
+  height: 48px;
+  border-radius: 12px;
+  padding: 10px 20px;
+  margin-bottom: 20px;
+  border: 1px solid #ced4da;
+}
+
+.custom-btn {
+  background-color: #ff5733; /* Màu tùy chỉnh */
+  border-color: #ff5733;
+  color: #fff; /* Màu chữ */
+  font-size: 16px;
+  max-height: 52px;
+  border-radius: 12px;
+}
+
+.form-footer {
+  font-size: 15px;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #dee2e6;
+}
+
+.divider:not(:empty)::before {
+  margin-right: 0.75em;
+}
+
+.divider:not(:empty)::after {
+  margin-left: 0.75em;
+}
+
+.custom-social-btn {
+  padding-left: 75px;
+  background-color: #f3f9fa; /* Màu nền */
+  border-radius: 12px; /* Bo góc */
+  height: 52px; /* Chiều cao */
+  font-size: 16px; /* Chỉnh kích thước chữ nếu cần */
+}
+
+/* Dùng d-flex để căn giữa logo và text */
+.d-flex {
+  display: flex;
+  align-items: center; /* Căn giữa theo chiều dọc */
+  align-self: center; /* Căn giữa theo chiều ngang */
+}
+/* Tạo khoảng cách giữa logo và text */
+.me-2 {
+  margin-right: 16px; /* Khoảng cách giữa logo và text */
+}
+/* Căn giữa text trong nút */
+.btn span {
+  text-align: left;
+}
