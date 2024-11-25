@@ -19,8 +19,6 @@ export default function setLayout(req, res, next) {
         if (!options.layout) {
             options.layout = layout;
         }
-
-        console.log(options.layout);
         
         originalRender.call(this, view, options);
     };
