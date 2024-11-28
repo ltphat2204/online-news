@@ -16,6 +16,9 @@ const app = express();
 setupViewEngine(app, __dirname);
 app.use(setLayout);
 
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
 // Config route for static files
 app.use('/statics', express.static(join(__dirname, 'public')));
 

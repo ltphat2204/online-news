@@ -1,0 +1,156 @@
+<div class="container bg-light p-3 rounded-lg shadow">
+    <div class="d-flex">
+        <h1>
+            Quản lý danh mục
+        </h1>
+        <button class="btn btn-primary ml-auto" data-toggle="modal" data-target="#addCategoryGroupModal">
+            Thêm danh mục
+        </button>
+    </div>
+</div>
+
+<div class="container bg-light p-3 rounded-lg shadow my-4">
+    <table class="table">
+        <thead>
+            <tr>
+            <th scope="col">#</th>
+            <th scope="col">Tên</th>
+            <th scope="col">Mô tả</th>
+            <th scope="col">&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#if this.empty}}
+            <tr>
+                <td colspan="4" class="text-center">Hiện chưa có danh mục nào</td>
+            </tr>
+            {{/if}}
+            {{#each this.categoryGroups}}
+            <tr data-id="{{id}}">
+                <th scope="row">{{@index}}</th>
+                <td>{{name}}</td>
+                <td>{{description}}</td>
+                <td>
+                    <button class="btn btn-primary edit-category" 
+                            data-toggle="modal" 
+                            data-target="#editCategoryGroupModal"
+                            data-id="{{id}}"
+                            data-name="{{name}}"
+                            data-description="{{description}}">
+                        Sửa
+                    </button>
+                    <button class="btn btn-danger delete-category" 
+                            data-toggle="modal" 
+                            data-target="#deleteCategoryGroupModal"
+                            data-id="{{id}}">
+                        Xóa
+                    </button>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+
+<div class="modal fade" id="addCategoryGroupModal" tabindex="-1" aria-labelledby="addCategoryGroupModalTitle" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" method="post" action="/admin/category-group/create">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addCategoryGroupModalTitle">Thêm danh mục</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+            <div class="form-group">
+                <label for="categoryGroupName">Tên danh mục</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="categoryGroupDescription">Mô tả</label>
+                <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+            </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+        <button type="submit" class="btn btn-primary">Thêm mới</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal fade" id="editCategoryGroupModal" tabindex="-1" aria-labelledby="editCategoryGroupModalTitle" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" method="post" action="/admin/category-group/edit">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editCategoryGroupModalTitle">Sửa danh mục</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+            <input type="hidden" id="editCategoryId" name="id">
+            <div class="form-group">
+                <label for="editCategoryName">Tên danh mục</label>
+                <input type="text" class="form-control" id="editCategoryName" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="editCategoryDescription">Mô tả</label>
+                <textarea class="form-control" id="editCategoryDescription" name="description" rows="3"></textarea>
+            </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal fade" id="deleteCategoryGroupModal" tabindex="-1" aria-labelledby="deleteCategoryGroupModalTitle" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" method="post" action="/admin/category-group/delete">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteCategoryGroupModalTitle">Xóa danh mục</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+            <input type="hidden" id="deleteCategoryId" name="id">
+            <p>Bạn có chắc chắn muốn xóa danh mục này không?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+        <button type="submit" class="btn btn-primary">Xóa</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Edit Modal Population
+    $('#editCategoryGroupModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var id = button.data('id');
+        var name = button.data('name');
+        var description = button.data('description');
+        
+        var modal = $(this);
+        modal.find('#editCategoryId').val(id);
+        modal.find('#editCategoryName').val(name);
+        modal.find('#editCategoryDescription').val(description);
+    });
+
+    // Delete Modal Population
+    $('#deleteCategoryGroupModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var id = button.data('id');
+        console.log(id);
+        
+        var modal = $(this);
+        modal.find('#deleteCategoryId').val(id);
+    });
+});
+</script>

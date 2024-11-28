@@ -22,14 +22,16 @@ CREATE TABLE "social_networks" (
   "social_id" varchar
 );
 
-CREATE TABLE "categories_group" (
+CREATE TABLE "category_groups" (
   "id" UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  "name" varchar
+  "name" varchar,
+  "description" text
 );
 
 CREATE TABLE "categories" (
   "id" UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   "name" varchar NOT NULL,
+  "description" text,
   "group_id" UUID,
   "created_at" timestamp DEFAULT now(),
   "updated_at" timestamp DEFAULT now()
