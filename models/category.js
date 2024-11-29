@@ -21,3 +21,9 @@ export const deleteCategory = async (id) => {
     const result = await database("categories").where("id", id).del();
     return result;
 }
+
+// get k row from offset s (first row is 0)
+export const getKCategoryFromS = async(k,s) =>{
+    const result = await database("categories").select("*").limit(k).offset(s);
+    return result;
+}

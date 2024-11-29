@@ -30,8 +30,9 @@
             <tr data-id="{{id}}">
                 <th scope="row">{{getNext @index}}</th>
                 <td>{{group_name}}</td>
-                <td>{{name}}</td>
-                <td>{{description}}</td>
+                <td>{{limitCharacters name 30}}</td>
+                <td>{{limitCharacters description 50}}</td>
+
                 <td>
                     <button class="btn btn-primary edit-category" 
                             data-toggle="modal" 
