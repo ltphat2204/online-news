@@ -41,7 +41,7 @@
         <td>{{fullname}}</td>
         <td>{{username}}</td>
         <td>{{role}}</td>
-        <td>{{created_at}}</td>
+        <td>{{formatDate created_at}}</td>
         <td>{{#if is_premium}}Có{{else}}Không{{/if}}</td>
         <td>{{#if is_blocked}}Có{{else}}Không{{/if}}</td>
         <td>
@@ -152,10 +152,6 @@
           <input type="hidden" class="form-control" id="editPassword" name="password" disabled>
         </div>
         <div class="form-group">
-          <label for="createAt">Ngày tạo</label>
-          <input type="text" class="form-control" id="createAt" name="created_at" disabled>
-        </div>
-        <div class="form-group">
           <label for="editRole">Vai trò</label>
           <select class="form-control" id="editRole" name="role" required>
             <option value="admin">Admin</option>
@@ -185,6 +181,10 @@
         <div class="form-group form-check">
           <input type="checkbox" class="form-check-input" id="editIsBlocked" name="is_blocked">
           <label class="form-check-label" for="editIsBlocked">Chặn</label>
+        </div>
+        <div class="form-group">
+          <label for="createAt">Ngày tạo: <span id="editCreatedAt"></span></label>
+          <input type="hidden" class="form-control" id="createAt" name="created_at" disabled>
         </div>
       </div>
       <div class="modal-footer">
@@ -229,6 +229,7 @@
       modal.find('#editPassword').val(button.data('password'));
       modal.find('#editRole').val(button.data('role'));
       modal.find('#createAt').val(button.data('created_at'));
+      modal.find('#editCreatedAt').text(moment(button.data('created_at')).format('L LTS'));
       modal.find('#editPenName').val(button.data('pen_name'));
       modal.find('#editDob').val(button.data('dob') ? new Date(button.data('dob')).toISOString().substring(0, 10) : '');
       modal.find('#editIsBlocked').prop('checked', button.data('is_blocked'));
