@@ -37,5 +37,3 @@ Chạy command sau để chạy được app với môi trường dev
 ```
 
 App sẽ được khởi chạy tại [http://localhost:3000](http://localhost:3000) theo mặc định.
-
-### Test by VPN
