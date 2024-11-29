@@ -37,11 +37,11 @@
       {{/if}}
       {{#each this.users}}
       <tr data-id="{{id}}">
-        <th scope="row">{{getNext @index}}</th>
+        <th scope="row">{{@index}}</th>
         <td>{{fullname}}</td>
         <td>{{username}}</td>
         <td>{{role}}</td>
-        <td>{{formatDate created_at}}</td>
+        <td>{{created_at}}</td>
         <td>{{#if is_premium}}Có{{else}}Không{{/if}}</td>
         <td>{{#if is_blocked}}Có{{else}}Không{{/if}}</td>
         <td>
@@ -147,7 +147,14 @@
           <label for="editUserName">Tên tài khoản</label>
           <input type="text" class="form-control" id="editUsername" name="username" required>
         </div>
-        <input type="hidden" class="form-control" id="editPassword" name="password">
+        <div class="form-group">
+          <label for="password">Mật khẩu</label>
+          <input type="hidden" class="form-control" id="editPassword" name="password" disabled>
+        </div>
+        <div class="form-group">
+          <label for="createAt">Ngày tạo</label>
+          <input type="text" class="form-control" id="createAt" name="created_at" disabled>
+        </div>
         <div class="form-group">
           <label for="editRole">Vai trò</label>
           <select class="form-control" id="editRole" name="role" required>
@@ -167,7 +174,7 @@
         </div>
 
         <div class="form-group form-check" id="editIsPremiumGroup">
-          <input type="checkbox" class="form-check-input" id="editIsPremium" name="is_premium" value="is_premium">
+          <input type="checkbox" class="form-check-input" id="editIsPremium" name="is_premium">
           <label class="form-check-label" for="editIsPremium">Premium</label>
         </div>
         <div class="form-group" id="editPremiumExpiredGroup" style="display: none;">
@@ -176,12 +183,8 @@
             value="premium_expired">
         </div>
         <div class="form-group form-check">
-          <input type="checkbox" class="form-check-input" id="editIsBlocked" name="is_blocked" value="is_blocked">
+          <input type="checkbox" class="form-check-input" id="editIsBlocked" name="is_blocked">
           <label class="form-check-label" for="editIsBlocked">Chặn</label>
-        </div>
-        <div class="form-group">
-          <label for="createAt">Ngày tạo: <span id="editCreatedAt"></span></label>
-          <input type="hidden" class="form-control" id="createAt" name="created_at" disabled>
         </div>
       </div>
       <div class="modal-footer">
@@ -214,138 +217,50 @@
 </div>
 
 <script>
-
   $(document).ready(function () {
     // Edit Modal Population
     $('#editUserModal').on('show.bs.modal', function (event) {
       var button = $(event.relatedTarget);
-      var id = button.data('id');
-      var fullname = button.data('fullname');
-      var email = button.data('email');
-      var username = button.data('username');
-      var password = button.data('password');
-      var role = button.data('role');
-      var created_at = button.data('created_at');
-      var pen_name = button.data('pen_name');
-      var dob = button.data('dob');
-      var is_blocked = button.data('is_blocked');
-      var is_premium = button.data('is_premium');
-      var premium_expired = button.data('premium_expired');
-
       var modal = $(this);
-      modal.find('#editUserId').val(id);
-      modal.find('#editUserFullname').val(fullname);
-      modal.find('#editEmail').val(email);
-      modal.find('#editUsername').val(username);
-      modal.find('#editPassword').val(password);
-      modal.find('#editRole').val(role);
-      modal.find('#createAt').val(created_at);
-      modal.find('#editCreatedAt').text(moment(created_at).format('DD/MM/YYYY HH:mm'));
-      modal.find('#editPenName').val(pen_name);
-      modal.find('#editDob').val(dob ? new Date(dob).toISOString().substring(0, 10) : '');
-      modal.find('#editIsBlocked').prop('checked', is_blocked);
-      modal.find('#editIsPremium').prop('checked', is_premium);
-      modal.find('#editPremiumExpired').val(premium_expired ? new Date(premium_expired).toISOString().substring(0, 16) : '');
+      modal.find('#editUserId').val(button.data('id'));
+      modal.find('#editUserFullname').val(button.data('fullname'));
+      modal.find('#editEmail').val(button.data('email'));
+      modal.find('#editUsername').val(button.data('username'));
+      modal.find('#editPassword').val(button.data('password'));
+      modal.find('#editRole').val(button.data('role'));
+      modal.find('#createAt').val(button.data('created_at'));
+      modal.find('#editPenName').val(button.data('pen_name'));
+      modal.find('#editDob').val(button.data('dob') ? new Date(button.data('dob')).toISOString().substring(0, 10) : '');
+      modal.find('#editIsBlocked').prop('checked', button.data('is_blocked'));
+      modal.find('#editIsPremium').prop('checked', button.data('is_premium'));
+      modal.find('#editPremiumExpired').val(button.data('premium_expired') ? new Date(button.data('premium_expired')).toISOString().substring(0, 16) : '');
 
-      if (role === 'writer') {
-        modal.find('#editPenNameGroup').show();
-      } else {
-        modal.find('#editPenNameGroup').hide();
-      }
-
-      if (is_premium) {
-        modal.find('#editPremiumExpiredGroup').show();
-      } else {
-        modal.find('#editPremiumExpiredGroup').hide();
-      }
-
-      if (is_blocked) {
-        modal.find('#editIsPremiumGroup').hide();
-      } else {
-        modal.find('#editIsPremiumGroup').show();
-      }
+      modal.find('#editPenNameGroup').toggle(button.data('role') === 'writer');
+      modal.find('#editPremiumExpiredGroup').toggle(button.data('is_premium'));
 
       $('#editRole').on('change', function () {
-        if ($(this).val() === 'writer') {
-          $('#editPenNameGroup').show();
-        } else {
-          $('#editPenNameGroup').hide();
-        }
+        $('#editPenNameGroup').toggle($(this).val() === 'writer');
       });
 
       $('#editIsPremium').on('change', function () {
-        if ($(this).is(':checked')) {
-          $('#editPremiumExpiredGroup').show();
-        } else {
-          $('#editPremiumExpiredGroup').hide();
-        }
-      });
-
-      $('#editIsBlocked').on('change', function () {
-        if ($(this).is(':checked')) {
-          $('#editIsPremiumGroup').hide();
-          $('#editPremiumExpiredGroup').hide();
-        } else {
-          $('#editIsPremiumGroup').show();
-        }
+        $('#editPremiumExpiredGroup').toggle($(this).is(':checked'));
       });
     });
 
     $('#addUserModal').on('show.bs.modal', function () {
       $('#createRole').on('change', function () {
-        if ($(this).val() === 'writer') {
-          $('#createPenNameGroup').show();
-        } else {
-          $('#createPenNameGroup').hide();
-        }
+        $('#createPenNameGroup').toggle($(this).val() === 'writer');
       });
 
       $('#createIsPremium').on('change', function () {
-        if ($(this).is(':checked')) {
-          $('#createPremiumExpiredGroup').show();
-        } else {
-          $('#createPremiumExpiredGroup').hide();
-        }
+        $('#createPremiumExpiredGroup').toggle($(this).is(':checked'));
       });
-
-      $('#createIsBlocked').on('change', function () {
-        if ($(this).is(':checked')) {
-          $('#createIsPremiumGroup').hide();
-          $('#createPremiumExpiredGroup').hide();
-        } else {
-          $('#createIsPremiumGroup').show();
-        }
-      });
-    });
-
-    $('#createUsername, #createEmail').on('blur', function () {
-      const username = $('#createUsername').val();
-      const email = $('#createEmail').val();
-      if (username && email) {
-        $.post('/admin/user/check-duplicate', { username, email })
-          .done(function (data) {
-            if (data.message === "User already exists") {
-              alert("User already exists");
-            }
-          })
-          .fail(function (jqXHR) {
-            if (jqXHR.status === 400) {
-              alert("User already exists");
-            } else {
-              alert("An error occurred. Please try again.");
-            }
-          });
-      }
     });
 
     // Delete Modal Population
     $('#deleteUserModal').on('show.bs.modal', function (event) {
       var button = $(event.relatedTarget);
-      var id = button.data('id');
-      console.log(id);
-
-      var modal = $(this);
-      modal.find('#deleteUserId').val(id);
+      $(this).find('#deleteUserId').val(button.data('id'));
     });
   });
 </script>

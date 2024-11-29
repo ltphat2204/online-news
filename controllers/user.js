@@ -46,6 +46,11 @@ export const patchUser = async (req, res) => {
     if (!user.premium_expired) {
         user.premium_expired = null;
     }
+    if (!user.is_blocked) {
+        user.is_blocked = false;
+    } else {
+        user.is_blocked = true;
+    }
     await editUser(id, user);
     res.redirect('/admin/user');
 }
