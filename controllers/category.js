@@ -10,8 +10,8 @@ export const getCategory = async (req, res) => {
 
     res.render('admin/category', {
         title: 'Chuyên mục',
-        empty: category.length === 0,
-        category
+        empty: categories.length === 0,
+        categories
     });
 }
 
