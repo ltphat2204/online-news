@@ -25,14 +25,14 @@
         <th scope="col">Vai trò</th>
         <th scope="col">Thời gian tạo</th>
         <th scope="col">Premium</th>
-        <th scope="col">Đã chặn</th>
+        <th scope="col">Chặn</th>
         <th scope="col">&nbsp;</th>
       </tr>
     </thead>
     <tbody>
       {{#if this.empty}}
       <tr>
-        <td colspan="8" class="text-center">Hiện chưa có người dùng nào</td>
+        <td colspan="8" class="text-center">Hiện chưa có danh mục nào</td>
       </tr>
       {{/if}}
       {{#each this.users}}
@@ -72,57 +72,56 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="createFullname">Tên người dùng <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="createFullname" name="fullname" required>
+        </div>
+        <div class="form-group">
+          <label for="createEmail">Email <span class="text-danger">*</span></label>
+          <input type="email" class="form-control" id="createEmail" name="email" required>
+        </div>
+        <div class="form-group">
+          <label for="createUsername">Tên tài khoản <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="createUsername" name="username" required>
+        </div>
+        <div class="form-group">
+          <label for="createPassword">Mật khẩu mặc định <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="createPassword" name="password" required>
+        </div>
+        <div class="form-group">
+          <label for="createRole">Vai trò<span class="text-danger">*</span></label>
+          <select class="form-control" id="createRole" name="role" required>
+            <option value="">-- Chọn vai trò --</option>
+            <option value="admin">Admin</option>
+            <option value="editor">Editor</option>
+            <option value="writer">Writer</option>
+            <option value="subscriber">Subscriber</option>
+          </select>
+        </div>
+        <div class="form-group" id="createPenNameGroup" style="display: none;">
+          <label for="createPenName">Bút danh</label>
+          <input type="text" class="form-control" id="createPenName" name="pen_name" value="">
+        </div>
+        <div class="form-group">
+          <label for="createDob">Ngày sinh</label>
+          <input type="date" class="form-control" id="createDob" name="dob" value="">
+        </div>
+        <div class="form-group form-check" id="createIsPremiumGroup">
+          <input type="checkbox" class="form-check-input" id="createIsPremium" name="is_premium" value="">
+          <label class="form-check-label" for="createIsPremium">Premium </label>
+        </div>
+        <div class="form-group" id="createPremiumExpiredGroup" style="display: none;">
+          <label for="createPremiumExpired">Ngày hết hạn <span class="text-danger">*</span></label>
+          <input type="date" class="form-control" id="createPremiumExpired" name="premium_expired" value="">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+        <button type="submit" class="btn btn-primary">Thêm mới</button>
+      </div>
+    </form>
   </div>
-  <div class="modal-body">
-    <div class="form-group">
-      <label for="createFullname">Tên người dùng <span class="text-danger">*</span></label>
-      <input type="text" class="form-control" id="createFullname" name="fullname" required>
-    </div>
-    <div class="form-group">
-      <label for="createEmail">Email <span class="text-danger">*</span></label>
-      <input type="email" class="form-control" id="createEmail" name="email" required>
-    </div>
-    <div class="form-group">
-      <label for="createUsername">Tên tài khoản <span class="text-danger">*</span></label>
-      <input type="text" class="form-control" id="createUsername" name="username" required>
-    </div>
-    <div class="form-group">
-      <label for="createPassword">Mật khẩu mặc định <span class="text-danger">*</span></label>
-      <input type="text" class="form-control" id="createPassword" name="password" required>
-    </div>
-    <div class="form-group">
-      <label for="createRole">Vai trò<span class="text-danger">*</span></label>
-      <select class="form-control" id="createRole" name="role" required>
-        <option value="">-- Chọn vai trò --</option>
-        <option value="admin">Admin</option>
-        <option value="editor">Editor</option>
-        <option value="writer">Writer</option>
-        <option value="subscriber">Subscriber</option>
-      </select>
-    </div>
-    <div class="form-group" id="createPenNameGroup" style="display: none;">
-      <label for="createPenName">Bút danh</label>
-      <input type="text" class="form-control" id="createPenName" name="pen_name" value="">
-    </div>
-    <div class="form-group">
-      <label for="createDob">Ngày sinh</label>
-      <input type="date" class="form-control" id="createDob" name="dob" value="">
-    </div>
-    <div class="form-group form-check" id="createIsPremiumGroup">
-      <input type="checkbox" class="form-check-input" id="createIsPremium" name="is_premium" value="">
-      <label class="form-check-label" for="createIsPremium">Premium </label>
-    </div>
-    <div class="form-group" id="createPremiumExpiredGroup" style="display: none;">
-      <label for="createPremiumExpired">Ngày hết hạn <span class="text-danger">*</span></label>
-      <input type="date" class="form-control" id="createPremiumExpired" name="premium_expired" value="">
-    </div>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-    <button type="submit" class="btn btn-primary">Thêm mới</button>
-  </div>
-  </form>
-</div>
 </div>
 
 <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalTitle" aria-hidden="true">
@@ -262,6 +261,12 @@
         modal.find('#editPremiumExpiredGroup').hide();
       }
 
+      if (is_blocked) {
+        modal.find('#editIsPremiumGroup').hide();
+      } else {
+        modal.find('#editIsPremiumGroup').show();
+      }
+
       $('#editRole').on('change', function () {
         if ($(this).val() === 'writer') {
           $('#editPenNameGroup').show();
@@ -275,6 +280,15 @@
           $('#editPremiumExpiredGroup').show();
         } else {
           $('#editPremiumExpiredGroup').hide();
+        }
+      });
+
+      $('#editIsBlocked').on('change', function () {
+        if ($(this).is(':checked')) {
+          $('#editIsPremiumGroup').hide();
+          $('#editPremiumExpiredGroup').hide();
+        } else {
+          $('#editIsPremiumGroup').show();
         }
       });
     });
@@ -293,6 +307,15 @@
           $('#createPremiumExpiredGroup').show();
         } else {
           $('#createPremiumExpiredGroup').hide();
+        }
+      });
+
+      $('#createIsBlocked').on('change', function () {
+        if ($(this).is(':checked')) {
+          $('#createIsPremiumGroup').hide();
+          $('#createPremiumExpiredGroup').hide();
+        } else {
+          $('#createIsPremiumGroup').show();
         }
       });
     });
