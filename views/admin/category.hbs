@@ -1,0 +1,177 @@
+<div class="container bg-light p-3 rounded-lg shadow">
+    <div class="d-flex">
+        <h1>
+            Quản lý chuyên mục
+        </h1>
+        <button class="btn btn-primary ml-auto" data-toggle="modal" data-target="#addCategoryModal">
+            Thêm chuyên mục
+        </button>
+    </div>
+</div>
+
+<div class="container bg-light p-3 rounded-lg shadow my-4">
+    <table class="table">
+        <thead>
+            <tr>
+            <th scope="col">#</th>
+            <th scope="col">Danh mục</th>
+            <th scope="col">Chuyên mục</th>
+            <th scope="col">Mô tả</th>
+            <th scope="col">&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#if this.empty}}
+            <tr>
+                <td colspan="4" class="text-center">Hiện chưa có chuyên mục nào</td>
+            </tr>
+            {{/if}}
+            {{#each this.categories}}
+            <tr data-id="{{id}}">
+                <th scope="row">{{@index}}</th>
+                <td>{{group_name}}</td>
+                <td>{{name}}</td>
+                <td>{{description}}</td>
+                <td>
+                    <button class="btn btn-primary edit-category" 
+                            data-toggle="modal" 
+                            data-target="#editCategoryModal"
+                            data-id="{{id}}"
+                            data-name="{{name}}"
+                            data-description="{{description}}"
+                            data-groupid="{{group_id}}">
+                        Sửa
+                    </button>
+                    <button class="btn btn-danger delete-category" 
+                            data-toggle="modal" 
+                            data-target="#deleteCategoryModal"
+                            data-id="{{id}}">
+                        Xóa
+                    </button>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalTitle" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" method="post" action="/admin/category/create">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addCategoryModalTitle">Thêm chuyên mục</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+            <div class="form-group">
+                <label for="categoryDescription">Thuộc danh mục</label>
+                <select class="custom-select" name="group_id" id="group_id">
+                  {{#each this.categoryGroups}}
+                    <option value="{{id}}">{{name}}</option>
+                  {{/each}}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="categoryName">Tên chuyên mục</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="categoryDescription">Mô tả</label>
+                <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+            </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+        <button type="submit" class="btn btn-primary">Thêm mới</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalTitle" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" method="post" action="/admin/category/edit">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editCategoryModalTitle">Sửa chuyên mục</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+            <input type="hidden" id="editCategoryId" name="id">
+            <div class="form-group">
+                <label for="categoryDescription">Thuộc danh mục</label>
+                <select class="custom-select" name="group_id" id="editCategoryGroup">
+                  {{#each this.categoryGroups}}
+                    <option value="{{id}}">{{name}}</option>
+                  {{/each}}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="editCategoryName">Tên chuyên mục</label>
+                <input type="text" class="form-control" id="editCategoryName" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="editCategoryDescription">Mô tả</label>
+                <textarea class="form-control" id="editCategoryDescription" name="description" rows="3"></textarea>
+            </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-labelledby="deleteCategoryModalTitle" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" method="post" action="/admin/category/delete">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteCategoryModalTitle">Xóa chuyên mục</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+            <input type="hidden" id="deleteCategoryId" name="id">
+            <p>Bạn có chắc chắn muốn xóa chuyên mục này không?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+        <button type="submit" class="btn btn-primary">Xóa</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Edit Modal Population
+    $('#editCategoryModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var id = button.data('id');
+        var name = button.data('name');
+        var description = button.data('description');
+        var group_id= button.data('groupid');
+        
+        var modal = $(this);
+        modal.find('#editCategoryId').val(id);
+        modal.find('#editCategoryName').val(name);
+        modal.find('#editCategoryDescription').val(description);
+        modal.find('#editCategoryGroup').val(group_id);
+    });
+
+    // Delete Modal Population
+    $('#deleteCategoryModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var id = button.data('id');
+        console.log(id);
+        
+        var modal = $(this);
+        modal.find('#deleteCategoryId').val(id);
+    });
+});
+</script>
