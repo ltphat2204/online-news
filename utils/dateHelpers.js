@@ -2,18 +2,27 @@ import moment from 'moment';
 import 'moment/locale/vi.js';
 import { capitalizeFirstLetter } from './stringHelpers.js';
 
+
+const getVietnamMoment = (date) => {
+    moment.locale('vi');
+
+    if (date) {
+        return moment(date).utcOffset(+420);
+    }
+    return moment().utcOffset(+420);
+}
+
 export const dateHelpers = {
     today: () => {
-        moment.locale('vi');
-        const date = moment();
+        const date = getVietnamMoment();
         const formattedDate = date.format('dddd, [ngày] DD/MM/YYYY');
         
         return capitalizeFirstLetter(formattedDate);
     },
     formatDate: (date) => {
-        moment.locale('vi');
-        const formattedDate = moment(date).format('DD/MM/YYYY hh:mm:ss');
+        const localDate = getVietnamMoment(date);
+        const formattedDate = localDate.format('DD/MM/YYYY hh:mm:ss');
         
-        return capitalizeFirstLetter(formattedDate);
+        return formattedDate;
     }
 }
