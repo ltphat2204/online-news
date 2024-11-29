@@ -1,0 +1,330 @@
+<div class="container bg-light p-3 rounded-lg shadow">
+  <div class="d-flex">
+    <h1>
+      Quản lý người dùng
+    </h1>
+    <button class="btn btn-primary ml-auto" data-toggle="modal" data-target="#addUserModal">
+      Thêm người dùng
+    </button>
+  </div>
+</div>
+
+{{#if error}}
+<div class="alert alert-danger" role="alert">
+  {{error}}
+</div>
+{{/if}}
+
+<div class="container bg-light p-3 rounded-lg shadow my-4">
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Tên người dùng</th>
+        <th scope="col">Tên tài khoản</th>
+        <th scope="col">Vai trò</th>
+        <th scope="col">Thời gian tạo</th>
+        <th scope="col">Premium</th>
+        <th scope="col">Đã chặn</th>
+        <th scope="col">&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#if this.empty}}
+      <tr>
+        <td colspan="7" class="text-center">Hiện chưa có danh mục nào</td>
+      </tr>
+      {{/if}}
+      {{#each this.users}}
+      <tr data-id="{{id}}">
+        <th scope="row">{{@index}}</th>
+        <td>{{fullname}}</td>
+        <td>{{username}}</td>
+        <td>{{role}}</td>
+        <td>{{created_at}}</td>
+        <td>{{#if is_premium}}Có{{else}}Không{{/if}}</td>
+        <td>{{#if is_blocked}}Có{{else}}Không{{/if}}</td>
+        <td>
+          <button class="btn btn-primary edit-user" data-toggle="modal" data-target="#editUserModal" data-id="{{id}}"
+            data-fullname="{{fullname}}" data-email="{{email}}" data-username="{{username}}"
+            data-password="{{password}}" data-role="{{role}}" data-created_at="{{created_at}}"
+            data-pen_name="{{pen_name}}" data-dob="{{dob}}" data-is_blocked="{{is_blocked}}"
+            data-is_premium="{{is_premium}}" data-premium_expired="{{premium_expired}}">
+            Sửa
+          </button>
+          <button class="btn btn-danger delete-user" data-toggle="modal" data-target="#deleteUserModal"
+            data-id="{{id}}">
+            Xóa
+          </button>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</div>
+
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalTitle" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" method="post" action="/admin/user/create">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addUserModalTitle">Thêm người dùng mới</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="createFullname">Tên người dùng <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="createFullname" name="fullname" required>
+        </div>
+        <div class="form-group">
+          <label for="createEmail">Email <span class="text-danger">*</span></label>
+          <input type="email" class="form-control" id="createEmail" name="email" required>
+        </div>
+        <div class="form-group">
+          <label for="createUsername">Tên tài khoản <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="createUsername" name="username" required>
+        </div>
+        <div class="form-group">
+          <label for="createPassword">Mật khẩu mặc định <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="createPassword" name="password" required>
+        </div>
+        <div class="form-group">
+          <label for="createRole">Vai trò<span class="text-danger">*</span></label>
+          <select class="form-control" id="createRole" name="role" required>
+            <option value="">-- Chọn vai trò --</option>
+            <option value="admin">Admin</option>
+            <option value="editor">Editor</option>
+            <option value="writer">Writer</option>
+            <option value="subscriber">Subscriber</option>
+          </select>
+        </div>
+        <div class="form-group" id="createPenNameGroup" style="display: none;">
+          <label for="createPenName">Bút danh</label>
+          <input type="text" class="form-control" id="createPenName" name="pen_name" value="">
+        </div>
+        <div class="form-group">
+          <label for="createDob">Ngày sinh</label>
+          <input type="date" class="form-control" id="createDob" name="dob" value="">
+        </div>
+        <div class="form-group form-check" id="createIsPremiumGroup">
+          <input type="checkbox" class="form-check-input" id="createIsPremium" name="is_premium" value="">
+          <label class="form-check-label" for="createIsPremium">Premium </label>
+        </div>
+        <div class="form-group" id="createPremiumExpiredGroup" style="display: none;">
+          <label for="createPremiumExpired">Ngày hết hạn <span class="text-danger">*</span></label>
+          <input type="date" class="form-control" id="createPremiumExpired" name="premium_expired" value="">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+        <button type="submit" class="btn btn-primary">Thêm mới</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalTitle" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" method="post" action="/admin/user/edit">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editUserModalTitle">Sửa danh mục</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editUserId" name="id">
+        <div class="form-group">
+          <label for="editUserFullname">Tên người dùng</label>
+          <input type="text" class="form-control" id="editUserFullname" name="fullname" required>
+        </div>
+        <div class="form-group">
+          <label for="editEmail">Email</label>
+          <input type="email" class="form-control" id="editEmail" name="email" required>
+        </div>
+        <div class="form-group">
+          <label for="editUserName">Tên tài khoản</label>
+          <input type="text" class="form-control" id="editUsername" name="username" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Mật khẩu</label>
+          <input type="password" class="form-control" id="editPassword" name="password" disabled>
+        </div>
+        <div class="form-group">
+          <label for="createAt">Ngày tạo</label>
+          <input type="text" class="form-control" id="createAt" name="created_at" disabled>
+        </div>
+        <div class="form-group">
+          <label for="editRole">Vai trò</label>
+          <select class="form-control" id="editRole" name="role" required>
+            <option value="admin">Admin</option>
+            <option value="editor">Editor</option>
+            <option value="writer">Writer</option>
+            <option value="subscriber">Subscriber</option>
+          </select>
+        </div>
+        <div class="form-group" id="editPenNameGroup" style="display: none;">
+          <label for="editPenName">Bút danh</label>
+          <input type="text" class="form-control" id="editPenName" name="pen_name">
+        </div>
+        <div class="form-group">
+          <label for="editDob">Ngày sinh</label>
+          <input type="text" class="form-control" id="editDob" name="dob">
+        </div>
+
+        <div class="form-group form-check" id="editIsPremiumGroup">
+          <input type="checkbox" class="form-check-input" id="editIsPremium" name="is_premium" value="is_premium">
+          <label class="form-check-label" for="editIsPremium">Premium</label>
+        </div>
+        <div class="form-group" id="editPremiumExpiredGroup" style="display: none;">
+          <label for="editPremiumExpired">Hết hạn Premium</label>
+          <input type="datetime-local" class="form-control" id="editPremiumExpired" name="premium_expired"
+            value="premium_expired">
+        </div>
+        <div class="form-group form-check">
+          <input type="checkbox" class="form-check-input" id="editIsBlocked" name="is_blocked" value="is_blocked">
+          <label class="form-check-label" for="editIsBlocked">Chặn</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalTitle" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" method="post" action="/admin/user/delete">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteUserModalTitle">Xóa người dùng</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="deleteUserId" name="id">
+        <p>Bạn có chắc chắn muốn xóa người dùng này không?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+        <button type="submit" class="btn btn-primary">Xóa</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+
+  $(document).ready(function () {
+    // Edit Modal Population
+    $('#editUserModal').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget);
+      var id = button.data('id');
+      var fullname = button.data('fullname');
+      var email = button.data('email');
+      var username = button.data('username');
+      var password = button.data('password');
+      var role = button.data('role');
+      var created_at = button.data('created_at');
+      var pen_name = button.data('pen_name');
+      var dob = button.data('dob');
+      var is_blocked = button.data('is_blocked');
+      var is_premium = button.data('is_premium');
+      var premium_expired = button.data('premium_expired');
+
+      var modal = $(this);
+      modal.find('#editUserId').val(id);
+      modal.find('#editUserFullname').val(fullname);
+      modal.find('#editEmail').val(email);
+      modal.find('#editUsername').val(username);
+      modal.find('#editPassword').val(password);
+      modal.find('#editRole').val(role);
+      modal.find('#createAt').val(created_at);
+      modal.find('#editPenName').val(pen_name);
+      modal.find('#editDob').val(dob ? new Date(dob).toISOString().substring(0, 10) : '');
+      modal.find('#editIsBlocked').prop('checked', is_blocked);
+      modal.find('#editIsPremium').prop('checked', is_premium);
+      modal.find('#editPremiumExpired').val(premium_expired ? new Date(premium_expired).toISOString().substring(0, 16) : '');
+
+      if (role === 'writer') {
+        modal.find('#editPenNameGroup').show();
+      } else {
+        modal.find('#editPenNameGroup').hide();
+      }
+
+      if (is_premium) {
+        modal.find('#editPremiumExpiredGroup').show();
+      } else {
+        modal.find('#editPremiumExpiredGroup').hide();
+      }
+
+      $('#editRole').on('change', function () {
+        if ($(this).val() === 'writer') {
+          $('#editPenNameGroup').show();
+        } else {
+          $('#editPenNameGroup').hide();
+        }
+      });
+
+      $('#editIsPremium').on('change', function () {
+        if ($(this).is(':checked')) {
+          $('#editPremiumExpiredGroup').show();
+        } else {
+          $('#editPremiumExpiredGroup').hide();
+        }
+      });
+    });
+
+    $('#addUserModal').on('show.bs.modal', function () {
+      $('#createRole').on('change', function () {
+        if ($(this).val() === 'writer') {
+          $('#createPenNameGroup').show();
+        } else {
+          $('#createPenNameGroup').hide();
+        }
+      });
+
+      $('#createIsPremium').on('change', function () {
+        if ($(this).is(':checked')) {
+          $('#createPremiumExpiredGroup').show();
+        } else {
+          $('#createPremiumExpiredGroup').hide();
+        }
+      });
+    });
+
+    $('#createUsername, #createEmail').on('blur', function () {
+      const username = $('#createUsername').val();
+      const email = $('#createEmail').val();
+      if (username && email) {
+        $.post('/admin/user/check-duplicate', { username, email })
+          .done(function (data) {
+            if (data.message === "User already exists") {
+              alert("User already exists");
+            }
+          })
+          .fail(function (jqXHR) {
+            if (jqXHR.status === 400) {
+              alert("User already exists");
+            } else {
+              alert("An error occurred. Please try again.");
+            }
+          });
+      }
+    });
+
+    // Delete Modal Population
+    $('#deleteUserModal').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget);
+      var id = button.data('id');
+      console.log(id);
+
+      var modal = $(this);
+      modal.find('#deleteUserId').val(id);
+    });
+  });
+</script>
