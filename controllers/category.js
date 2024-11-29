@@ -1,12 +1,12 @@
 import { 
-    getAllCategory, 
+    getAllCategories, 
     createCategory, 
     editCategory, 
     deleteCategory 
 } from "../models/category.js";
 
 export const getCategory = async (req, res) => {
-    const categories = await getAllCategory();
+    const categories = await getAllCategories();
 
     res.render('admin/category', {
         title: 'Chuyên mục',

@@ -5,7 +5,7 @@ export const createCategory = async (category) => {
     return result;
 }
 
-export const getAllCategory = async () => {
+export const getAllCategories = async () => {
     const categories = await database("categories").select("*");
     return categories;
 }
