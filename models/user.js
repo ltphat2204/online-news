@@ -1,7 +1,6 @@
 import database from "../config/database.js";
 
 export const createUser = async (user) => {
-    console.log("user", user);
     const result = await database("users").insert(user);
     return result;
 }
