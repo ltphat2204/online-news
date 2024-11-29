@@ -1,5 +1,6 @@
 import express from 'express';
 import categoryGroupRouter from './category_group.js';
+import userRouter from './user.js';
 import categoryRouter from './category.js';
 import hashtagRouter from './hashtags.js';
 
@@ -11,6 +12,7 @@ router.get('/', (req, res) => {
     });
 });
 
+router.use('/user', userRouter);
 router.use('/category-group', categoryGroupRouter)
 router.use('/category', categoryRouter)
 router.use('/hashtags', hashtagRouter)
