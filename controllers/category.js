@@ -11,7 +11,8 @@ export const getCategory = async (req, res) => {
     res.render('admin/category', {
         title: 'Chuyên mục',
         empty: categories.length === 0,
-        categories
+        categories,
+        categoryGroups: res.locals.categoryGroups
     });
 }
 

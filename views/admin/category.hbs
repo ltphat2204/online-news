@@ -14,7 +14,8 @@
         <thead>
             <tr>
             <th scope="col">#</th>
-            <th scope="col">Tên</th>
+            <th scope="col">Danh mục</th>
+            <th scope="col">Chuyên mục</th>
             <th scope="col">Mô tả</th>
             <th scope="col">&nbsp;</th>
             </tr>
@@ -28,6 +29,7 @@
             {{#each this.categories}}
             <tr data-id="{{id}}">
                 <th scope="row">{{@index}}</th>
+                <td>{{group_name}}</td>
                 <td>{{name}}</td>
                 <td>{{description}}</td>
                 <td>
@@ -36,7 +38,8 @@
                             data-target="#editCategoryModal"
                             data-id="{{id}}"
                             data-name="{{name}}"
-                            data-description="{{description}}">
+                            data-description="{{description}}"
+                            data-groupid="{{group_id}}">
                         Sửa
                     </button>
                     <button class="btn btn-danger delete-category" 
@@ -62,6 +65,14 @@
         </button>
       </div>
       <div class="modal-body">
+            <div class="form-group">
+                <label for="categoryDescription">Thuộc danh mục</label>
+                <select class="custom-select" name="group_id" id="group_id">
+                  {{#each this.categoryGroups}}
+                    <option value="{{id}}">{{name}}</option>
+                  {{/each}}
+                </select>
+            </div>
             <div class="form-group">
                 <label for="categoryName">Tên chuyên mục</label>
                 <input type="text" class="form-control" id="name" name="name" required>
@@ -90,6 +101,14 @@
       </div>
       <div class="modal-body">
             <input type="hidden" id="editCategoryId" name="id">
+            <div class="form-group">
+                <label for="categoryDescription">Thuộc danh mục</label>
+                <select class="custom-select" name="group_id" id="editCategoryGroup">
+                  {{#each this.categoryGroups}}
+                    <option value="{{id}}">{{name}}</option>
+                  {{/each}}
+                </select>
+            </div>
             <div class="form-group">
                 <label for="editCategoryName">Tên chuyên mục</label>
                 <input type="text" class="form-control" id="editCategoryName" name="name" required>
@@ -136,11 +155,13 @@ $(document).ready(function() {
         var id = button.data('id');
         var name = button.data('name');
         var description = button.data('description');
+        var group_id= button.data('groupid');
         
         var modal = $(this);
         modal.find('#editCategoryId').val(id);
         modal.find('#editCategoryName').val(name);
         modal.find('#editCategoryDescription').val(description);
+        modal.find('#editCategoryGroup').val(group_id);
     });
 
     // Delete Modal Population
