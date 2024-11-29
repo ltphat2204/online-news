@@ -23,21 +23,22 @@
         <tbody>
             {{#if this.empty}}
             <tr>
-                <td colspan="4" class="text-center">Hiện chưa có thẻ nào</td>
+                <td colspan="5" class="text-center">Hiện chưa có thẻ nào</td>
             </tr>
             {{/if}}
             {{#each this.hashtags}}
             <tr data-id="{{id}}">
                 <th scope="row">{{@index}}</th>
-                <td>{{name}}</td>
-                <td>{{description}}</td>
+                <td>{{tag_name}}</td>
+                <td>{{usage}}</td>
+                <td>{{created_at}}</td>
                 <td>
                     <button class="btn btn-primary edit-hashtag" 
                             data-toggle="modal" 
                             data-target="#editHashtagModal"
                             data-id="{{id}}"
                             data-usage="{{usage}}"
-                            data-created-at="{{created-at}}">
+                            data-created-at="{{created_at}}">
                         Sửa
                     </button>
                     <button class="btn btn-danger delete-hashtag" 
@@ -65,7 +66,7 @@
       <div class="modal-body">
             <div class="form-group">
                 <label for="HashtagName">Tên thẻ</label>
-                <input type="text" class="form-control" id="name" name="name" required>
+                <input type="text" class="form-control" id="tag_name" name="tag_name" required>
             </div>
       </div>
       <div class="modal-footer">
@@ -89,7 +90,7 @@
             <input type="hidden" id="editHashtagId" name="id">
             <div class="form-group">
                 <label for="editHashtagName">Tên thẻ</label>
-                <input type="text" class="form-control" id="editHashtagName" name="name" required>
+                <input type="text" class="form-control" id="editHashtagName" name="tag_name" required>
             </div>
       </div>
       <div class="modal-footer">
@@ -104,7 +105,7 @@
   <div class="modal-dialog">
     <form class="modal-content" method="post" action="/admin/hashtags/delete">
       <div class="modal-header">
-        <h5 class="modal-title" id="deleteCHashtagModalTitle">Xóa danh mục</h5>
+        <h5 class="modal-title" id="deleteHashtagModalTitle">Xóa thẻ</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -127,11 +128,11 @@ $(document).ready(function() {
     $('#editHashtagModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget);
         var id = button.data('id');
-        var name = button.data('name');
+        var tag_name = button.data('tag_name');
         
         var modal = $(this);
         modal.find('#editHashtagId').val(id);
-        modal.find('#editHashtagName').val(name);
+        modal.find('#editHashtagName').val(tag_name);
     });
 
     // Delete Modal Population
@@ -141,7 +142,7 @@ $(document).ready(function() {
         console.log(id);
         
         var modal = $(this);
-        modal.find('#deleteHashtag').val(id);
+        modal.find('#deleteHashtagId').val(id);
     });
 });
 </script>

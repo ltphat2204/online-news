@@ -11,7 +11,7 @@ export const getHashtags = async (req, res) => {
     res.render('admin/hashtags', {
         title: 'Thẻ',
         empty: hashtags.length === 0,
-        hastags
+        hashtags
     });
 }
 
@@ -32,5 +32,5 @@ export const patchHashtag = async (req, res) => {
 export const deleteHashtagByID = async (req, res) => {
     const { id } = req.body;
     await deleteHashtag(id);
-    res.redirect('/admin/hastags');
+    res.redirect('/admin/hashtags');
 }
