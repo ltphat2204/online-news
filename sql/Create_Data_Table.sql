@@ -92,7 +92,7 @@ CREATE INDEX ON "articles" ("view_count");
 
 -- Foreign Keys
 ALTER TABLE "social_networks" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
-ALTER TABLE "categories" ADD FOREIGN KEY ("group_id") REFERENCES "categories_group" ("id");
+ALTER TABLE "categories" ADD FOREIGN KEY ("group_id") REFERENCES "category_groups" ("id");
 ALTER TABLE "articles" ADD FOREIGN KEY ("category_id") REFERENCES "categories" ("id");
 ALTER TABLE "articles" ADD FOREIGN KEY ("author_id") REFERENCES "users" ("id");
 ALTER TABLE "articles" ADD FOREIGN KEY ("editor_id") REFERENCES "users" ("id");
