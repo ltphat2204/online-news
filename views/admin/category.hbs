@@ -28,7 +28,7 @@
             {{/if}}
             {{#each this.categories}}
             <tr data-id="{{id}}">
-                <th scope="row">{{@index}}</th>
+                <th scope="row">{{getNext @index}}</th>
                 <td>{{group_name}}</td>
                 <td>{{name}}</td>
                 <td>{{description}}</td>

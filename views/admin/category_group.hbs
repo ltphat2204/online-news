@@ -27,9 +27,9 @@
             {{/if}}
             {{#each this.categoryGroups}}
             <tr data-id="{{id}}">
-                <th scope="row">{{@index}}</th>
-                <td>{{name}}</td>
-                <td>{{description}}</td>
+                <th scope="row">{{getNext @index}}</th>
+                <td>{{limitCharacters name 30}}</td>
+                <td>{{limitCharacters description 50}}</td>
                 <td>
                     <button class="btn btn-primary edit-category" 
                             data-toggle="modal" 

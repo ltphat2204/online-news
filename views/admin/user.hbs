@@ -37,7 +37,7 @@
       {{/if}}
       {{#each this.users}}
       <tr data-id="{{id}}">
-        <th scope="row">{{@index}}</th>
+        <th scope="row">{{getNext @index}}</th>
         <td>{{fullname}}</td>
         <td>{{username}}</td>
         <td>{{role}}</td>

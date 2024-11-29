@@ -28,7 +28,7 @@
             {{/if}}
             {{#each this.hashtags}}
             <tr data-id="{{id}}">
-                <th scope="row">{{@index}}</th>
+                <th scope="row">{{getNext @index}}</th>
                 <td>{{tag_name}}</td>
                 <td>{{usage}}</td>
                 <td>{{formatDate created_at}}</td>

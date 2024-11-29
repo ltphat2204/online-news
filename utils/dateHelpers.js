@@ -1,6 +1,6 @@
 import moment from 'moment';
 import 'moment/locale/vi.js';
-import { capitalizeFirstLetter } from './string.js';
+import { capitalizeFirstLetter } from './stringHelpers.js';
 
 export const dateHelpers = {
     today: () => {
