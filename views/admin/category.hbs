@@ -13,11 +13,11 @@
     <table class="table">
         <thead>
             <tr>
-            <th scope="col">#</th>
-            <th scope="col">Danh mục</th>
-            <th scope="col">Chuyên mục</th>
-            <th scope="col">Mô tả</th>
-            <th scope="col">&nbsp;</th>
+                <th scope="col">#</th>
+                <th scope="col">Danh mục</th>
+                <th scope="col">Chuyên mục</th>
+                <th scope="col">Mô tả</th>
+                <th scope="col">&nbsp;</th>
             </tr>
         </thead>
         <tbody>
@@ -30,22 +30,17 @@
             <tr data-id="{{id}}">
                 <th scope="row">{{getNext @index}}</th>
                 <td>{{group_name}}</td>
-                <td>{{name}}</td>
-                <td>{{description}}</td>
+                <td>{{limitCharacters name 30}}</td>
+                <td>{{limitCharacters description 50}}</td>
+
                 <td>
-                    <button class="btn btn-primary edit-category" 
-                            data-toggle="modal" 
-                            data-target="#editCategoryModal"
-                            data-id="{{id}}"
-                            data-name="{{name}}"
-                            data-description="{{description}}"
-                            data-groupid="{{group_id}}">
+                    <button class="btn btn-primary edit-category" data-toggle="modal" data-target="#editCategoryModal"
+                        data-id="{{id}}" data-name="{{name}}" data-description="{{description}}"
+                        data-groupid="{{group_id}}">
                         Sửa
                     </button>
-                    <button class="btn btn-danger delete-category" 
-                            data-toggle="modal" 
-                            data-target="#deleteCategoryModal"
-                            data-id="{{id}}">
+                    <button class="btn btn-danger delete-category" data-toggle="modal"
+                        data-target="#deleteCategoryModal" data-id="{{id}}">
                         Xóa
                     </button>
                 </td>
@@ -54,124 +49,192 @@
         </tbody>
     </table>
 </div>
-
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        {{#if (ne currentPage 1) }} 
+        <li class="page-item"><a class="page-link" id ="previous-page" href="#">Previous</a></li>
+        {{/if}}
+        {{#each pageArray}}
+        <li class="page-item"><a class="page-link" href="/admin/category?page={{this}}">{{this}}</a></li>
+        {{/each}}
+        {{#if (ne currentPage totalPages)}}
+        <li class="page-item" id = "next-page"><a class="page-link" href="#">Next</a></li>
+        {{/if}}
+    </ul>
+</nav>
+{{!-- <nav aria-label="Page navigation example">
+    <ul class="pagination">
+        <li class="page-item"><a class="page-link" id ="previous-page" href="#">Previous</a></li>
+        <li class="page-item"><a class="page-link" href="#"></a></li>
+        <li class="page-item" id = "next-page"><a class="page-link" href="#">Next</a></li>
+    </ul>
+</nav> --}}
 <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalTitle" aria-hidden="true">
-  <div class="modal-dialog">
-    <form class="modal-content" method="post" action="/admin/category/create">
-      <div class="modal-header">
-        <h5 class="modal-title" id="addCategoryModalTitle">Thêm chuyên mục</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-            <div class="form-group">
-                <label for="categoryDescription">Thuộc danh mục</label>
-                <select class="custom-select" name="group_id" id="group_id">
-                  {{#each this.categoryGroups}}
-                    <option value="{{id}}">{{name}}</option>
-                  {{/each}}
-                </select>
+    <div class="modal-dialog">
+        <form class="modal-content" method="post" action="/admin/category/create">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCategoryModalTitle">Thêm chuyên mục</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            <div class="form-group">
-                <label for="categoryName">Tên chuyên mục</label>
-                <input type="text" class="form-control" id="name" name="name" required>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="categoryDescription">Thuộc danh mục</label>
+                    <select class="custom-select" name="group_id" id="group_id">
+                        {{#each this.categoryGroups}}
+                        <option value="{{id}}">{{name}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="categoryName">Tên chuyên mục</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="categoryDescription">Mô tả</label>
+                    <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="categoryDescription">Mô tả</label>
-                <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                <button type="submit" class="btn btn-primary">Thêm mới</button>
             </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-        <button type="submit" class="btn btn-primary">Thêm mới</button>
-      </div>
-    </form>
-  </div>
+        </form>
+    </div>
 </div>
 
-<div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalTitle" aria-hidden="true">
-  <div class="modal-dialog">
-    <form class="modal-content" method="post" action="/admin/category/edit">
-      <div class="modal-header">
-        <h5 class="modal-title" id="editCategoryModalTitle">Sửa chuyên mục</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-            <input type="hidden" id="editCategoryId" name="id">
-            <div class="form-group">
-                <label for="categoryDescription">Thuộc danh mục</label>
-                <select class="custom-select" name="group_id" id="editCategoryGroup">
-                  {{#each this.categoryGroups}}
-                    <option value="{{id}}">{{name}}</option>
-                  {{/each}}
-                </select>
+<div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalTitle"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="modal-content" method="post" action="/admin/category/edit">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editCategoryModalTitle">Sửa chuyên mục</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            <div class="form-group">
-                <label for="editCategoryName">Tên chuyên mục</label>
-                <input type="text" class="form-control" id="editCategoryName" name="name" required>
+            <div class="modal-body">
+                <input type="hidden" id="editCategoryId" name="id">
+                <div class="form-group">
+                    <label for="categoryDescription">Thuộc danh mục</label>
+                    <select class="custom-select" name="group_id" id="editCategoryGroup">
+                        {{#each this.categoryGroups}}
+                        <option value="{{id}}">{{name}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editCategoryName">Tên chuyên mục</label>
+                    <input type="text" class="form-control" id="editCategoryName" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="editCategoryDescription">Mô tả</label>
+                    <textarea class="form-control" id="editCategoryDescription" name="description" rows="3"></textarea>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="editCategoryDescription">Mô tả</label>
-                <textarea class="form-control" id="editCategoryDescription" name="description" rows="3"></textarea>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
             </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
-      </div>
-    </form>
-  </div>
+        </form>
+    </div>
 </div>
 
-<div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-labelledby="deleteCategoryModalTitle" aria-hidden="true">
-  <div class="modal-dialog">
-    <form class="modal-content" method="post" action="/admin/category/delete">
-      <div class="modal-header">
-        <h5 class="modal-title" id="deleteCategoryModalTitle">Xóa chuyên mục</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-            <input type="hidden" id="deleteCategoryId" name="id">
-            <p>Bạn có chắc chắn muốn xóa chuyên mục này không?</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-        <button type="submit" class="btn btn-primary">Xóa</button>
-      </div>
-    </form>
-  </div>
+<div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-labelledby="deleteCategoryModalTitle"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="modal-content" method="post" action="/admin/category/delete">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteCategoryModalTitle">Xóa chuyên mục</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="deleteCategoryId" name="id">
+                <p>Bạn có chắc chắn muốn xóa chuyên mục này không?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                <button type="submit" class="btn btn-primary">Xóa</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <script>
-$(document).ready(function() {
-    // Edit Modal Population
-    $('#editCategoryModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget);
-        var id = button.data('id');
-        var name = button.data('name');
-        var description = button.data('description');
-        var group_id= button.data('groupid');
-        
-        var modal = $(this);
-        modal.find('#editCategoryId').val(id);
-        modal.find('#editCategoryName').val(name);
-        modal.find('#editCategoryDescription').val(description);
-        modal.find('#editCategoryGroup').val(group_id);
+    $(document).ready(function () {
+        // Edit Modal Population
+        $('#editCategoryModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var id = button.data('id');
+            var name = button.data('name');
+            var description = button.data('description');
+            var group_id = button.data('groupid');
+
+            var modal = $(this);
+            modal.find('#editCategoryId').val(id);
+            modal.find('#editCategoryName').val(name);
+            modal.find('#editCategoryDescription').val(description);
+            modal.find('#editCategoryGroup').val(group_id);
+        });
+
+        // Delete Modal Population
+        $('#deleteCategoryModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var id = button.data('id');
+            console.log(id);
+
+            var modal = $(this);
+            modal.find('#deleteCategoryId').val(id);
+        });
+    });
+</script>
+
+{{!-- <script>
+    $(document).ready(function(){
+        function loadAPage(page){
+            $ajax({
+                url: '/controllers/category.js',
+                method: 'GET',
+                datatype: 'json',
+                success: function(data){
+                    $('#categoryList').empty();
+                    data.categories.forEach(category => {
+                        const Item = $('<li></li>').text(category.name);
+                        $('#categoryList').append(Item);
+                    });
+                $('.pagination .page-item'). removeClass('active');
+                $(`.pagination .page-item[data-page=${page}]`).addClass('active');
+                },
+                error: function(error) {
+                console.error('Error fetching categories while paginating:', error);
+                }
+            });
+        }
+        $('.pagination').on('click', '.page-item', function(e) {
+        e.preventDefault();
+        const clickedPage = $(this).data('page');
+        if (clickedPage) {
+            loadCategories(clickedPage);
+        } else {
+            // Xử lý nút Previous và Next nếu cần
+            const currentPage = parseInt($('.pagination .page-item.active').data('page'), 10) || 1;
+            if ($(this).attr('id') === 'previous-page') {
+                if (currentPage > 1) {
+                    loadCategories(currentPage - 1);
+                }
+            } else if ($(this).attr('id') === 'next-page') {
+                const totalPages = parseInt($('.pagination').data('total-pages'), 10);
+                if (currentPage < totalPages) {
+                    loadCategories(currentPage + 1);
+                }
+            }
+        }
     });
 
-    // Delete Modal Population
-    $('#deleteCategoryModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget);
-        var id = button.data('id');
-        console.log(id);
-        
-        var modal = $(this);
-        modal.find('#deleteCategoryId').val(id);
-    });
+    // Load trang mặc định (trang 1)
+    loadCategories(1);
 });
-</script>
+</script> --}}
