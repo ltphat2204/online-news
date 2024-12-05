@@ -1,5 +1,5 @@
 import express from 'express';
-import { getCategory, postCategory, patchCategory, deleteCategoryById} from '../../controllers/category.js';
+import { getCategory, postCategory, patchCategory, deleteCategoryById } from '../../controllers/category.js';
 import preloadCategoryGroups from '../../middlewares/preloadCategoryGroups.js';
 
 const router = express.Router();
