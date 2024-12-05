@@ -20,55 +20,16 @@
                 <th scope="col">&nbsp;</th>
             </tr>
         </thead>
-        <tbody>
-            {{#if this.empty}}
-            <tr>
-                <td colspan="4" class="text-center">Hiện chưa có chuyên mục nào</td>
-            </tr>
-            {{/if}}
-            {{#each this.categories}}
-            <tr data-id="{{id}}">
-                <th scope="row">{{getNext @index}}</th>
-                <td>{{group_name}}</td>
-                <td>{{limitCharacters name 30}}</td>
-                <td>{{limitCharacters description 50}}</td>
-
-                <td>
-                    <button class="btn btn-primary edit-category" data-toggle="modal" data-target="#editCategoryModal"
-                        data-id="{{id}}" data-name="{{name}}" data-description="{{description}}"
-                        data-groupid="{{group_id}}">
-                        Sửa
-                    </button>
-                    <button class="btn btn-danger delete-category" data-toggle="modal"
-                        data-target="#deleteCategoryModal" data-id="{{id}}">
-                        Xóa
-                    </button>
-                </td>
-            </tr>
-            {{/each}}
+        <tbody id="category-content">
         </tbody>
     </table>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination" id="pagination">
+        </ul>
+    </nav>
 </div>
-<nav aria-label="Page navigation example">
-    <ul class="pagination">
-        {{#if (ne currentPage 1) }} 
-        <li class="page-item"><a class="page-link" id ="previous-page" href="#">Previous</a></li>
-        {{/if}}
-        {{#each pageArray}}
-        <li class="page-item"><a class="page-link" href="/admin/category?page={{this}}">{{this}}</a></li>
-        {{/each}}
-        {{#if (ne currentPage totalPages)}}
-        <li class="page-item" id = "next-page"><a class="page-link" href="#">Next</a></li>
-        {{/if}}
-    </ul>
-</nav>
-{{!-- <nav aria-label="Page navigation example">
-    <ul class="pagination">
-        <li class="page-item"><a class="page-link" id ="previous-page" href="#">Previous</a></li>
-        <li class="page-item"><a class="page-link" href="#"></a></li>
-        <li class="page-item" id = "next-page"><a class="page-link" href="#">Next</a></li>
-    </ul>
-</nav> --}}
+
+
 <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalTitle" aria-hidden="true">
     <div class="modal-dialog">
         <form class="modal-content" method="post" action="/admin/category/create">
@@ -163,6 +124,145 @@
     </div>
 </div>
 
+
+<script>
+    $(document).ready(function () {
+        loadAPage(1); // Gọi hàm loadAPage khi lần đầu tải trang
+        function loadAPage(page) {
+            fetch(`/admin/category/getPage?page=${page}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    renderPagination(data);
+                    renderData(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching categories while paginating:', error);
+                });
+
+
+            function renderPagination(data) {
+                var $pagination = $('#pagination');
+                $pagination.empty();
+                //prev page button
+                var $prevBtn = $('<li>', { class: 'page-item' });
+                if (parseInt(data.currentPage, 10) === 1) {
+                    $prevBtn.addClass('disabled');
+                } else {
+                    $prevBtn.removeClass('disabled');
+                }
+                $prevBtn.attr('data-page', data.currentPage - 1);
+                var $prevPageLink = $('<a>', { class: 'page-link', href: '#', text: 'Previous' });
+                $prevBtn.append($prevPageLink);
+                $pagination.append($prevBtn);
+                //Each page button
+                data.pageArray.forEach(pageIndex => {
+                    var $pageBtn = $('<li>', { class: 'page-item', 'data-page': pageIndex });
+                    if (pageIndex === data.currentPage) {
+                        $pageBtn.addClass('active');
+                    }
+                    var $pageLink = $('<a>', { class: 'page-link', href: '#', text: pageIndex });
+                    $pageBtn.append($pageLink);
+                    $pagination.append($pageBtn);
+                });
+
+                //Next page button
+                var $nextBtn = $('<li>', { class: 'page-item' });
+                if (parseInt(data.currentPage) === data.totalPages) {
+                    $nextBtn.addClass('disabled');
+                } else {
+                    $nextBtn.removeClass('disabled');
+                }
+                $nextBtn.attr('data-page', data.currentPage + 1);
+                var $nextPageLink = $('<a>', { class: 'page-link', href: '#', text: 'Next' });
+                $nextBtn.append($nextPageLink);
+                $pagination.append($nextBtn);
+
+                //click pagination event
+                $('.page-item').click(function (e) {
+                    if ($(this).hasClass('disabled')) {
+                        e.preventDefault(); // Ngăn chặn click nếu phần tử có lớp 'disabled'
+                    } else {
+                        var page = $(this).data('page');
+                        if (page !== undefined) {
+                            loadAPage(page);
+                        }
+                    }
+                });
+            }
+            function renderData(data) {
+                var contentBox = document.getElementById('category-content');
+                if (data.empty) {
+                    contentBox.innerHTML = '<tr><td colspan="4" class="text-center">Hiện chưa có chuyên mục nào</td></tr>';
+                }
+                else {
+                    var index = 1;
+                    contentBox.innerHTML = '';
+                    data.categories.forEach(category => {
+                        var row = document.createElement('tr');
+                        row.setAttribute('data-id', category.id);
+                        contentBox.appendChild(row);
+
+                        //create table data
+                        var rowIndex = document.createElement('th');
+                        rowIndex.setAttribute('scope', 'row');
+                        rowIndex.innerText = index;
+                        index++;
+                        row.appendChild(rowIndex);
+
+                        var groupName = document.createElement('td');
+                        groupName.innerText = category.group_name;
+                        row.appendChild(groupName);
+
+                        var categoryName = document.createElement('td');
+                        categoryName.innerText = category.name;
+                        row.appendChild(categoryName);
+
+                        var categoryDescription = document.createElement('td');
+                        categoryDescription.innerText = category.description;
+                        row.appendChild(categoryDescription);
+
+                        //create modal button
+                        var functionBox = document.createElement('td');
+                        var editBtn = document.createElement('button');
+                        editBtn.setAttribute('class', 'btn btn-primary edit-category');
+                        editBtn.setAttribute('data-toggle', 'modal');
+                        editBtn.setAttribute('data-target', '#editCategoryModal');
+                        editBtn.setAttribute('data-id', category.id);
+                        editBtn.setAttribute('data-name', category.name);
+                        editBtn.setAttribute('data-description', category.description);
+                        editBtn.setAttribute('data-groupid', category.group_id);
+                        editBtn.innerText = 'Sửa';
+                        functionBox.appendChild(editBtn);
+
+                        var deleteBtn = document.createElement('button');
+                        deleteBtn.setAttribute('class', 'btn btn-danger delete-category');
+                        deleteBtn.setAttribute('data-toggle', 'modal');
+                        deleteBtn.setAttribute('data-target', '#deleteCategoryModal');
+                        deleteBtn.setAttribute('data-id', category.id);
+                        deleteBtn.innerText = 'Xóa';
+                        functionBox.appendChild(deleteBtn);
+                        row.appendChild(functionBox);
+                    });
+                }
+            }
+        }
+
+    });
+
+</script>
+
+
+
 <script>
     $(document).ready(function () {
         // Edit Modal Population
@@ -191,50 +291,3 @@
         });
     });
 </script>
-
-{{!-- <script>
-    $(document).ready(function(){
-        function loadAPage(page){
-            $ajax({
-                url: '/controllers/category.js',
-                method: 'GET',
-                datatype: 'json',
-                success: function(data){
-                    $('#categoryList').empty();
-                    data.categories.forEach(category => {
-                        const Item = $('<li></li>').text(category.name);
-                        $('#categoryList').append(Item);
-                    });
-                $('.pagination .page-item'). removeClass('active');
-                $(`.pagination .page-item[data-page=${page}]`).addClass('active');
-                },
-                error: function(error) {
-                console.error('Error fetching categories while paginating:', error);
-                }
-            });
-        }
-        $('.pagination').on('click', '.page-item', function(e) {
-        e.preventDefault();
-        const clickedPage = $(this).data('page');
-        if (clickedPage) {
-            loadCategories(clickedPage);
-        } else {
-            // Xử lý nút Previous và Next nếu cần
-            const currentPage = parseInt($('.pagination .page-item.active').data('page'), 10) || 1;
-            if ($(this).attr('id') === 'previous-page') {
-                if (currentPage > 1) {
-                    loadCategories(currentPage - 1);
-                }
-            } else if ($(this).attr('id') === 'next-page') {
-                const totalPages = parseInt($('.pagination').data('total-pages'), 10);
-                if (currentPage < totalPages) {
-                    loadCategories(currentPage + 1);
-                }
-            }
-        }
-    });
-
-    // Load trang mặc định (trang 1)
-    loadCategories(1);
-});
-</script> --}}

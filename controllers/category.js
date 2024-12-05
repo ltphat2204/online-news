@@ -7,11 +7,14 @@ import {
     countCategories
 } from "../models/category.js";
 
+export const getRender = async (req, res) => {
+    res.render('admin/category')
+}
 export const getCategory = async (req, res) => {
     try
     {
-        const limit = 2;
-        const page = parseInt(req.query.page, 10) || 1;
+        const limit = isNaN(parseInt(req.query.limit, 10)) ? 5 : parseInt(req.query.limit, 10); 
+        const page = isNaN(parseInt(req.query.page, 10)) ? 1 : parseInt(req.query.page, 10); 
         const offset = (page-1)*limit||0;
 
         // Kiểm tra tính hợp lệ của các tham số đầu vào
@@ -27,8 +30,7 @@ export const getCategory = async (req, res) => {
         const countResult = await countCategories();
         const totalPages = Math.ceil(countResult.total/ limit);
         const pageArray = Array.from({ length: totalPages }, (_, i) => i + 1);
-        res.render('admin/category',{
-            title: 'Quản lý chuyên mục',
+        res.json({
             categories,
             currentPage: page,
             totalPages,
