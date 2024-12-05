@@ -10,6 +10,10 @@ export const getAllHashtags = async (limit, offset) => {
     return hashtags;
 }
 
+export const searchHashtags = async (searchTerm, limit, offset) => {
+    const hashtags = await database("hashtags").select("*").where("tag_name", "like", `%${searchTerm}%`).limit(limit).offset(offset);
+    return hashtags;
+}
 export const countHashtags = async () => {
     const result = await database("hashtags").count("* as total").first();
     return result;
