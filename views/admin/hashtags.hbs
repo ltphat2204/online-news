@@ -50,6 +50,21 @@
             </tr>
             {{/each}}
         </tbody>
+        <nav aria-label="...">
+          <ul class="pagination">
+            <li class="page-item disabled">
+              <a class="page-link">Previous</a>
+            </li>
+            {{#each this.pageItems}}
+            <li class="page-item">
+              <a class="page-link" href="/admin/hashtags?page={{value}}">{{value}}</a>
+            </li>
+            {{/each}}
+            <li class="page-item">
+              <a class="page-link" href="#">Next</a>
+            </li>
+          </ul>
+        </nav>
     </table>
 </div>
 
