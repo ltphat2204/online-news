@@ -5,9 +5,13 @@ export const createHashtags = async (hashtags) => {
     return result;
 }
 
-export const getAllHashtags = async () => {
-    const hashtags = await database("hashtags").select("*");
+export const searchHashtags = async (searchTerm = "", limit, offset) => {
+    const hashtags = await database("hashtags").select("*").where("tag_name", "like", `%${searchTerm}%`).limit(limit).offset(offset);
     return hashtags;
+}
+export const countHashtags = async (searchTerm = "") => {
+    const result = await database("hashtags").where("tag_name","like",`%${searchTerm}%`).count("* as total").first();
+    return result;
 }
 
 export const editHashtag = async (id, hashtag) => {
