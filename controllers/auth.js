@@ -23,6 +23,8 @@ export const handleLogin = async (req, res) => {
             });
         }
         else {
+            req.session.auth = true;
+            req.session.authUser = old_user;
             res.redirect("/");
         }
     }

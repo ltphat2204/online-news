@@ -37,15 +37,39 @@
                     <li class="nav-item" style="padding: .5rem">
                         <img src="/statics/assets/LogoPremium.png" alt="Logo premium" style="height: 30px; width: auto">
                     </li>
-                    <li class="nav-item nav-item-group" style="font-size: 1.2rem;">
-                        <a class="nav-link" href="/"><i class="bi bi-person-circle"></i></a>
-                        <form class="search-form">
-                            <div class="search-container">
-                                <input type="text" class="search-input" placeholder="Tìm kiếm...">
-                                <i class="nav-link bi bi-search search-icon" style="cursor: pointer"></i>
+                    {{#if auth}}
+                        <li class="nav-item nav-item-group" style="font-size: 1.2rem;">
+                            <a class="nav-link dropdown-toggle" href="/" role="button" data-toggle="dropdown"><i class="bi bi-person-circle"></i> 
+                                Hello, {{authUser.username}}
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item" href="/">
+                                    <i class="bi-person-circle"></i>
+                                    Profile
+                                </a>
+                                <a class="dropdown-item" href="/">
+                                    <i class="bi-box-arrow-right" href="/"></i>
+                                    Logout
+                                </a>
                             </div>
-                        </form>
-                    </li>
+                            <form class="search-form">
+                                <div class="search-container">
+                                    <input type="text" class="search-input" placeholder="Tìm kiếm...">
+                                    <i class="nav-link bi bi-search search-icon" style="cursor: pointer"></i>
+                                </div>
+                            </form>
+                        </li>
+                    {{else}}
+                        <li class="nav-item nav-item-group" style="font-size: 1.2rem;">
+                            <a class="nav-link" href="/auth/login"><i class="bi bi-person-circle"></i> Đăng nhập</a>
+                            <form class="search-form">
+                                <div class="search-container">
+                                    <input type="text" class="search-input" placeholder="Tìm kiếm...">
+                                    <i class="nav-link bi bi-search search-icon" style="cursor: pointer"></i>
+                                </div>
+                            </form>
+                        </li>
+                    {{/if}}
                 </ul>
             </div>
         </div>
