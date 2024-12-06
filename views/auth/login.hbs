@@ -5,28 +5,46 @@
 
   <div class="login-container">
     <div class="form-login">
-      <form method="POST" action="/login">
+      <form method="POST" action="/auth/login">
         <div class="mb-3">
-          <label for="email" class="form-label">Email</label>
+          <label for="email" class="form-label">Email/Username</label>
           <input
-            type="email"
-            class="form-control"
+            type="text"
+            {{#if this.userNotFound}}
+               class="form-control is-invalid"
+            {{else}}
+               class="form-control"
+            {{/if}}
             id="email"
             name="email"
             placeholder="vidu@email.com"
             required
           />
+          {{#if this.userNotFound}}
+            <div class="invalid-feedback">
+              Tài khoản không tồn tại.
+            </div>
+          {{/if}}
         </div>
         <div class="mb-3">
           <label for="password" class="form-label">Mật khẩu</label>
           <input
             type="password"
-            class="form-control"
+            {{#if this.wrongPassword}}
+               class="form-control is-invalid"
+            {{else}}
+               class="form-control"
+            {{/if}}
             id="password"
             name="password"
             placeholder="tối thiểu 8 ký tự"
             required
           />
+          {{#if this.wrongPassword}}
+            <div class="invalid-feedback">
+              Mật khẩu bạn nhập không đúng.
+            </div>
+          {{/if}}
         </div>
 
         <!--end là để canh phải-->
