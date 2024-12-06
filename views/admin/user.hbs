@@ -297,7 +297,7 @@
       modal.find('#createAt').val(button.data('created_at'));
       modal.find('#editCreatedAt').text(moment(button.data('created_at')).format('L LTS'));
       modal.find('#editPenName').val(button.data('pen_name'));
-      modal.find('#editDob').val(button.data('dob') ? new Date(button.data('dob')).toISOString().substring(0, 10) : '');
+      modal.find('#editDob').val(button.data('dob') ? moment(button.data('dob')).format('YYYY-MM-DD') : '');
       modal.find('#editIsBlocked').prop('checked', button.data('is_blocked'));
       modal.find('#editIsPremium').prop('checked', button.data('is_premium'));
       modal.find('#editPremiumExpired').val(button.data('premium_expired') ? new Date(button.data('premium_expired')).toISOString().substring(0, 16) : '');
