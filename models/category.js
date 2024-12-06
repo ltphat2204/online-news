@@ -30,8 +30,10 @@ export const getCategoriesWithPagination = async(k,s) =>{
         if (!Number.isInteger(k) || k < 0 || !Number.isInteger(s) || s < 0) {
             throw new Error("Invalid input: 'k' and 's' must be non-negative integers.");
         }
-    const result = await database("categories").select("categories.id", "categories.name", "categories.group_id", "category_groups.name as group_name", "categories.description")
-    .join("category_groups", "categories.group_id", "category_groups.id").limit(k).offset(s);
+    const result = await database("categories")
+                            .select("categories.id", "categories.name", "categories.group_id", "category_groups.name as group_name", "categories.description")
+                            .join("category_groups", "categories.group_id", "category_groups.id")
+                            .limit(k).offset(s);
     return result;
     } 
     catch (error) 
