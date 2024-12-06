@@ -55,3 +55,8 @@ export const getUserByUsername = async (username) => {
     const result = await database("users").select("*").where("username", username).first();
     return result;
 }
+
+export const getUserById = async (id) => {
+    const result = await database("users").select("*").where("id", id).first();
+    return result;
+}

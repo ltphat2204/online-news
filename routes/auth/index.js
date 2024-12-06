@@ -1,5 +1,6 @@
 import express from "express";
 import { handleLogin,
+         handleLogout,
          handleRegister} from "../../controllers/auth.js";
 
 const router = express.Router();
@@ -18,6 +19,7 @@ router.get("/login", (req, res) => {
   });
 });
 
-router.post("/login", handleLogin)
+router.post("/login", handleLogin);
 
+router.post("/logout", handleLogout);
 export default router;

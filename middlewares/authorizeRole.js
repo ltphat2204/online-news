@@ -1,12 +1,12 @@
-// import { getUserById } from "../controllers/user";
+import { authUserById } from "../controllers/user.js";
 const authorizeRole = (allowedRoles) =>{
-    return function(req, res, next) {
-        const userRole = req.session.user.role;
-        
-        if (allowedRoles.includes(userRole)) {
+    return async function(req, res, next) {
+        const id = req.session.authUser.id;
+        const user = await authUserById(id);
+        if (allowedRoles.includes(user.role)) {
             next();
         } else {
-            res.status(403).send('You do not have permission to access this page');
+            res.redirect("/");
         }
     };
 }
