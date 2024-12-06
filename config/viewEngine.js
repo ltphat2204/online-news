@@ -8,7 +8,7 @@ export default function setup(app, dirname) {
         helpers: {
             ...dateHelpers,
             ...numberHelpers,
-            ...stringHelpers,
+            ...stringHelpers
         },
         extname: '.hbs',
         defaultLayout: 'main'

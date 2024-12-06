@@ -1,17 +1,38 @@
 import {
-    getAllHashtags,
     createHashtags,
+    countHashtags,
     editHashtag,
-    deleteHashtag
+    deleteHashtag,
+    searchHashtags
 } from "../models/hashtags.js";
 
 export const getHashtags = async (req, res) => {
-    const hashtags = await getAllHashtags();
+    const limit = 4;
+    const searchTerm = req.query.search || '';
+    const page = req.query.page || 1;
+
+    const n = await countHashtags(searchTerm);
+    const nPages = Math.ceil(n.total / limit);
+    const pageItems = [];
+
+    const offset = (page - 1) * limit;
+    const hashtags = await searchHashtags(searchTerm, limit, offset)
+
+    for (let i = 1; i <= nPages; i++) {
+        const item = {
+            value: i,
+            isActive: i === page,
+            searchTerm: searchTerm
+        }
+        pageItems.push(item);
+    }
 
     res.render('admin/hashtags', {
         title: 'Thẻ',
         empty: hashtags.length === 0,
-        hashtags
+        hashtags,
+        pageItems: pageItems,
+        searchTerm: searchTerm
     });
 }
 

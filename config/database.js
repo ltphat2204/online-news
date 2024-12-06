@@ -9,6 +9,10 @@ const connectDB = () => {
         pool: {
             min: 0,
             max: 7,
+        },
+        postProcessResponse: (result) => {
+            pg.raw('SET TIME ZONE \'Asia/Ho_Chi_Minh\'').then();
+            return result;
         }
     });
 

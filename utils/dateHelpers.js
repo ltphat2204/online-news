@@ -12,8 +12,9 @@ export const dateHelpers = {
     },
     formatDate: (date) => {
         moment.locale('vi');
-        const formattedDate = moment(date).format('DD/MM/YYYY hh:mm:ss');
+        const localDate = moment(date);
+        const formattedDate = localDate.format('L LTS');
         
-        return capitalizeFirstLetter(formattedDate);
+        return formattedDate;
     }
 }
