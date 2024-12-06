@@ -30,6 +30,12 @@ export const handleLogin = async (req, res) => {
     }
 }
 
+export const handleLogout = async(req, res) => {
+    req.session.auth = false;
+    req.session.authUser = null;
+    req.session.retUrl = null;
+    res.redirect("/");
+}
 export const handleRegister = async (req, res) => {
     const user = req.body;
     user.role = "subscriber";

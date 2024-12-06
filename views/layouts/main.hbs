@@ -47,8 +47,9 @@
                                     <i class="bi-person-circle"></i>
                                     Profile
                                 </a>
-                                <a class="dropdown-item" href="/">
-                                    <i class="bi-box-arrow-right" href="/"></i>
+                                <form id="frmLogout" action="/auth/logout" method="post"></form>
+                                <a class="dropdown-item" href="javascript: $('#frmLogout').submit()">
+                                    <i class="bi-box-arrow-right" href="/auth/logout"></i>
                                     Logout
                                 </a>
                             </div>
