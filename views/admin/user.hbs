@@ -1,26 +1,22 @@
 <div class="container bg-light p-3 rounded-lg shadow">
   <div class="d-flex justify-content-between align-items-center">
     <h1>Quản lý người dùng</h1>
-
-    <div class="d-flex justify-content-end align-items-center">
-      <!-- Form tìm kiếm -->
-      <form class="form-inline d-flex" method="GET" action="/admin/user/search">
-        <input class="form-control mr-2" type="text" name="query" placeholder="Tìm kiếm..." aria-label="Tìm kiếm"
-          value="{{query}}" />
-        <button class="btn btn-outline-primary" type="submit">
-          <i class="bi bi-search"></i> Tìm kiếm
-        </button>
-      </form>
-
-      <!-- Nút Thêm người dùng -->
-      <button class="btn btn-primary ml-2" data-toggle="modal" data-target="#addUserModal">
-        <i class="bi bi-person-plus"></i> Thêm người dùng
-      </button>
-    </div>
+    <!-- Nút Thêm người dùng -->
+    <button class="btn btn-primary ml-2" data-toggle="modal" data-target="#addUserModal">
+      <i class="bi bi-person-plus"></i> Thêm người dùng
+    </button>
   </div>
 </div>
 
 <div class="container bg-light p-3 rounded-lg shadow my-4">
+  <!-- Form tìm kiếm -->
+  <form class="form-inline d-flex justify-content-end mb-3" method="GET" action="/admin/user/search">
+    <input class="form-control mr-2" type="text" name="query" placeholder="Tìm kiếm..." aria-label="Tìm kiếm"
+      value="{{query}}" />
+    <button class="btn btn-outline-primary" type="submit">
+      <i class="bi bi-search"></i> Tìm kiếm
+    </button>
+  </form>
   <table class="table">
     <thead>
       <tr>
