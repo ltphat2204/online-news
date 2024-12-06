@@ -1,0 +1,47 @@
+<div class="container bg-light p-3 rounded-lg shadow">
+    <div class="d-flex">
+        <h1>
+            Thêm bài viết
+        </h1>
+    </div>
+</div>
+
+<div class="container bg-light p-3 rounded-lg shadow my-4">
+    <form method="post" action="/admin/articles/create" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="title">Tiêu đề</label>
+            <input type="text" class="form-control" id="title" name="title" required>
+        </div>
+        <div class="form-group">
+            <label for="abstract">Tóm tắt</label>
+            <textarea rows="3" class="form-control" id="abstract" name="abstract" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="abstract">Ảnh bìa</label>
+            <input type="file" id="thumbnail" name="thumbnail">
+        </div>
+        <div class="form-group">
+            <label for="categoryDescription">Chuyên mục</label>
+            <select class="custom-select" name="category_id" id="category_id">
+              {{#each this.categories}}
+                <option value="{{id}}">{{name}}</option>
+              {{/each}}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="abstract">Nội dung</label>
+            <textarea id="summernote" name="content"></textarea>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary ml-auto">Tạo</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('#summernote').summernote({
+            height: 500
+        });
+    });
+</script>
