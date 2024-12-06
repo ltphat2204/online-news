@@ -1,0 +1,94 @@
+<div class="container bg-light p-3 rounded-lg shadow">
+    <div class="d-flex">
+        <h1>
+            Quản lý bài viết
+        </h1>
+        <button class="btn btn-primary ml-auto" onclick="window.location.href = '/admin/articles/create'">
+            Thêm bài viết
+        </button>
+    </div>
+</div>
+
+<div class="container bg-light p-3 rounded-lg shadow my-4">
+    <form class="form-inline ml-auto mr-3" method="get" action="/admin/articles">
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Tìm kiếm bài viết" name="search" value="{{this.searchTerm}}">
+          <div class="input-group-append">
+            <button class="btn btn-primary" type="submit">
+            <i class="bi bi-search"></i>
+            </button>
+          </div>
+      </div>
+    </form>
+    <table class="table">
+        <thead>
+            <tr>
+            <th scope="col">#</th>
+            <th scope="col">Ảnh bìa</th>
+            <th scope="col">Tiêu đề</th>
+            <th scope="col">Nội dung</th>
+            <th scope="col">Chuyên mục</th>
+            <th scope="col">Trạng thái</th>
+            <th scope="col">&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#if this.empty}}
+            <tr>
+                <td colspan="7" class="text-center">Hiện chưa có bài viết nào</td>
+            </tr>
+            {{/if}}
+            {{#each this.articles}}
+            <tr data-id="{{id}}">
+                <th scope="row">{{getNext @index}}</th>
+                <td>{{thumbnail}}</td>
+                <td>{{title}}</td>
+                <td>{{abstract}}</td>
+                <td>{{category}}</td>
+                <td>{{status}}</td>
+                <td>
+                    <button class="btn btn-primary"
+                            onclick="window.location.href = '/admin/articles/edit?id={{id}}'">
+                        Sửa
+                    </button>
+                    <button class="btn btn-danger" 
+                            data-toggle="modal" 
+                            data-target="#deleteArticleModal"
+                            data-id="{{id}}">
+                        Xóa
+                    </button>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    <nav aria-label="...">
+      <ul class="pagination">
+        {{#each this.pageItems}}
+        <li class="page-item">
+          <a class="page-link" href="/admin/hashtags?page={{value}}&search={{searchTerm}}">{{value}}</a>
+        </li>
+        {{/each}}
+      </ul>
+    </nav>
+</div>
+
+<div class="modal fade" id="deleteArticleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="post" action="/admin/articles/delete" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Xóa bài viết</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Bạn có chắc chắn muốn xóa bài viết?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+        <button type="submit" class="btn btn-primary">Xóa</button>
+      </div>
+    </form>
+  </div>
+</div>
