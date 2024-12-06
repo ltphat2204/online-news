@@ -3,10 +3,11 @@ import categoryGroupRouter from './category_group.js';
 import userRouter from './user.js';
 import categoryRouter from './category.js';
 import hashtagRouter from './hashtags.js';
+import authorizeRole from '../../middlewares/authorizeRole.js';
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
+router.get('/',authorizeRole(['admin','writer','editor']), (req, res) => {
     res.render('admin/home', {
         title: 'Trang chủ'
     });

@@ -152,3 +152,8 @@ export const deleteUserById = async (req, res) => {
     res.redirect('/admin/user');
 }
 
+export const getUserById = async (req, res) => {
+    const { id } = req.params;
+    const user = await getUser(id);
+    res.json(user);
+}
