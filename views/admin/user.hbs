@@ -300,7 +300,7 @@
       modal.find('#editDob').val(button.data('dob') ? moment(button.data('dob')).format('YYYY-MM-DD') : '');
       modal.find('#editIsBlocked').prop('checked', button.data('is_blocked'));
       modal.find('#editIsPremium').prop('checked', button.data('is_premium'));
-      modal.find('#editPremiumExpired').val(button.data('premium_expired') ? new Date(button.data('premium_expired')).toISOString().substring(0, 16) : '');
+      modal.find('#editPremiumExpired').val(button.data('premium_expired') ? moment(button.data('premium_expired')).format('YYYY-MM-DDTHH:mm') : '');
 
       modal.find('#editPenNameGroup').toggle(button.data('role') === 'writer');
       modal.find('#editPremiumExpiredGroup').toggle(button.data('is_premium'));
