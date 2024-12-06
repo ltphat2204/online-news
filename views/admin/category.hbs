@@ -152,6 +152,7 @@
 
             function renderPagination(data) {
                 var $pagination = $('#pagination');
+                $pagination.addClass('justify-content-center');
                 $pagination.empty();
                 //prev page button
                 var $prevBtn = $('<li>', { class: 'page-item' });
@@ -161,7 +162,7 @@
                     $prevBtn.removeClass('disabled');
                 }
                 $prevBtn.attr('data-page', data.currentPage - 1);
-                var $prevPageLink = $('<a>', { class: 'page-link', href: '#', text: 'Previous' });
+                var $prevPageLink = $('<a>', { class: 'page-link', href: '#'}).html('&laquo;');
                 $prevBtn.append($prevPageLink);
                 $pagination.append($prevBtn);
                 //Each page button
@@ -183,7 +184,7 @@
                     $nextBtn.removeClass('disabled');
                 }
                 $nextBtn.attr('data-page', data.currentPage + 1);
-                var $nextPageLink = $('<a>', { class: 'page-link', href: '#', text: 'Next' });
+                var $nextPageLink = $('<a>', { class: 'page-link', href: '#'}).html('&raquo;');
                 $nextBtn.append($nextPageLink);
                 $pagination.append($nextBtn);
 
