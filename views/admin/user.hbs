@@ -1,49 +1,57 @@
 <div class="container bg-light p-3 rounded-lg shadow">
-  <div class="d-flex">
-    <h1>
-      Quản lý người dùng
-    </h1>
-    <button class="btn btn-primary ml-auto" data-toggle="modal" data-target="#addUserModal">
-      Thêm người dùng
-    </button>
+  <div class="d-flex justify-content-between align-items-center">
+    <h1>Quản lý người dùng</h1>
+
+    <div class="d-flex justify-content-end align-items-center">
+      <!-- Form tìm kiếm -->
+      <form class="form-inline d-flex" method="GET" action="/admin/user/search">
+        <input class="form-control mr-2" type="text" name="query" placeholder="Tìm kiếm..." aria-label="Tìm kiếm"
+          value="{{query}}" />
+        <button class="btn btn-outline-primary" type="submit">
+          <i class="bi bi-search"></i> Tìm kiếm
+        </button>
+      </form>
+
+      <!-- Nút Thêm người dùng -->
+      <button class="btn btn-primary ml-2" data-toggle="modal" data-target="#addUserModal">
+        <i class="bi bi-person-plus"></i> Thêm người dùng
+      </button>
+    </div>
   </div>
 </div>
-
-{{#if error}}
-<div class="alert alert-danger" role="alert">
-  {{error}}
-</div>
-{{/if}}
 
 <div class="container bg-light p-3 rounded-lg shadow my-4">
   <table class="table">
     <thead>
       <tr>
-        <th scope="col">#</th>
-        <th scope="col">Tên người dùng</th>
-        <th scope="col">Tên tài khoản</th>
-        <th scope="col">Vai trò</th>
-        <th scope="col">Thời gian tạo</th>
-        <th scope="col">Premium</th>
-        <th scope="col">Chặn</th>
-        <th scope="col">&nbsp;</th>
+        <th scope="col" style="width: 5%;">#</th>
+        <th scope="col" style="width: 15%;">Tên người dùng</th>
+        <th scope="col" style="width: 15%;">Tên tài khoản</th>
+        <th scope="col" style="width: 20%;">Email</th>
+        <th scope="col" style="width: 10%;">Vai trò</th>
+        <th scope="col" style="width: 15%;">Thời gian tạo</th>
+        <th scope="col" style="width: 10%;">Premium</th>
+        <th scope="col" style="width: 10%;">Chặn</th>
+        <th scope="col" style="width: 10%;">&nbsp;</th>
       </tr>
     </thead>
     <tbody>
-      {{#if this.empty}}
+      <!-- Trường hợp không có kết quả tìm kiếm hoặc không có người dùng nào -->
+      {{#if error}}
       <tr>
-        <td colspan="8" class="text-center">Hiện chưa có danh mục nào</td>
+        <td colspan="9" class="text-center">{{error}}</td>
       </tr>
       {{/if}}
       {{#each this.users}}
       <tr data-id="{{id}}">
-        <th scope="row">{{getNext @index}}</th>
-        <td>{{fullname}}</td>
-        <td>{{username}}</td>
-        <td>{{role}}</td>
+        <th scope="row">{{getNextPageIndex ../currentPage @index ../limit}}</th>
+        <td>{{limitCharacters fullname 20}}</td>
+        <td>{{limitCharacters username 20}}</td>
+        <td>{{limitCharacters email 25}}</td>
+        <td>{{limitCharacters role 10}}</td>
         <td>{{formatDate created_at}}</td>
-        <td>{{#if is_premium}}Có{{else}}Không{{/if}}</td>
-        <td>{{#if is_blocked}}Có{{else}}Không{{/if}}</td>
+        <td>{{isPremium}}</td>
+        <td>{{isBlocked}}</td>
         <td>
           <button class="btn btn-primary edit-user" data-toggle="modal" data-target="#editUserModal" data-id="{{id}}"
             data-fullname="{{fullname}}" data-email="{{email}}" data-username="{{username}}"
@@ -61,6 +69,58 @@
       {{/each}}
     </tbody>
   </table>
+  <!-- Phân trang -->
+  {{#if (gt totalPages 1)}}
+  <nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+
+      <!-- Nút Previous -->
+      {{#if (gt currentPage 1)}}
+      <li class="page-item">
+        <a class="page-link"
+          href="{{#if query}}/admin/user/search?query={{query}}&page={{getPrevious currentPage}}{{else}}/admin/user?page={{getPrevious currentPage}}{{/if}}"
+          aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+      {{else}}
+      <li class="page-item disabled">
+        <a class="page-link" href="#" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+      {{/if}}
+
+      <!-- Hiển thị các trang -->
+      {{#each (range 1 totalPages) as |page|}}
+      <li class="page-item {{#if (eq page ../currentPage)}}active{{/if}}">
+        <a class="page-link {{#if (eq page ../currentPage)}}text-white bg-primary{{/if}}"
+          href="{{#if ../query}}/admin/user/search?query={{../query}}&page={{page}}{{else}}/admin/user?page={{page}}{{/if}}">
+          {{page}}
+        </a>
+      </li>
+      {{/each}}
+
+      <!-- Nút Next -->
+      {{#if (lt currentPage totalPages)}}
+      <li class="page-item">
+        <a class="page-link"
+          href="{{#if query}}/admin/user/search?query={{query}}&page={{getNext currentPage}}{{else}}/admin/user?page={{getNext currentPage}}{{/if}}"
+          aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+      {{else}}
+      <li class="page-item disabled">
+        <a class="page-link" href="#" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+      {{/if}}
+
+    </ul>
+  </nav>
+  {{/if}}
 </div>
 
 <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalTitle" aria-hidden="true">
@@ -147,7 +207,10 @@
           <label for="editUserName">Tên tài khoản</label>
           <input type="text" class="form-control" id="editUsername" name="username" required>
         </div>
-        <input type="hidden" class="form-control" id="editPassword" name="password">
+        <div class="form-group">
+          <label for="password">Mật khẩu</label>
+          <input type="hidden" class="form-control" id="editPassword" name="password" disabled>
+        </div>
         <div class="form-group">
           <label for="editRole">Vai trò</label>
           <select class="form-control" id="editRole" name="role" required>
@@ -163,11 +226,11 @@
         </div>
         <div class="form-group">
           <label for="editDob">Ngày sinh</label>
-          <input type="text" class="form-control" id="editDob" name="dob">
+          <input type="date" class="form-control" id="editDob" name="dob">
         </div>
 
         <div class="form-group form-check" id="editIsPremiumGroup">
-          <input type="checkbox" class="form-check-input" id="editIsPremium" name="is_premium" value="is_premium">
+          <input type="checkbox" class="form-check-input" id="editIsPremium" name="is_premium">
           <label class="form-check-label" for="editIsPremium">Premium</label>
         </div>
         <div class="form-group" id="editPremiumExpiredGroup" style="display: none;">
@@ -176,7 +239,7 @@
             value="premium_expired">
         </div>
         <div class="form-group form-check">
-          <input type="checkbox" class="form-check-input" id="editIsBlocked" name="is_blocked" value="is_blocked">
+          <input type="checkbox" class="form-check-input" id="editIsBlocked" name="is_blocked">
           <label class="form-check-label" for="editIsBlocked">Chặn</label>
         </div>
         <div class="form-group">
@@ -214,138 +277,51 @@
 </div>
 
 <script>
-
   $(document).ready(function () {
-    // Edit Modal Population
-    $('#editUserModal').on('show.bs.modal', function (event) {
-      var button = $(event.relatedTarget);
-      var id = button.data('id');
-      var fullname = button.data('fullname');
-      var email = button.data('email');
-      var username = button.data('username');
-      var password = button.data('password');
-      var role = button.data('role');
-      var created_at = button.data('created_at');
-      var pen_name = button.data('pen_name');
-      var dob = button.data('dob');
-      var is_blocked = button.data('is_blocked');
-      var is_premium = button.data('is_premium');
-      var premium_expired = button.data('premium_expired');
-
-      var modal = $(this);
-      modal.find('#editUserId').val(id);
-      modal.find('#editUserFullname').val(fullname);
-      modal.find('#editEmail').val(email);
-      modal.find('#editUsername').val(username);
-      modal.find('#editPassword').val(password);
-      modal.find('#editRole').val(role);
-      modal.find('#createAt').val(created_at);
-      modal.find('#editCreatedAt').text(moment(created_at).format('DD/MM/YYYY HH:mm'));
-      modal.find('#editPenName').val(pen_name);
-      modal.find('#editDob').val(dob ? new Date(dob).toISOString().substring(0, 10) : '');
-      modal.find('#editIsBlocked').prop('checked', is_blocked);
-      modal.find('#editIsPremium').prop('checked', is_premium);
-      modal.find('#editPremiumExpired').val(premium_expired ? new Date(premium_expired).toISOString().substring(0, 16) : '');
-
-      if (role === 'writer') {
-        modal.find('#editPenNameGroup').show();
-      } else {
-        modal.find('#editPenNameGroup').hide();
-      }
-
-      if (is_premium) {
-        modal.find('#editPremiumExpiredGroup').show();
-      } else {
-        modal.find('#editPremiumExpiredGroup').hide();
-      }
-
-      if (is_blocked) {
-        modal.find('#editIsPremiumGroup').hide();
-      } else {
-        modal.find('#editIsPremiumGroup').show();
-      }
-
-      $('#editRole').on('change', function () {
-        if ($(this).val() === 'writer') {
-          $('#editPenNameGroup').show();
-        } else {
-          $('#editPenNameGroup').hide();
-        }
-      });
-
-      $('#editIsPremium').on('change', function () {
-        if ($(this).is(':checked')) {
-          $('#editPremiumExpiredGroup').show();
-        } else {
-          $('#editPremiumExpiredGroup').hide();
-        }
-      });
-
-      $('#editIsBlocked').on('change', function () {
-        if ($(this).is(':checked')) {
-          $('#editIsPremiumGroup').hide();
-          $('#editPremiumExpiredGroup').hide();
-        } else {
-          $('#editIsPremiumGroup').show();
-        }
-      });
-    });
 
     $('#addUserModal').on('show.bs.modal', function () {
       $('#createRole').on('change', function () {
-        if ($(this).val() === 'writer') {
-          $('#createPenNameGroup').show();
-        } else {
-          $('#createPenNameGroup').hide();
-        }
+        $('#createPenNameGroup').toggle($(this).val() === 'writer');
       });
 
       $('#createIsPremium').on('change', function () {
-        if ($(this).is(':checked')) {
-          $('#createPremiumExpiredGroup').show();
-        } else {
-          $('#createPremiumExpiredGroup').hide();
-        }
-      });
-
-      $('#createIsBlocked').on('change', function () {
-        if ($(this).is(':checked')) {
-          $('#createIsPremiumGroup').hide();
-          $('#createPremiumExpiredGroup').hide();
-        } else {
-          $('#createIsPremiumGroup').show();
-        }
+        $('#createPremiumExpiredGroup').toggle($(this).is(':checked'));
       });
     });
 
-    $('#createUsername, #createEmail').on('blur', function () {
-      const username = $('#createUsername').val();
-      const email = $('#createEmail').val();
-      if (username && email) {
-        $.post('/admin/user/check-duplicate', { username, email })
-          .done(function (data) {
-            if (data.message === "User already exists") {
-              alert("User already exists");
-            }
-          })
-          .fail(function (jqXHR) {
-            if (jqXHR.status === 400) {
-              alert("User already exists");
-            } else {
-              alert("An error occurred. Please try again.");
-            }
-          });
-      }
+    $('#editUserModal').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget);
+      var modal = $(this);
+      modal.find('#editUserId').val(button.data('id'));
+      modal.find('#editUserFullname').val(button.data('fullname'));
+      modal.find('#editEmail').val(button.data('email'));
+      modal.find('#editUsername').val(button.data('username'));
+      modal.find('#editPassword').val(button.data('password'));
+      modal.find('#editRole').val(button.data('role'));
+      modal.find('#createAt').val(button.data('created_at'));
+      modal.find('#editCreatedAt').text(moment(button.data('created_at')).format('L LTS'));
+      modal.find('#editPenName').val(button.data('pen_name'));
+      modal.find('#editDob').val(button.data('dob') ? new Date(button.data('dob')).toISOString().substring(0, 10) : '');
+      modal.find('#editIsBlocked').prop('checked', button.data('is_blocked'));
+      modal.find('#editIsPremium').prop('checked', button.data('is_premium'));
+      modal.find('#editPremiumExpired').val(button.data('premium_expired') ? new Date(button.data('premium_expired')).toISOString().substring(0, 16) : '');
+
+      modal.find('#editPenNameGroup').toggle(button.data('role') === 'writer');
+      modal.find('#editPremiumExpiredGroup').toggle(button.data('is_premium'));
+
+      $('#editRole').on('change', function () {
+        $('#editPenNameGroup').toggle($(this).val() === 'writer');
+      });
+
+      $('#editIsPremium').on('change', function () {
+        $('#editPremiumExpiredGroup').toggle($(this).is(':checked'));
+      });
     });
 
-    // Delete Modal Population
     $('#deleteUserModal').on('show.bs.modal', function (event) {
       var button = $(event.relatedTarget);
-      var id = button.data('id');
-      console.log(id);
-
-      var modal = $(this);
-      modal.find('#deleteUserId').val(id);
+      $(this).find('#deleteUserId').val(button.data('id'));
     });
   });
+
 </script>
