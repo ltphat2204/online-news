@@ -48,3 +48,20 @@ export const countCategories = async () => {
     const result = await database("categories").count('* as total').first();
     return result;
 }
+
+export const countSearchCategories = async (search) => {
+    const result = await database("categories")
+                            .where("name", "like", `%${search}%`)
+                            .count('* as total')
+                            .first();
+    return result;
+}
+
+export const searchCategoryByName = async(search, k, s) => {
+    const result = await database("categories")
+                            .select("categories.id", "categories.name", "categories.group_id", "category_groups.name as group_name", "categories.description")
+                            .join("category_groups", "categories.group_id", "category_groups.id")
+                            .where("categories.name", "like", `%${search}%`)
+                            .limit(k).offset(s);
+    return result;
+}

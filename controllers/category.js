@@ -1,21 +1,23 @@
-import { 
-    getAllCategories, 
-    createCategory, 
-    editCategory, 
+import {
+    getAllCategories,
+    createCategory,
+    editCategory,
     deleteCategory,
     getCategoriesWithPagination,
-    countCategories
+    countCategories,
+    countSearchCategories,
+    searchCategoryByName
 } from "../models/category.js";
 
 export const getRender = async (req, res) => {
     res.render('admin/category')
 }
 export const getCategory = async (req, res) => {
-    try
-    {
-        const limit = isNaN(parseInt(req.query.limit, 10)) ? 5 : parseInt(req.query.limit, 10); 
-        const page = isNaN(parseInt(req.query.page, 10)) ? 1 : parseInt(req.query.page, 10); 
-        const offset = (page-1)*limit||0;
+    try {
+        const type = req.query.type;
+        const limit = isNaN(parseInt(req.query.limit, 10)) ? 5 : parseInt(req.query.limit, 10);
+        const page = isNaN(parseInt(req.query.page, 10)) ? 1 : parseInt(req.query.page, 10);
+        const offset = (page - 1) * limit || 0;
 
         // Kiểm tra tính hợp lệ của các tham số đầu vào
         if (isNaN(limit) || limit <= 0) {
@@ -25,10 +27,21 @@ export const getCategory = async (req, res) => {
             return res.status(400).json({ error: "Invalid 's' value. It must be a non-negative integer." });
         }
 
-        const categories = await getCategoriesWithPagination(limit, offset);
+        var categories =[];
+        var countResult = {};
+        if(type === 'search'){
+            const searchVal = req.query.search;
+            categories = await searchCategoryByName(searchVal, limit, offset);
+            countResult = await countSearchCategories(searchVal);
+        }
+        else
+        {
+            categories = await getCategoriesWithPagination(limit, offset);
+            countResult = await countCategories();
+        }
         //number of pages
-        const countResult = await countCategories();
-        const totalPages = Math.ceil(countResult.total/ limit);
+        
+        const totalPages = Math.ceil(countResult.total / limit);
         const pageArray = Array.from({ length: totalPages }, (_, i) => i + 1);
         res.json({
             categories,
@@ -67,3 +80,23 @@ export const deleteCategoryById = async (req, res) => {
 
     res.redirect('/admin/category');
 }
+
+// export const searchCategory = async (req, res) => {
+//     const limit = isNaN(parseInt(req.query.limit, 10)) ? 5 : parseInt(req.query.limit, 10);
+//     const page = isNaN(parseInt(req.query.page, 10)) ? 1 : parseInt(req.query.page, 10);
+//     const offset = (page - 1) * limit || 0;
+//     const { search } = req.query;
+//     const categories = await searchCategoryByName(search, limit, offset);
+//     const countResult = await countSearchCategories(search);
+//     const totalPages = Math.ceil(countResult.total / limit);
+//     const pageArray = Array.from({ length: totalPages }, (_, i) => i + 1);
+//     res.json({
+//         categories,
+//         currentPage: page,
+//         totalPages,
+//         pageArray,
+//         limit,
+//         empty: Array.isArray(categories) ? categories.length === 0 : true,
+//         categoryGroups: res.locals.categoryGroups,
+//     });
+// }
