@@ -80,23 +80,3 @@ export const deleteCategoryById = async (req, res) => {
 
     res.redirect('/admin/category');
 }
-
-// export const searchCategory = async (req, res) => {
-//     const limit = isNaN(parseInt(req.query.limit, 10)) ? 5 : parseInt(req.query.limit, 10);
-//     const page = isNaN(parseInt(req.query.page, 10)) ? 1 : parseInt(req.query.page, 10);
-//     const offset = (page - 1) * limit || 0;
-//     const { search } = req.query;
-//     const categories = await searchCategoryByName(search, limit, offset);
-//     const countResult = await countSearchCategories(search);
-//     const totalPages = Math.ceil(countResult.total / limit);
-//     const pageArray = Array.from({ length: totalPages }, (_, i) => i + 1);
-//     res.json({
-//         categories,
-//         currentPage: page,
-//         totalPages,
-//         pageArray,
-//         limit,
-//         empty: Array.isArray(categories) ? categories.length === 0 : true,
-//         categoryGroups: res.locals.categoryGroups,
-//     });
-// }
