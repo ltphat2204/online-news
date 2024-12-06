@@ -1,5 +1,4 @@
 import {
-    getAllHashtags,
     createHashtags,
     countHashtags,
     editHashtag,
@@ -12,22 +11,22 @@ export const getHashtags = async (req, res) => {
     const searchTerm = req.query.search || '';
     const page = req.query.page || 1;
 
-    const n = await countHashtags();
+    const n = await countHashtags(searchTerm);
     const nPages = Math.ceil(n.total / limit);
     const pageItems = [];
+
+    const offset = (page - 1) * limit;
+    const hashtags = await searchHashtags(searchTerm, limit, offset)
+
     for (let i = 1; i <= nPages; i++) {
         const item = {
             value: i,
-            isActive: i === page
+            isActive: i === page,
+            searchTerm: searchTerm
         }
         pageItems.push(item);
     }
 
-    const offset = (page - 1) * limit;
-
-    const hashtags = searchTerm 
-        ? await searchHashtags(searchTerm, limit, offset)
-        : await getAllHashtags(limit, offset);
     res.render('admin/hashtags', {
         title: 'Thẻ',
         empty: hashtags.length === 0,
