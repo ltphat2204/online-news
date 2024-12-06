@@ -1,15 +1,25 @@
 <div class="container bg-light p-3 rounded-lg shadow">
-    <div class="d-flex">
+    <div class="d-flex justify-content-between">
         <h1>
             Quản lý chuyên mục
         </h1>
-        <button class="btn btn-primary ml-auto" data-toggle="modal" data-target="#addCategoryModal">
-            Thêm chuyên mục
-        </button>
+        <button class="btn btn-primary ml-2" data-toggle="modal" data-target="#addCategoryModal">
+                <i class="bi bi-person-plus"></i>Thêm chuyên mục
+            </button>
     </div>
 </div>
 
 <div class="container bg-light p-3 rounded-lg shadow my-4">
+    <div class="d-flex justify-content-end align-items-center mb-2">
+            <form action="" class ="d-flex form-inline" id ="searchForm">
+                <input class="form-control mr-2" type="text" placeholder="Tìm kiếm...">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-search"></i> Tìm kiếm
+                </button>
+            </form>
+
+            
+        </div>
     <table class="table">
         <thead>
             <tr>
@@ -20,39 +30,13 @@
             <th scope="col">&nbsp;</th>
             </tr>
         </thead>
-        <tbody>
-            {{#if this.empty}}
-            <tr>
-                <td colspan="4" class="text-center">Hiện chưa có chuyên mục nào</td>
-            </tr>
-            {{/if}}
-            {{#each this.categories}}
-            <tr data-id="{{id}}">
-                <th scope="row">{{getNext @index}}</th>
-                <td>{{group_name}}</td>
-                <td>{{name}}</td>
-                <td>{{description}}</td>
-                <td>
-                    <button class="btn btn-primary edit-category" 
-                            data-toggle="modal" 
-                            data-target="#editCategoryModal"
-                            data-id="{{id}}"
-                            data-name="{{name}}"
-                            data-description="{{description}}"
-                            data-groupid="{{group_id}}">
-                        Sửa
-                    </button>
-                    <button class="btn btn-danger delete-category" 
-                            data-toggle="modal" 
-                            data-target="#deleteCategoryModal"
-                            data-id="{{id}}">
-                        Xóa
-                    </button>
-                </td>
-            </tr>
-            {{/each}}
+        <tbody id="category-content">
         </tbody>
     </table>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination" id="pagination">
+        </ul>
+    </nav>
 </div>
 
 <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalTitle" aria-hidden="true">
@@ -147,6 +131,155 @@
   </div>
 </div>
 
+
+<script>
+    $(document).ready(function () {
+        loadAPage(1); // Gọi hàm loadAPage khi lần đầu tải trang
+        function loadAPage(page, type = 'normal', search = undefined) {
+            fetch(`/admin/category/getPage?page=${page}&type=${type}&search=${search}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    renderPagination(data, type, search);
+                    renderData(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching categories while paginating:', error);
+                });
+        }
+
+        //Get data và phân trang cho search
+        
+        $('#searchForm').submit(function (e) {
+            e.preventDefault();
+            var searchVal = $('#searchForm input').val();
+            loadAPage(1, 'search', searchVal);
+        });
+
+
+        function renderPagination(data, type = 'normal', search = undefined) {
+                var $pagination = $('#pagination');
+                $pagination.addClass('justify-content-center');
+                $pagination.empty();
+                //prev page button
+                var $prevBtn = $('<li>', { class: 'page-item' });
+                if (parseInt(data.currentPage, 10) === 1) {
+                    $prevBtn.addClass('disabled');
+                } else {
+                    $prevBtn.removeClass('disabled');
+                }
+                $prevBtn.attr('data-page', data.currentPage - 1);
+                var $prevPageLink = $('<a>', { class: 'page-link', href: '#' }).html('&laquo;');
+                $prevBtn.append($prevPageLink);
+                $pagination.append($prevBtn);
+                //Each page button
+                data.pageArray.forEach(pageIndex => {
+                    var $pageBtn = $('<li>', { class: 'page-item', 'data-page': pageIndex });
+                    if (pageIndex === data.currentPage) {
+                        $pageBtn.addClass('active');
+                    }
+                    var $pageLink = $('<a>', { class: 'page-link', href: '#', text: pageIndex });
+                    $pageBtn.append($pageLink);
+                    $pagination.append($pageBtn);
+                });
+
+                //Next page button
+                var $nextBtn = $('<li>', { class: 'page-item' });
+                if (parseInt(data.currentPage) === data.totalPages) {
+                    $nextBtn.addClass('disabled');
+                } else {
+                    $nextBtn.removeClass('disabled');
+                }
+                $nextBtn.attr('data-page', data.currentPage + 1);
+                var $nextPageLink = $('<a>', { class: 'page-link', href: '#' }).html('&raquo;');
+                $nextBtn.append($nextPageLink);
+                $pagination.append($nextBtn);
+
+                //click pagination event
+                $('.page-item').click(function (e) {
+                    if ($(this).hasClass('disabled')) {
+                        e.preventDefault(); // Ngăn chặn click nếu phần tử có lớp 'disabled'
+                    } else {
+                        var page = $(this).data('page');
+                        if (page !== undefined) {
+                            loadAPage(page, type, search);
+                        }
+                    }
+                });
+            }
+
+
+
+            function renderData(data) {
+                var contentBox = document.getElementById('category-content');
+                if (data.empty) {
+                    contentBox.innerHTML = '<tr><td colspan="4" class="text-center">Hiện chưa có chuyên mục nào</td></tr>';
+                }
+                else {
+                    var index = 1;
+                    contentBox.innerHTML = '';
+                    data.categories.forEach(category => {
+                        var row = document.createElement('tr');
+                        row.setAttribute('data-id', category.id);
+                        contentBox.appendChild(row);
+
+                        //create table data
+                        var rowIndex = document.createElement('th');
+                        rowIndex.setAttribute('scope', 'row');
+                        rowIndex.innerText = index;
+                        index++;
+                        row.appendChild(rowIndex);
+
+                        var groupName = document.createElement('td');
+                        groupName.innerText = category.group_name;
+                        row.appendChild(groupName);
+
+                        var categoryName = document.createElement('td');
+                        categoryName.innerText = category.name;
+                        row.appendChild(categoryName);
+
+                        var categoryDescription = document.createElement('td');
+                        categoryDescription.innerText = category.description;
+                        row.appendChild(categoryDescription);
+
+                        //create modal button
+                        var functionBox = document.createElement('td');
+                        var editBtn = document.createElement('button');
+                        editBtn.setAttribute('class', 'btn btn-primary edit-category');
+                        editBtn.setAttribute('data-toggle', 'modal');
+                        editBtn.setAttribute('data-target', '#editCategoryModal');
+                        editBtn.setAttribute('data-id', category.id);
+                        editBtn.setAttribute('data-name', category.name);
+                        editBtn.setAttribute('data-description', category.description);
+                        editBtn.setAttribute('data-groupid', category.group_id);
+                        editBtn.innerText = 'Sửa';
+                        functionBox.appendChild(editBtn);
+
+                        var deleteBtn = document.createElement('button');
+                        deleteBtn.setAttribute('class', 'btn btn-danger delete-category');
+                        deleteBtn.setAttribute('data-toggle', 'modal');
+                        deleteBtn.setAttribute('data-target', '#deleteCategoryModal');
+                        deleteBtn.setAttribute('data-id', category.id);
+                        deleteBtn.innerText = 'Xóa';
+                        functionBox.appendChild(deleteBtn);
+                        row.appendChild(functionBox);
+                    });
+                }
+            }
+    });
+
+</script>
+
+
 <script>
 $(document).ready(function() {
     // Edit Modal Population
@@ -163,7 +296,7 @@ $(document).ready(function() {
         modal.find('#editCategoryDescription').val(description);
         modal.find('#editCategoryGroup').val(group_id);
     });
-
+    
     // Delete Modal Population
     $('#deleteCategoryModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget);

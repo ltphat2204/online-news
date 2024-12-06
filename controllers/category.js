@@ -1,19 +1,62 @@
-import { 
-    getAllCategories, 
-    createCategory, 
-    editCategory, 
-    deleteCategory 
+import {
+    getAllCategories,
+    createCategory,
+    editCategory,
+    deleteCategory,
+    getCategoriesWithPagination,
+    countCategories,
+    countSearchCategories,
+    searchCategoryByName
 } from "../models/category.js";
 
+export const getRender = async (req, res) => {
+    res.render('admin/category')
+}
 export const getCategory = async (req, res) => {
-    const categories = await getAllCategories();
+    try {
+        const type = req.query.type;
+        const limit = isNaN(parseInt(req.query.limit, 10)) ? 5 : parseInt(req.query.limit, 10);
+        const page = isNaN(parseInt(req.query.page, 10)) ? 1 : parseInt(req.query.page, 10);
+        const offset = (page - 1) * limit || 0;
 
-    res.render('admin/category', {
-        title: 'Chuyên mục',
-        empty: categories.length === 0,
-        categories,
-        categoryGroups: res.locals.categoryGroups
-    });
+        // Kiểm tra tính hợp lệ của các tham số đầu vào
+        if (isNaN(limit) || limit <= 0) {
+            return res.status(400).json({ error: "Invalid 'k' value. It must be a positive integer." });
+        }
+        if (isNaN(offset) || offset < 0) {
+            return res.status(400).json({ error: "Invalid 's' value. It must be a non-negative integer." });
+        }
+
+        var categories =[];
+        var countResult = {};
+        if(type === 'search'){
+            const searchVal = req.query.search;
+            categories = await searchCategoryByName(searchVal, limit, offset);
+            countResult = await countSearchCategories(searchVal);
+        }
+        else
+        {
+            categories = await getCategoriesWithPagination(limit, offset);
+            countResult = await countCategories();
+        }
+        //number of pages
+        
+        const totalPages = Math.ceil(countResult.total / limit);
+        const pageArray = Array.from({ length: totalPages }, (_, i) => i + 1);
+        res.json({
+            categories,
+            currentPage: page,
+            totalPages,
+            pageArray,
+            limit,
+            empty: categories.length === 0,
+            categoryGroups: res.locals.categoryGroups,
+        });
+    }
+    catch (error) {
+        console.error("Error fetching paginated categories:", error);
+        res.status(500).json({ error: "An error occurred while fetching categories." });
+    }
 }
 
 export const postCategory = async (req, res) => {
