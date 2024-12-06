@@ -45,3 +45,13 @@ export const deleteUser = async (id) => {
     const result = await database("users").where("id", id).del();
     return result;
 }
+
+export const getUserByEmail = async (email) => {
+    const result = await database("users").select("*").where("email", email).first();
+    return result;
+}
+
+export const getUserByUsername = async (username) => {
+    const result = await database("users").select("*").where("username", username).first();
+    return result;
+}
