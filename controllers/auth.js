@@ -24,7 +24,12 @@ export const handleLogin = async (req, res) => {
         }
         else {
             req.session.auth = true;
-            req.session.authUser = old_user;
+            req.session.authUser = {
+                id: old_user.id,
+                username: old_user.username,
+                fullname: old_user.fullname,
+                role: old_user.role
+            };
             res.redirect("/");
         }
     }
@@ -58,6 +63,6 @@ export const handleRegister = async (req, res) => {
         const hashedPassword = await hashPassword(user.password);
         user.password = hashedPassword;
         await createUser(user);
-        res.redirect("/");
+        res.redirect("/auth/login");
     }
 }
