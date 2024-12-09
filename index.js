@@ -1,4 +1,5 @@
 import express from 'express';
+import session from 'express-session';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import setupViewEngine from './config/viewEngine.js';
@@ -14,6 +15,15 @@ import setLayout from './middlewares/setLayout.js';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 setupViewEngine(app, __dirname);
+
+app.set('trust proxy', 1);
+app.use(session({
+    secret: 'SECRET_KEY',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {}
+}));
+
 app.use(setLayout);
 
 app.use(express.urlencoded({ extended: true }));
