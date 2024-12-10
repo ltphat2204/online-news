@@ -4,6 +4,7 @@ import userRouter from './user.js';
 import categoryRouter from './category.js';
 import hashtagRouter from './hashtags.js';
 import authorizeRole from '../../middlewares/authorizeRole.js';
+import articleRouter from './articles.js'
 
 const router = express.Router();
 router.use('/',authorizeRole(['admin','writer','editor']));
@@ -19,5 +20,6 @@ router.use('/user', userRouter);
 router.use('/category-group', categoryGroupRouter)
 router.use('/category', categoryRouter)
 router.use('/hashtags', hashtagRouter)
+router.use('/articles', articleRouter)
 
 export default router;
