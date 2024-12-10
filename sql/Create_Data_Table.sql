@@ -73,7 +73,9 @@ CREATE TABLE "comment" (
   "author_id" UUID,
   "article_id" UUID NOT NULL,
   "guest_name" varchar,
-  "content" text
+  "content" text,
+  "created_at" timestamp DEFAULT now(),
+  "updated_at" timestamp DEFAULT now()
 );
 
 CREATE TABLE "editor_category" (
