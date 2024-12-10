@@ -1,9 +1,9 @@
 import { getUserByEmail,
-         getUserByUsername,
-         createUser
- } from "../models/user.js";
+    getUserByUsername,
+    createUser
+} from "../models/user.js";
 import { comparePassword,
-         hashPassword} from "../utils/cryptography.js";
+    hashPassword} from "../utils/cryptography.js";
 
 export const handleLogin = async (req, res) => {
     const user = req.body;
@@ -44,6 +44,7 @@ export const handleLogout = async(req, res) => {
 export const handleRegister = async (req, res) => {
     const user = req.body;
     user.role = "subscriber";
+  
     const old_user = await getUserByEmail(user.email);
     const old_name = await getUserByUsername(user.username);
 
