@@ -45,3 +45,43 @@ export const getArticleBySlug = async (slug) => {
     const article = await database("articles").where({ slug: slug }).first();
     return article;
 }
+
+export const getArticleInfoById = async (id) => {
+    return await database("articles")
+        .select(
+            "articles.*",
+            "categories.id as category_id",
+            "categories.name as category_name",
+            "category_groups.id as group_id",
+            "category_groups.name as group_name",
+            "users.id as author_id",
+            "users.fullname as author_name"
+        )
+        .join("categories", "articles.category_id", "categories.id")
+        .join("category_groups", "categories.group_id", "category_groups.id")
+        .join("users", "articles.author_id", "users.id")
+        .where("articles.id", id)
+        .first();
+}
+
+export const getArticlesByCategory = async (category_id, current_article_id, limit = 5) => {
+    return await database("articles")
+        .select("articles.*", "categories.name as category_name")
+        .join("categories", "articles.category_id", "categories.id")
+        .where("articles.category_id", category_id)
+        .andWhere("articles.id", "!=", current_article_id)
+        .limit(limit)
+
+};
+
+export const addComment = async (comment) => {
+    const result = await database("comment").insert(comment);
+    return result;
+};
+
+export const getCommentsByArticleId = async (article_id) => {
+    return await database("comment")
+        .select("guest_name as author_name", "content", "created_at")
+        .where("article_id", article_id)
+        .orderBy("created_at", "desc");
+};
