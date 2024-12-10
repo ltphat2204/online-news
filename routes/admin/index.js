@@ -6,12 +6,14 @@ import hashtagRouter from './hashtags.js';
 import authorizeRole from '../../middlewares/authorizeRole.js';
 
 const router = express.Router();
+router.use('/',authorizeRole(['admin','writer','editor']));
 
-router.get('/',authorizeRole(['admin','writer','editor']), (req, res) => {
+router.get('/', (req, res) => {
     res.render('admin/home', {
         title: 'Trang chủ'
     });
 });
+
 
 router.use('/user', userRouter);
 router.use('/category-group', categoryGroupRouter)
