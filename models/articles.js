@@ -15,13 +15,17 @@ export const getAllArticles = async (search = "", offset = 0, limit = 5) => {
 }
 
 export const countArticles = async (search = "") => {
-    const result = await database("articles")
-                    .whereLike("title", `% ${search} %`)
-                    .orWhereLike("abstract", `% ${search} %`)
-                    .orWhereLike("content", `% ${search} %`)
-                    .count("* as total").first();
-    return result;
-}
+    let query = database("articles");
+  
+    if (search) {
+        query = query.whereLike("title", `%${search}%`)
+                   .orWhereLike("abstract", `%${search}%`)
+                   .orWhereLike("content", `%${search}%`);
+    }
+  
+    const result = await query.count("* as total").first();
+    return result.total;
+  };
 
 export const createArticle = async (article) => {
     const result = await database("articles").insert(article);
