@@ -31,6 +31,7 @@ export const getArticles = async (req, res) => {
 export const postArticle = async (req, res) => {
     const article = req.body;
     const author_id = req.session.authUser.id;
+    console.log(article);
     await createArticle({ ...article, author_id });
 
     res.redirect("/admin/articles");
