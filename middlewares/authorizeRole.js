@@ -1,7 +1,7 @@
 import { authUserById } from "../controllers/user.js";
 const authorizeRole = (allowedRoles) => {
     return async function (req, res, next) {
-        if (req.session.authUser === undefined) {
+        if (!req.session.authUser) {
             res.redirect("/auth/login");
             return;
         }
