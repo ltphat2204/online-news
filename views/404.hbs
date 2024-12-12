@@ -1,0 +1,10 @@
+<div class="text-center">
+    <h1 class="display-1 text-danger">404</h1>
+    <p class="lead">Rất tiếc, trang bạn tìm kiếm không tồn tại.</p>
+    {{#if auth}}
+        <p>Chào {{authUser}}, có vẻ bạn đã lạc hướng.</p>
+    {{else}}
+        <p>Bạn chưa đăng nhập. <a href="/login">Đăng nhập ngay</a>.</p>
+    {{/if}}
+    <a href="/" class="btn btn-primary mt-3">Quay lại Trang chủ</a>
+</div>
