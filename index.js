@@ -52,6 +52,14 @@ app.use('/articles', ArticleRoutes);
 app.use('/admin', AdminRoutes);
 app.use('/auth', AuthRoutes);
 
+// Xử lý lỗi 404
+app.use((req, res) => {
+  res.status(404).render('404', {
+      title: 'Không tìm thấy trang',
+      message: 'Rất tiếc, trang bạn tìm kiếm không tồn tại.'
+  });
+});
+
 // Run app
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
