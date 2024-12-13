@@ -44,7 +44,7 @@
       Swal.fire({
         icon: 'error',
         title: 'Lỗi',
-        text: 'Mật khẩu quá ngắn, vui lòng nhập lại'
+        text: 'Mật khẩu quá ngắn, ít nhất phải chứa 8 ký tự'
       });
       return;
     }
@@ -57,13 +57,20 @@
 
       const data = await response.json();
       console.log(data);
-      if (data === false) {
+      if (!data.userExist) {
         Swal.fire({
           icon: 'error',
           title: 'Lỗi',
-          text: 'Người dùng đã tồn tại!'
+          text: 'Username này đã tồn tại!'
         });
         return;
+      }
+      else if (!data.emailExist) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Lỗi',
+          text: 'Email này đã tồn tại'
+        })
       } else {
         Swal.fire({
         title: "Đăng ký thành công",
