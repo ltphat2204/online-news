@@ -12,6 +12,8 @@
             type="text"
             {{#if this.userNotFound}}
                class="form-control is-invalid"
+            {{else if this.error}}
+                class="form-control is-invalid"
             {{else}}
                class="form-control"
             {{/if}}
@@ -20,9 +22,14 @@
             placeholder="vidu@email.com"
             required
           />
+          {{!-- Display error message --}}
           {{#if this.userNotFound}}
             <div class="invalid-feedback">
               Tài khoản không tồn tại.
+            </div>
+          {{else if this.error}}
+            <div class="invalid-feedback">
+              {{this.error}}
             </div>
           {{/if}}
         </div>
@@ -43,6 +50,13 @@
           {{#if this.wrongPassword}}
             <div class="invalid-feedback">
               Mật khẩu bạn nhập không đúng.
+            </div>
+          {{/if}}
+
+          {{!-- Message for users with social login --}}
+          {{#if this.socialLogin}}
+            <div class="mt-2 alert alert-info">
+              Bạn đã đăng ký bằng {{this.provider}}. Vui lòng nhấn vào nút "{{this.provider}}" ở dưới.
             </div>
           {{/if}}
         </div>
@@ -67,10 +81,7 @@
 
       <div class="d-grid gap-2">
         <!-- Button Google -->
-        <button
-          class="btn custom-social-btn w-100 d-flex align-items-center mb-3"
-          onclick="signInWithGoogle()"
-        >
+        <a href="/auth/google" class="btn custom-social-btn w-100 d-flex align-items-center mb-3">
           <img
             src="/statics/assets/Google.png"
             alt="Google Logo"
@@ -78,13 +89,10 @@
             style="width: 28px; height: 28px;"
           />
           <span>Đăng nhập bằng Google</span>
-        </button>
+        </a>
 
         <!-- Button Facebook -->
-        <button
-          class="btn custom-social-btn w-100 d-flex align-items-center mb-3"
-          onclick="signInWithFacebook()"
-        >
+        <a href="/auth/facebook" class="btn custom-social-btn w-100 d-flex align-items-center mb-3">
           <img
             src="/statics/assets/Facebook.png"
             alt="Facebook Logo"
@@ -92,13 +100,10 @@
             style="width: 28px; height: 28px;"
           />
           <span>Đăng nhập bằng Facebook</span>
-        </button>
+        </a>
 
         <!-- Button Github -->
-        <button
-          class="btn custom-social-btn w-100 d-flex align-items-center mb-3"
-          onclick="signInWithGithub()"
-        >
+        <a href="/auth/github" class="btn custom-social-btn w-100 d-flex align-items-center mb-3">
           <img
             src="/statics/assets/Github.png"
             alt="Github Logo"
@@ -106,12 +111,12 @@
             style="width: 28px; height: 28px;"
           />
           <span>Đăng nhập bằng Github</span>
-        </button>
+        </a>
       </div>
     </div>
   </div>
 
   <footer class="text-center mt-4 fs-6">
-    <p class="small text-muted">&copy; 2024 ALL RIGHTS RESERVED</p>
+    <p class="small text-muted">© 2024 ALL RIGHTS RESERVED</p>
   </footer>
 </body>

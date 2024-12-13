@@ -12,6 +12,7 @@ import database from './config/database.js';
 import AdminRoutes from './routes/admin/index.js';
 import AuthRoutes from './routes/auth/index.js';
 import setLayout from './middlewares/setLayout.js';
+import passport from './config/passport.js';
 
 // Setup
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -33,6 +34,9 @@ app.use(session({
     saveUninitialized: true,
     cookie: {}
 }));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use(setLayout);
 
