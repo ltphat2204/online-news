@@ -42,8 +42,7 @@ app.use('/auth', AuthRoutes);
 app.use((req, res) => {
   res.status(404).render('404', {
       title: 'Không tìm thấy trang',
-      auth: req.session.auth,
-      authUser: req.session.authUser,
+      message: 'Rất tiếc, trang bạn tìm kiếm không tồn tại.'
   });
 });
 
