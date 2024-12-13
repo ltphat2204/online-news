@@ -1,9 +1,7 @@
 import express from 'express';
-import hbs_section from 'express-handlebars-sections';
 import session from 'express-session';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { engine } from 'express-handlebars';
 import setupViewEngine from './config/viewEngine.js';
 import IndexRoutes from './routes/index.js';
 import ArticleRoutes from './routes/articles.js';
@@ -20,13 +18,6 @@ const app = express();
 setupViewEngine(app, __dirname);
 
 app.set('trust proxy', 1);
-
-app.engine('hbs', engine({
-    extname: 'hbs',
-    helpers: {
-        fill_section: hbs_section()
-    }
-}));
 
 app.use(session({
     secret: 'SECRET_KEY',
