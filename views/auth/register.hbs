@@ -11,7 +11,7 @@
     if (email.length === 0) {
       Swal.fire({
         icon: 'error',
-        title: 'Error',
+        title: 'Lỗi',
         text: 'Vui lòng nhập email'
       });
       return;
@@ -19,7 +19,7 @@
     if (username.length === 0) {
       Swal.fire({
         icon: 'error',
-        title: 'Error',
+        title: 'Lỗi',
         text: 'Vui lòng nhập username'
       });
       return;
@@ -27,7 +27,7 @@
     if (fullname.length === 0) {
       Swal.fire({
         icon: 'error',
-        title: 'Error',
+        title: 'Lỗi',
         text: 'Vui lòng nhập họ và tên'
       });
       return;
@@ -35,7 +35,7 @@
     if (password.length === 0) {
       Swal.fire({
         icon: 'error',
-        title: 'Error',
+        title: 'Lỗi',
         text: 'Vui lòng nhập mật khẩu'
       });
       return;
@@ -43,21 +43,43 @@
     if (password.length < 8) {
       Swal.fire({
         icon: 'error',
-        title: 'Error',
+        title: 'Lỗi',
         text: 'Mật khẩu quá ngắn, vui lòng nhập lại'
       });
       return;
     }
-    if (this.userExist) {
-    Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Tài khoản này đã được đăng ký'
-      });
-      return;
+    const url = `/auth/is-available?username=${username}&email=${email}`;
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log(data);
+      if (data === false) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Lỗi',
+          text: 'Người dùng đã tồn tại!'
+        });
+        return;
+      } else {
+        Swal.fire({
+        title: "Đăng ký thành công",
+        text: "Giờ bạn đã có thể đăng nhập",
+        icon: "success"
+        }).then((result) => {
+          if (result.isConfirmed) {
+            $('#register').off('submit').submit();
+          }
+        });
+      }
+    } 
+    catch (error) {
+      console.error(error.message);
     }
-    else
-      $('#register').off('submit').submit();
+
   });
 </script>
 {{/fill_section}}
@@ -74,39 +96,21 @@
           <label for="email" class="form-label">Email</label>
           <input
             type="email"
-            {{#if this.userExist}}
-               class="form-control is-invalid"
-            {{else}}
-               class="form-control"
-            {{/if}}
+            class="form-control"
             id="email"
             name="email"
             placeholder="vidu@email.com"
           />
-          {{#if this.userExist}}
-            <div class="invalid-feedback">
-              Tài khoản này đã được đăng ký.
-            </div>
-          {{/if}}
         </div>
         <div class="mb-3">
           <label for="username" class="form-label">Username</label>
           <input
             type="username"
-            {{#if this.userExist}}
-               class="form-control is-invalid"
-            {{else}}
-               class="form-control"
-            {{/if}}
+            class="form-control"
             id="username"
             name="username"
             placeholder="Tối đa 16 ký tự"
           />
-          {{#if this.userExist}}
-            <div class="invalid-feedback">
-              Tài khoản này đã được đăng ký.
-            </div>
-          {{/if}}
         </div>
         <div class="mb-3">
           <label for="fullname" class="form-label">Họ và tên</label>

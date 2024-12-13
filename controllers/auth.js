@@ -44,26 +44,20 @@ export const handleLogout = async(req, res) => {
 export const handleRegister = async (req, res) => {
     const user = req.body;
     user.role = "subscriber";
-  
-    const old_user = await getUserByEmail(user.email);
-    const old_name = await getUserByUsername(user.username);
+    const hashedPassword = await hashPassword(user.password);
+    user.password = hashedPassword;
+    await createUser(user);
+    res.redirect("/auth/login");
+}
+export const checkAvailable = async (req, res) => {
+    const user = req.query.username;
+    const email = req.query.email;
 
-    if (old_user) {
-        res.render("auth/register", {
-            title: "Đăng ký",
-            userExist: true
-        });
+    const old_name = await getUserByUsername(user);
+    const old_email = await getUserByEmail(email);
+
+    if (!old_name && !old_email) {
+        return res.json(true);
     }
-    else if (old_name) {
-        res.render("auth/register", {
-            title: "Đăng ký",
-            userExist: true
-        });
-    }
-    else {
-        const hashedPassword = await hashPassword(user.password);
-        user.password = hashedPassword;
-        await createUser(user);
-        res.redirect("/auth/login");
-    }
+    return res.json(false);
 }

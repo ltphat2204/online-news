@@ -1,5 +1,6 @@
 import express from "express";
-import { handleLogin,
+import { checkAvailable,
+         handleLogin,
          handleLogout,
          handleRegister} from "../../controllers/auth.js";
 
@@ -18,6 +19,8 @@ router.get("/login", (req, res) => {
     title: "Đăng nhập",
   });
 });
+
+router.get("/is-available", checkAvailable);
 
 router.post("/login", handleLogin);
 
