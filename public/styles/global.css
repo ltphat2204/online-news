@@ -2,6 +2,11 @@ body {
     background-image: url("/statics/assets/Background.png");
     background-repeat: repeat;
 }
+
+p {
+    text-align: justify;
+}
+
 .nav-item-group {
     display: flex;
     align-items: center;
