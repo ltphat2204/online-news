@@ -3,14 +3,14 @@ import nodemailer from 'nodemailer';
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: EMAIL,
-        pass: EMAIL_APPPASS,
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_APPPASS,
     },
 });
 
 export const sendOTP = async (toEmail, otp) => {
     const mailOptions = {
-        from: 'documentofkelvin@gmail.com',
+        from: process.env.EMAIL,
         to: toEmail,
         subject: 'Mã xác thực tài khoản OTP',
         html: `
@@ -28,7 +28,7 @@ export const sendOTP = async (toEmail, otp) => {
                         <tr style="text-align:center;vertical-align:middle">
                             <td style="height:65px;background-color:#01345e;text-align:center;vertical-align:middle;">
                                 <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
-                                    <img src="/public/assets/Header mail.png" width="538" height="65" alt="Trang báo Điện tử Crispy Chicken Rice" style="display: block;">
+                                    <img src="https://res.cloudinary.com/ltphat2204/image/upload/v1734078089/Crispy%20rice%20chicken%20mail%20header.png" width="538" height="65" alt="Trang báo Điện tử Crispy Chicken Rice" style="display: block;">
                                 </div>
                             </td>
                         </tr>

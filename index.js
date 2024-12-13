@@ -10,6 +10,7 @@ import database from './config/database.js';
 import AdminRoutes from './routes/admin/index.js';
 import AuthRoutes from './routes/auth/index.js';
 import setLayout from './middlewares/setLayout.js';
+import { sendOTP } from './utils/mailSender.js';
 
 // Setup
 const __dirname = dirname(fileURLToPath(import.meta.url));
