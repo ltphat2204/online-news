@@ -1,3 +1,67 @@
+{{#fill_section 'js'}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  $('#register').on('submit', async function (e) {
+    e.preventDefault();
+    const email = $('#email').val();
+    const username = $('#username').val();
+    const fullname = $('#fullname').val();
+    const password = $('#password').val();
+
+    if (email.length === 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Vui lòng nhập email'
+      });
+      return;
+    }
+    if (username.length === 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Vui lòng nhập username'
+      });
+      return;
+    }
+    if (fullname.length === 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Vui lòng nhập họ và tên'
+      });
+      return;
+    }
+    if (password.length === 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Vui lòng nhập mật khẩu'
+      });
+      return;
+    }
+    if (password.length < 8) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Mật khẩu quá ngắn, vui lòng nhập lại'
+      });
+      return;
+    }
+    if (this.userExist) {
+    Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Tài khoản này đã được đăng ký'
+      });
+      return;
+    }
+    else
+      $('#register').off('submit').submit();
+  });
+</script>
+{{/fill_section}}
+
 <body>
   <div class="login-logo text-center">
     <img src="/statics/assets/LogoFinal.png" alt="Logo" />
@@ -5,7 +69,7 @@
 
   <div class="login-container">
     <div class="form-login">
-      <form method="POST" action="/auth/register">
+      <form id="register" method="POST" action="/auth/register">
         <div class="mb-3">
           <label for="email" class="form-label">Email</label>
           <input
@@ -18,7 +82,6 @@
             id="email"
             name="email"
             placeholder="vidu@email.com"
-            required
           />
           {{#if this.userExist}}
             <div class="invalid-feedback">
@@ -38,7 +101,6 @@
             id="username"
             name="username"
             placeholder="Tối đa 16 ký tự"
-            required
           />
           {{#if this.userExist}}
             <div class="invalid-feedback">
@@ -54,7 +116,6 @@
             id="fullname"
             name="fullname"
             placeholder="VD: Trần Văn A"
-            required
           />
         </div>
         <div class="mb-3">
@@ -65,7 +126,6 @@
             id="password"
             name="password"
             placeholder="Tối thiểu 8 ký tự"
-            required
           />
         </div>
 
@@ -132,4 +192,5 @@
   <footer class="text-center mt-4 fs-6">
     <p class="small text-muted">&copy; 2024 ALL RIGHTS RESERVED</p>
   </footer>
+  {{{_sections.js}}}
 </body>
