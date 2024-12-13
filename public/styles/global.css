@@ -1,7 +1,9 @@
 body {
     background-image: url("/statics/assets/Background.png");
-    background-repeat: repeat;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
+
 .nav-item-group {
     display: flex;
     align-items: center;

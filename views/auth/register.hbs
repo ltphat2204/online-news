@@ -1,135 +1,162 @@
-<body>
-  <div class="login-logo text-center">
-    <img src="/statics/assets/LogoFinal.png" alt="Logo" />
-  </div>
+{{#fill_section 'js'}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  $('#register').on('submit', async function (e) {
+    e.preventDefault();
+    const email = $('#email').val();
+    const username = $('#username').val();
+    const fullname = $('#fullname').val();
+    const password = $('#password').val();
 
-  <div class="login-container">
-    <div class="form-login">
-      <form method="POST" action="/auth/register">
-        <div class="mb-3">
-          <label for="email" class="form-label">Email</label>
-          <input
-            type="email"
-            {{#if this.userExist}}
-               class="form-control is-invalid"
-            {{else}}
-               class="form-control"
-            {{/if}}
-            id="email"
-            name="email"
-            placeholder="vidu@email.com"
-            required
-          />
-          {{#if this.userExist}}
-            <div class="invalid-feedback">
-              Tài khoản này đã được đăng ký.
-            </div>
-          {{/if}}
-        </div>
-        <div class="mb-3">
-          <label for="username" class="form-label">Username</label>
-          <input
-            type="username"
-            {{#if this.userExist}}
-               class="form-control is-invalid"
-            {{else}}
-               class="form-control"
-            {{/if}}
-            id="username"
-            name="username"
-            placeholder="Tối đa 16 ký tự"
-            required
-          />
-          {{#if this.userExist}}
-            <div class="invalid-feedback">
-              Tài khoản này đã được đăng ký.
-            </div>
-          {{/if}}
-        </div>
-        <div class="mb-3">
-          <label for="fullname" class="form-label">Họ và tên</label>
-          <input
-            type="fullname"
-            class="form-control"
-            id="fullname"
-            name="fullname"
-            placeholder="VD: Trần Văn A"
-            required
-          />
-        </div>
-        <div class="mb-3">
-          <label for="password" class="form-label">Mật khẩu</label>
-          <input
-            type="password"
-            class="form-control"
-            id="password"
-            name="password"
-            placeholder="Tối thiểu 8 ký tự"
-            required
-          />
-        </div>
+    if (email.length === 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Lỗi',
+        text: 'Vui lòng nhập email'
+      });
+      return;
+    }
+    if (username.length === 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Lỗi',
+        text: 'Vui lòng nhập username'
+      });
+      return;
+    }
+    if (fullname.length === 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Lỗi',
+        text: 'Vui lòng nhập họ và tên'
+      });
+      return;
+    }
+    if (password.length === 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Lỗi',
+        text: 'Vui lòng nhập mật khẩu'
+      });
+      return;
+    }
+    if (password.length < 8) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Lỗi',
+        text: 'Mật khẩu quá ngắn, ít nhất phải chứa 8 ký tự'
+      });
+      return;
+    }
+    const url = `/auth/is-available?username=${username}&email=${email}`;
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
 
-        <!--custom-btn là class mình tự định nghĩa-->
-        <div class="d-flex justify-content-center mt-3">
-          <button type="submit" class="btn custom-btn btn-lg w-100">Đăng ký</button>
-        </div>
+      const data = await response.json();
+      console.log(data);
+      if (!data.userExist) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Lỗi',
+          text: 'Username này đã tồn tại!'
+        });
+        return;
+      }
+      else if (!data.emailExist) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Lỗi',
+          text: 'Email này đã tồn tại'
+        })
+      } else {
+        Swal.fire({
+          title: "Đăng ký thành công",
+          text: "Giờ bạn đã có thể đăng nhập",
+          icon: "success"
+        }).then((result) => {
+          if (result.isConfirmed) {
+            $('#register').off('submit').submit();
+          }
+        });
+      }
+    }
+    catch (error) {
+      console.error(error.message);
+    }
 
-        <div class="form-footer mt-3">
-          Đã có tài khoản?
-          <a href="/auth/login">Đăng nhập</a>
-        </div>
-      </form>
+  });
+</script>
+{{/fill_section}}
 
-      <div class="divider my-4 text-center">Hoặc</div>
+<div class="login-logo text-center">
+  <img src="/statics/assets/LogoFinal.png" alt="Logo" />
+</div>
 
-      <div class="d-grid gap-2">
-        <!-- Button Google -->
-        <button
-          class="btn custom-social-btn w-100 d-flex align-items-center mb-3"
-          onclick="signInWithGoogle()"
-        >
-          <img
-            src="/statics/assets/Google.png"
-            alt="Google Logo"
-            class="me-2"
-            style="width: 28px; height: 28px;"
-          />
-          <span>Đăng ký bằng Google</span>
-        </button>
-
-        <!-- Button Facebook -->
-        <button
-          class="btn custom-social-btn w-100 d-flex align-items-center mb-3"
-          onclick="signInWithFacebook()"
-        >
-          <img
-            src="/statics/assets/Facebook.png"
-            alt="Facebook Logo"
-            class="me-2"
-            style="width: 28px; height: 28px;"
-          />
-          <span>Đăng ký bằng Facebook</span>
-        </button>
-
-        <!-- Button Github -->
-        <button
-          class="btn custom-social-btn w-100 d-flex align-items-center mb-3"
-          onclick="signInWithGithub()"
-        >
-          <img
-            src="/statics/assets/Github.png"
-            alt="Github Logo"
-            class="me-2"
-            style="width: 28px; height: 28px;"
-          />
-          <span>Đăng ký bằng Github</span>
-        </button>
+<div class="login-container">
+  <div class="form-login">
+    <form id="register" method="POST" action="/auth/register">
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" class="form-control" id="email" name="email" placeholder="vidu@email.com" />
+      </div>
+      <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input type="username" class="form-control" id="username" name="username" placeholder="Tối đa 16 ký tự" />
+      </div>
+      <div class="mb-3">
+        <label for="fullname" class="form-label">Họ và tên</label>
+        <input type="fullname" class="form-control" id="fullname" name="fullname" placeholder="VD: Trần Văn A" />
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Mật khẩu</label>
+        <input type="password" class="form-control" id="password" name="password" placeholder="Tối thiểu 8 ký tự" />
       </div>
 
+      <div class="d-flex justify-content-center mt-3">
+        <button type="submit" class="btn custom-btn btn-lg w-100">Đăng ký</button>
+      </div>
+
+      <div class="form-footer mt-3">
+        Đã có tài khoản?
+        <a href="/auth/login">Đăng nhập</a>
+      </div>
+    </form>
+
+    <div class="divider my-4 text-center">Hoặc</div>
+
+    <div class="d-grid gap-2">
+      <a href="/auth/google" class="btn custom-social-btn w-100 d-flex align-items-center mb-3">
+        <img
+          src="/statics/assets/Google.png"
+          alt="Google Logo"
+          class="me-2"
+          style="width: 28px; height: 28px;"
+        />
+        <span>Đăng nhập bằng Google</span>
+      </a>
+      <a href="/auth/facebook" class="btn custom-social-btn w-100 d-flex align-items-center mb-3">
+        <img
+          src="/statics/assets/Facebook.png"
+          alt="Facebook Logo"
+          class="me-2"
+          style="width: 28px; height: 28px;"
+        />
+        <span>Đăng nhập bằng Facebook</span>
+      </a>
+      <a href="/auth/github" class="btn custom-social-btn w-100 d-flex align-items-center mb-3">
+        <img
+          src="/statics/assets/Github.png"
+          alt="Github Logo"
+          class="me-2"
+          style="width: 28px; height: 28px;"
+        />
+        <span>Đăng nhập bằng Github</span>
+      </a>
     </div>
   </div>
+</div>
 
-  <footer class="text-center mt-4 fs-6">
-    <p class="small text-muted">&copy; 2024 ALL RIGHTS RESERVED</p>
-  </footer>
-</body>
+{{{_sections.js}}}
