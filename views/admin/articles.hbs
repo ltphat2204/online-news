@@ -41,7 +41,7 @@
             {{#each this.articles}}
             <tr data-id="{{id}}">
                 <th scope="row">{{getNext @index}}</th>
-                <td>{{thumbnail}}</td>
+                <td><img src="{{thumbnail}}" height="auto" width="70"></td>
                 <td>{{title}}</td>
                 <td>{{abstract}}</td>
                 <td>{{category}}</td>
@@ -65,8 +65,8 @@
     <nav aria-label="...">
       <ul class="pagination">
         {{#each this.pageItems}}
-        <li class="page-item">
-          <a class="page-link" href="/admin/hashtags?page={{value}}&search={{searchTerm}}">{{value}}</a>
+        <li class="page-item {{status}}">
+          <a class="page-link" href="/admin/articles?page={{value}}&search={{searchTerm}}">{{value}}</a>
         </li>
         {{/each}}
       </ul>
