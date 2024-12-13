@@ -8,5 +8,4 @@ router.post('/create', postUsers);
 router.post('/edit', patchUser);
 router.post('/delete', deleteUserById);
 router.get('/search', searchUsers);
-
 export default router;

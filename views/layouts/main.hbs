@@ -76,73 +76,20 @@
         </div>
     </nav>
     <div style="border-top: 1px solid black; border-bottom: 1px solid black; background-color: white;">
-        <ul class="container nav nav-bottom">
+        <ul class="container nav nav-bottom justify-content-center">
             <li class="nav-item">
                 <a class="nav-link active" href="/"><i style="color: #3A7CC4" class="bi bi-house-door-fill"></i></a>
             </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">Kinh tế</a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">Nông nghiệp</a>
-                    <a class="dropdown-item" href="#">Thủy sản</a>
-                </div>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">Chính trị</a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">Trong nước</a>
-                    <a class="dropdown-item" href="#">Nước ngoài</a>
-                </div>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">Chính trị</a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">Trong nước</a>
-                    <a class="dropdown-item" href="#">Nước ngoài</a>
-                </div>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">Chính trị</a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">Trong nước</a>
-                    <a class="dropdown-item" href="#">Nước ngoài</a>
-                </div>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">Chính trị</a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">Trong nước</a>
-                    <a class="dropdown-item" href="#">Nước ngoài</a>
-                </div>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">Chính trị</a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">Trong nước</a>
-                    <a class="dropdown-item" href="#">Nước ngoài</a>
-                </div>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">Chính trị</a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">Trong nước</a>
-                    <a class="dropdown-item" href="#">Nước ngoài</a>
-                </div>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">Chính trị</a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">Trong nước</a>
-                    <a class="dropdown-item" href="#">Nước ngoài</a>
-                </div>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">Chính trị</a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">Trong nước</a>
-                    <a class="dropdown-item" href="#">Nước ngoài</a>
-                </div>
-            </li>
+            {{#each categoryGroups}}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">{{group_name}}</a>
+                    <div class="dropdown-menu">
+                        {{#each this.categories}}
+                            <a class="dropdown-item" href="/category/{{id}}">{{name}}</a>
+                        {{/each}}
+                    </div>
+                </li>
+            {{/each}}
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false"><i class="bi bi-list"></i></a>
                 <div class="dropdown-menu">

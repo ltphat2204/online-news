@@ -5,7 +5,8 @@ import {
     createUser,
     editUser,
     deleteUser,
-    searchUsersByKey
+    searchUsersByKey,
+    getUserById
 } from "../models/user.js";
 
 // Hàm lấy người dùng với phân trang
@@ -153,3 +154,17 @@ export const deleteUserById = async (req, res) => {
     res.redirect('/admin/user');
 }
 
+export const authUserById = async (id) => {
+    try {
+        const user = await getUserById(id);
+        
+        if (!user) {
+            throw new Error('User not found');
+        }
+        
+        return user;
+    } catch (error) {
+        console.error('Error in authUserById:', error.message);
+        throw error; // Ném lỗi lên để xử lý ở nơi gọi hàm nếu cần
+    }
+}

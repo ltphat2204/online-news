@@ -8,12 +8,12 @@ export const getArticles = async (req, res) => {
     const searchTerm = req.query.search || '';
     const articles = await getAllArticles(searchTerm, offset, LIMIT);
 
-    const nPages = await countArticles(searchTerm);
+    const nPages = await countArticles(searchTerm) / LIMIT;
     const pageItems = [];
     for (let i = 1; i <= nPages; i++) {
         const item = {
             value: i,
-            isActive: i === page,
+            status: i == page ? "active" : "",
             searchTerm: searchTerm
         }
         pageItems.push(item);
@@ -31,6 +31,7 @@ export const getArticles = async (req, res) => {
 export const postArticle = async (req, res) => {
     const article = req.body;
     const author_id = req.session.authUser.id;
+    console.log(article);
     await createArticle({ ...article, author_id });
 
     res.redirect("/admin/articles");

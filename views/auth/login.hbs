@@ -1,117 +1,106 @@
-<body>
-  <div class="login-logo text-center">
-    <img src="/statics/assets/LogoFinal.png" alt="Logo" />
-  </div>
+<div class="login-logo text-center">
+  <img src="/statics/assets/LogoFinal.png" alt="Logo" />
+</div>
 
-  <div class="login-container">
-    <div class="form-login">
-      <form method="POST" action="/auth/login">
-        <div class="mb-3">
-          <label for="email" class="form-label">Email/Username</label>
-          <input
-            type="text"
-            {{#if this.userNotFound}}
-               class="form-control is-invalid"
-            {{else}}
-               class="form-control"
-            {{/if}}
-            id="email"
-            name="email"
-            placeholder="vidu@email.com"
-            required
-          />
+<div class="login-container">
+  <div class="form-login">
+    <form method="POST" action="/auth/login">
+      <div class="mb-3">
+        <label for="email" class="form-label">Email/Username</label>
+        <input
+          type="text"
           {{#if this.userNotFound}}
-            <div class="invalid-feedback">
-              Tài khoản không tồn tại.
-            </div>
+             class="form-control is-invalid"
+          {{else if this.error}}
+              class="form-control is-invalid"
+          {{else}}
+             class="form-control"
           {{/if}}
-        </div>
-        <div class="mb-3">
-          <label for="password" class="form-label">Mật khẩu</label>
-          <input
-            type="password"
-            {{#if this.wrongPassword}}
-               class="form-control is-invalid"
-            {{else}}
-               class="form-control"
-            {{/if}}
-            id="password"
-            name="password"
-            placeholder="tối thiểu 8 ký tự"
-            required
-          />
-          {{#if this.wrongPassword}}
-            <div class="invalid-feedback">
-              Mật khẩu bạn nhập không đúng.
-            </div>
-          {{/if}}
-        </div>
-
-        <!--end là để canh phải-->
-        <div class="d-flex justify-content-end">
-          <a href="/forgot-password" class="text-decoration-none">Quên mật khẩu?</a>
-        </div>
-
-        <!--custom-btn là class mình tự định nghĩa-->
-        <div class="d-flex justify-content-center mt-3">
-          <button type="submit" class="btn custom-btn btn-lg w-100">Đăng nhập</button>
-        </div>
-
-        <div class="form-footer mt-3">
-          Chưa có tài khoản?
-          <a href="/auth/register">Đăng ký</a>
-        </div>
-      </form>
-
-      <div class="divider my-4 text-center">Hoặc</div>
-
-      <div class="d-grid gap-2">
-        <!-- Button Google -->
-        <button
-          class="btn custom-social-btn w-100 d-flex align-items-center mb-3"
-          onclick="signInWithGoogle()"
-        >
-          <img
-            src="/statics/assets/Google.png"
-            alt="Google Logo"
-            class="me-2"
-            style="width: 28px; height: 28px;"
-          />
-          <span>Đăng nhập bằng Google</span>
-        </button>
-
-        <!-- Button Facebook -->
-        <button
-          class="btn custom-social-btn w-100 d-flex align-items-center mb-3"
-          onclick="signInWithFacebook()"
-        >
-          <img
-            src="/statics/assets/Facebook.png"
-            alt="Facebook Logo"
-            class="me-2"
-            style="width: 28px; height: 28px;"
-          />
-          <span>Đăng nhập bằng Facebook</span>
-        </button>
-
-        <!-- Button Github -->
-        <button
-          class="btn custom-social-btn w-100 d-flex align-items-center mb-3"
-          onclick="signInWithGithub()"
-        >
-          <img
-            src="/statics/assets/Github.png"
-            alt="Github Logo"
-            class="me-2"
-            style="width: 28px; height: 28px;"
-          />
-          <span>Đăng nhập bằng Github</span>
-        </button>
+          id="email"
+          name="email"
+          placeholder="vidu@email.com"
+          required
+        />
+        {{#if this.userNotFound}}
+          <div class="invalid-feedback">
+            Tài khoản không tồn tại.
+          </div>
+        {{else if this.error}}
+          <div class="invalid-feedback">
+            {{this.error}}
+          </div>
+        {{/if}}
       </div>
+
+      <div class="mb-3">
+        <label for="password" class="form-label">Mật khẩu</label>
+        <input
+          type="password"
+          {{#if this.wrongPassword}}
+             class="form-control is-invalid"
+          {{else}}
+             class="form-control"
+          {{/if}}
+          id="password"
+          name="password"
+          placeholder="tối thiểu 8 ký tự"
+          required
+        />
+        {{#if this.wrongPassword}}
+          <div class="invalid-feedback">
+            Mật khẩu bạn nhập không đúng.
+          </div>
+        {{/if}}
+        {{#if this.socialLogin}}
+          <div class="mt-2 alert alert-info">
+            Bạn đã đăng ký bằng {{this.provider}}. Vui lòng nhấn vào nút "{{this.provider}}" ở dưới.
+          </div>
+        {{/if}}
+      </div>
+
+      <div class="d-flex justify-content-end">
+        <a href="/forgot-password" class="text-decoration-none">Quên mật khẩu?</a>
+      </div>
+
+      <div class="d-flex justify-content-center mt-3">
+        <button type="submit" class="btn custom-btn btn-lg w-100">Đăng nhập</button>
+      </div>
+      <div class="form-footer mt-3">
+        Chưa có tài khoản?
+        <a href="/auth/register">Đăng ký</a>
+      </div>
+    </form>
+    
+    <div class="divider my-4 text-center">Hoặc</div>
+
+    <div class="d-grid gap-2">
+      <a href="/auth/google" class="btn custom-social-btn w-100 d-flex align-items-center mb-3">
+        <img
+          src="/statics/assets/Google.png"
+          alt="Google Logo"
+          class="me-2"
+          style="width: 28px; height: 28px;"
+        />
+        <span>Đăng nhập bằng Google</span>
+      </a>
+      <a href="/auth/facebook" class="btn custom-social-btn w-100 d-flex align-items-center mb-3">
+        <img
+          src="/statics/assets/Facebook.png"
+          alt="Facebook Logo"
+          class="me-2"
+          style="width: 28px; height: 28px;"
+        />
+        <span>Đăng nhập bằng Facebook</span>
+      </a>
+      <a href="/auth/github" class="btn custom-social-btn w-100 d-flex align-items-center mb-3">
+        <img
+          src="/statics/assets/Github.png"
+          alt="Github Logo"
+          class="me-2"
+          style="width: 28px; height: 28px;"
+        />
+        <span>Đăng nhập bằng Github</span>
+      </a>
     </div>
   </div>
-
-  <footer class="text-center mt-4 fs-6">
-    <p class="small text-muted">&copy; 2024 ALL RIGHTS RESERVED</p>
-  </footer>
-</body>
+</div>
