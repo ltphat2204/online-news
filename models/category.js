@@ -5,10 +5,14 @@ export const createCategory = async (category) => {
     return result;
 }
 
-export const getAllCategories = async () => {
-    const categories = await database("categories")
-                            .select("categories.id", "categories.name", "categories.group_id", "category_groups.name as group_name", "categories.description")
-                            .join("category_groups", "categories.group_id", "category_groups.id");
+export const getAllCategories = async (category_group) => {
+    const query = database("categories")
+                .select("categories.id", "categories.name", "categories.group_id", "category_groups.name as group_name", "categories.description")
+                .join("category_groups", "categories.group_id", "category_groups.id");
+    if (category_group) {
+        query.where("categories.group_id", category_group);
+    }
+    const categories = await query;
     return categories;
 }
 
