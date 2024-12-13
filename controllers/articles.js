@@ -1,4 +1,4 @@
-import { getAllArticles, getArticleInfoById, getArticlesByCategory, addComment, getCommentsByArticleId } from "../models/articles.js";
+import { getAllArticles, getArticleInfoById, getArticlesByCategory, addComment, getCommentsByArticleId, getHashtagsByArticleId } from "../models/articles.js";
 
 export const getArticles = async (req, res) => {
     const articles = await getAllArticles();
@@ -37,6 +37,8 @@ export const showArticle = async (req, res) => {
         article.content = addInlineStylesToMedia(article.content);
         const category_articles = await getArticlesByCategory(article.category_id, article.id);
         const comments = await getCommentsByArticleId(article.id);
+        const hashtags = await getHashtagsByArticleId(article.id);
+        article.hashtags = hashtags; 
         res.render('articles/detail', {
             title: article.title,
             article,

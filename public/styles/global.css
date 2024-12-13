@@ -4,6 +4,10 @@ body {
     background-size: cover;
 }
 
+p {
+    text-align: justify;
+}
+
 .nav-item-group {
     display: flex;
     align-items: center;
