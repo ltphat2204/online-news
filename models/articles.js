@@ -85,3 +85,10 @@ export const getCommentsByArticleId = async (article_id) => {
         .where("article_id", article_id)
         .orderBy("created_at", "desc");
 };
+
+export const getHashtagsByArticleId = async (article_id) => {
+    return await database("hashtags")
+        .select("hashtags.id", "hashtags.tag_name as name")
+        .join("article_tag", "hashtags.id", "article_tag.tag_id")
+        .where("article_tag.article_id", article_id);
+};
