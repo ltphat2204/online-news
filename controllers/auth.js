@@ -89,8 +89,10 @@ export const checkAvailable = async (req, res) => {
     const old_name = await getUserByUsername(user);
     const old_email = await getUserByEmail(email);
 
-    if (!old_name && !old_email) {
-        return res.json(true);
+    const response = {
+        userExist: !old_name,
+        emailExist: !old_email
     }
-    return res.json(false);
+
+    return res.json(response);
 }
