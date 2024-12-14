@@ -16,6 +16,11 @@ export default function setup(app, dirname) {
         defaultLayout: 'main'
     });
 
+    hbs.handlebars.registerHelper('includes', function(array, value) {
+        if (!array)
+            return false;
+        return array.includes(value);
+    });
     // Config view engine with handlebars
     // Set the view file as .hbs
     app.engine('hbs', hbs.engine);

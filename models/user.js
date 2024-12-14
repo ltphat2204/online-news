@@ -60,3 +60,13 @@ export const getUserById = async (id) => {
     const result = await database("users").select("*").where("id", id).first();
     return result;
 }
+
+export const getEditors = async (searchTerm = "", limit, offset) => {
+    const result = await database("users").select("*").where("role", "editor").andWhere("username", "like", `%${searchTerm}%`).limit(limit).offset(offset);
+    return result;
+}
+
+export const countEditors = async (searchTerm = "") => {
+    const result = await database("users").where("role", "editor").andWhere("username", "like", `${searchTerm}`).count("* as total").first();
+    return result;
+}

@@ -1,0 +1,128 @@
+<div class="container bg-light p-3 rounded-lg shadow">
+    <div class="d-flex">
+        <h1>
+            Phân công
+        </h1>
+    </div>
+</div>
+
+<div class="container bg-light p-3 rounded-lg shadow my-4">
+    <form class="form-inline ml-auto mr-3" method="get" action="/admin/assign">
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="Tìm kiếm editor" name="search" value="{{this.searchTerm}}">
+          <div class="input-group-append">
+            <button class="btn btn-primary" type="submit">
+            <i class="bi bi-search"></i>
+            </button>
+          </div>
+      </div>
+    </form>
+    <table class="table">
+        <thead>
+            <tr>
+            <th scope="col">#</th>
+            <th scope="col">Tên nhà báo</th>
+            <th scope="col">Username</th>
+            <th scope="col">Chuyên mục</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#if this.empty}}
+            <tr>
+                <td colspan="5" class="text-center">Hiện chưa có nhà báo nào</td>
+            </tr>
+            {{/if}}
+            {{#each this.editorsCategories}}
+            <tr data-id="{{id}}">
+                <th scope="row">{{getNext @index}}</th>
+                <td>{{fullname}}</td>
+                <td>{{username}}</td>
+                <td>
+                  {{#each categoryNames}}
+                    <span class="badge badge-primary mr-1">{{this}}</span>
+                  {{/each}}
+                </td>
+                <td>
+                    <button class="btn btn-primary edit-assign" 
+                            data-id="{{id}}"
+                            data-toggle="modal" 
+                            data-target="#editAssignModal"
+                            data-fullname="{{fullname}}"
+                            data-category-names="{{categoryNames}}">
+                        Sửa
+                    </button>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    <nav aria-label="...">
+      <ul class="pagination">
+        {{#each this.pageItems}}
+        <li class="page-item">
+          <a class="page-link" href="/admin/assign?page={{value}}&search={{searchTerm}}">{{value}}</a>
+        </li>
+        {{/each}}
+      </ul>
+    </nav>
+</div>
+
+<div class="modal fade" id="editAssignModal" tabindex="-1" aria-labelledby="editAssignTitle" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" method="post" action="/admin/assign/edit">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editAssignModalTitle">Sửa phân công</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <input type="hidden" id="editAssignId" name="id">
+        <div class="form-group">
+          <label for="editAssignName">Tên nhà báo</label>
+          <input type="text" class="form-control" id="editAssignName" name="fullname" readonly>
+        </div>
+        <div class="form-group">
+          <label for="editAssignCategoryNames">Chuyên mục quản lý</label>
+          <div class="checkbox-group">
+            {{#each this.categories}}
+              <div class="checkbox-item">
+                <input type="checkbox" name="group_id[]" id="group_{{id}}" value="{{id}}"
+                {{#if (includes ../categoryNames name)}}
+                   checked
+                {{/if}}>
+                <label for="group_{{id}}">{{name}}</label>
+              </div>              
+            {{/each}}
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Edit Modal Population
+    $('#editAssignModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var id = button.data('id');
+        var fullname = button.data('fullname');
+        var categoryNames = button.data('category-names');
+
+        console.log(fullname);
+        console.log(categoryNames);
+        
+        var modal = $(this);
+
+        modal.find('#editAssignId').val(id);
+        modal.find('#editAssignName').val(fullname);
+        modal.find('#editAssignCategoryNames').val(categoryNames);
+    });
+});
+</script>
