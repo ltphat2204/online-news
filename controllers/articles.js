@@ -52,11 +52,13 @@ export const postComment = async (req, res) => {
 
 export const searchArticles = async (req, res) => {
     const searchQuery = req.query.search||"";
+    const categoryGroup = req.query.categoryGroup||"";
+    const category = req.query.category||"";
     const page = req.query.page||1;
     const limit = req.query.limit || 5;
     const offset = (page-1) * limit || 0;
 
-    const articles = await fullTextSearchArticles(searchQuery, limit, offset);
+    const articles = await fullTextSearchArticles(searchQuery, categoryGroup, category, limit, offset);
     const categoryGroups = await getAllCategoryGroups();
     const categories = await getAllCategories();
     const totalPages = Math.ceil(articles.total / limit);
@@ -64,7 +66,7 @@ export const searchArticles = async (req, res) => {
         title: 'Bài báo',
         totalPages: totalPages,
         currentPage: page,
-        empty: articles.total === 0,
+        empty: articles.results.length === 0,
         articles: articles.results,
         categoryGroups,
         categories

@@ -3,29 +3,29 @@ import database from "../config/database.js";
 export const getAllArticles = async (search = "", offset = 0, limit = 5) => {
     if (search) {
         return await database("articles").select("articles.*", "categories.name as category")
-                    .join("categories", "articles.category_id", "categories.id")
-                    .whereLike("title", `% ${search} %`)
-                    .orWhereLike("abstract", `% ${search} %`)
-                    .orWhereLike("content", `% ${search} %`)
-                    .offset(offset).limit(limit);
-    } 
+            .join("categories", "articles.category_id", "categories.id")
+            .whereLike("title", `% ${search} %`)
+            .orWhereLike("abstract", `% ${search} %`)
+            .orWhereLike("content", `% ${search} %`)
+            .offset(offset).limit(limit);
+    }
     return await database("articles").select("articles.*", "categories.name as category")
-                .join("categories", "articles.category_id", "categories.id")
-                .offset(offset).limit(limit);
+        .join("categories", "articles.category_id", "categories.id")
+        .offset(offset).limit(limit);
 }
 
 export const countArticles = async (search = "") => {
     let query = database("articles");
-  
+
     if (search) {
         query = query.whereLike("title", `%${search}%`)
-                   .orWhereLike("abstract", `%${search}%`)
-                   .orWhereLike("content", `%${search}%`);
+            .orWhereLike("abstract", `%${search}%`)
+            .orWhereLike("content", `%${search}%`);
     }
-  
+
     const result = await query.count("* as total").first();
     return result.total;
-  };
+};
 
 export const createArticle = async (article) => {
     const result = await database("articles").insert(article);
@@ -91,34 +91,61 @@ export const getCommentsByArticleId = async (article_id) => {
 };
 
 
-export const fullTextSearchArticles = async (searchQuery, k, s) => {
+export const fullTextSearchArticles = async (searchQuery, categoryGroup, category, k, s) => {
     // k is limit and s is offset
     try {
-        const count = await database('articles')
-            .whereRaw("to_tsvector('simple', title || ' ' || abstract || ' ' || content) @@ plainto_tsquery('simple', ?)", [searchQuery])
-            .count("* as total").first();
-        if(k === undefined || s === undefined) {
+        if (k === undefined || s === undefined) {
             k = total;
             s = 0;
         }
-        let results;
-        if(searchQuery === "") {
+        let results, count;
+        if (searchQuery === "") {
+            count = await database('articles')
+                .whereRaw("to_tsvector('simple', title || ' ' || abstract || ' ' || content) @@ plainto_tsquery('simple', ?)", [searchQuery])
+                .count("* as total").first();
             results = await database('articles')
-            .join('users', 'articles.author_id', 'users.id')
-            .limit(k).offset(s);
+                .select(
+                    "articles.*",
+                    "categories.id as category_id",
+                    "categories.name as category_name",
+                    "category_groups.id as group_id",
+                    "category_groups.name as group_name",
+                    "users.id as author_id",
+                    "users.fullname as author_name"
+                )
+                .join("categories", "articles.category_id", "categories.id")
+                .join("category_groups", "categories.group_id", "category_groups.id")
+                .join("users", "articles.author_id", "users.id")
+                .where("category_groups.name", categoryGroup)
+                .andWhere("categories.name", category)
+                .limit(k).offset(s);
         }
         else {
+            count = await database('articles')
+                .whereRaw("to_tsvector('simple', title || ' ' || abstract || ' ' || content) @@ plainto_tsquery('simple', ?)", [searchQuery])
+                .count("* as total").first();
             results = await database('articles')
-            .whereRaw("to_tsvector('simple', title || ' ' || abstract || ' ' || content) @@ plainto_tsquery('simple', ?)", [searchQuery])
-            .join('users', 'articles.author_id', 'users.id')
-            .limit(k).offset(s);
+                .select(
+                    "articles.*",
+                    "categories.id as category_id",
+                    "categories.name as category_name",
+                    "category_groups.id as group_id",
+                    "category_groups.name as group_name",
+                    "users.id as author_id",
+                    "users.fullname as author_name"
+                )
+                .whereRaw("to_tsvector('simple', title || ' ' || abstract || ' ' || content) @@ plainto_tsquery('simple', ?)", [searchQuery])
+                .join("categories", "articles.category_id", "categories.id")
+                .join("category_groups", "categories.group_id", "category_groups.id")
+                .join("users", "articles.author_id", "users.id")
+                .where("category_groups.name", categoryGroup)
+                .andWhere("categories.name", category)
+                .limit(k).offset(s);
         }
-        return {total: count.total, results: results}
+        return { total: count.total, results: results }
     } catch (error) {
         console.error('Error searching articles:', error);
         throw error;
     }
 };
-
-
 
