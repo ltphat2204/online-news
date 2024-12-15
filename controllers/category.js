@@ -6,8 +6,8 @@ import {
     getCategoriesWithPagination,
     countCategories,
     countSearchCategories,
-    searchCategoryByName
-} from "../models/category.js";
+    searchCategoryByName,
+    getCategoryByCategoryGroup} from "../models/category.js";
 
 export const getRender = async (req, res) => {
     res.render('admin/category')
@@ -79,4 +79,10 @@ export const deleteCategoryById = async (req, res) => {
     await deleteCategory(id);
 
     res.redirect('/admin/category');
+}
+
+export const searchCategoryByCategoryGroup = async (req, res) => {
+    const categoryGroup = req.query.categoryGroup;
+    const categories = await getCategoryByCategoryGroup(categoryGroup);
+    res.json({ categories });
 }

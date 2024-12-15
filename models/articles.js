@@ -89,3 +89,36 @@ export const getCommentsByArticleId = async (article_id) => {
         .where("article_id", article_id)
         .orderBy("created_at", "desc");
 };
+
+
+export const fullTextSearchArticles = async (searchQuery, k, s) => {
+    // k is limit and s is offset
+    try {
+        const count = await database('articles')
+            .whereRaw("to_tsvector('simple', title || ' ' || abstract || ' ' || content) @@ plainto_tsquery('simple', ?)", [searchQuery])
+            .count("* as total").first();
+        if(k === undefined || s === undefined) {
+            k = total;
+            s = 0;
+        }
+        let results;
+        if(searchQuery === "") {
+            results = await database('articles')
+            .join('users', 'articles.author_id', 'users.id')
+            .limit(k).offset(s);
+        }
+        else {
+            results = await database('articles')
+            .whereRaw("to_tsvector('simple', title || ' ' || abstract || ' ' || content) @@ plainto_tsquery('simple', ?)", [searchQuery])
+            .join('users', 'articles.author_id', 'users.id')
+            .limit(k).offset(s);
+        }
+        return {total: count.total, results: results}
+    } catch (error) {
+        console.error('Error searching articles:', error);
+        throw error;
+    }
+};
+
+
+

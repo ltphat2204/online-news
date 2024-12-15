@@ -65,3 +65,12 @@ export const searchCategoryByName = async(search, k, s) => {
                             .limit(k).offset(s);
     return result;
 }
+
+
+export const getCategoryByCategoryGroup = async (name) => {
+    const result = await database("categories")
+                            .select("categories.id", "categories.name", "categories.group_id", "category_groups.name as group_name", "categories.description")  
+                            .join("category_groups", "categories.group_id", "category_groups.id")
+                            .where("category_groups.name", name);
+    return result;
+}
