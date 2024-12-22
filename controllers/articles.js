@@ -1,4 +1,6 @@
-import { getAllArticles, getArticleInfoById, getArticlesByCategory, addComment, getCommentsByArticleId, getHashtagsByArticleId } from "../models/articles.js";
+import { getAllArticles, getArticleInfoById, getArticlesByCategory, addComment, getCommentsByArticleId, getHashtagsByArticleId, fullTextSearchArticles } from "../models/articles.js";
+import { getAllCategoryGroups } from "../models/category_group.js";
+import { getAllCategories } from "../models/category.js";
 
 export const getArticles = async (req, res) => {
     const articles = await getAllArticles();
@@ -55,4 +57,28 @@ export const postComment = async (req, res) => {
     const article_id = req.params.id;
     await addComment({ guest_name, content, article_id });
     res.redirect(`/articles?id=${article_id}`);
+}
+
+
+export const searchArticles = async (req, res) => {
+    const searchQuery = req.query.search||"";
+    const categoryGroup = req.query.categoryGroup||"";
+    const category = req.query.category||"";
+    const page = req.query.page||1;
+    const limit = req.query.limit || 5;
+    const offset = (page-1) * limit || 0;
+
+    const articles = await fullTextSearchArticles(searchQuery, categoryGroup, category, limit, offset);
+    const categoryGroups = await getAllCategoryGroups();
+    const categories = await getAllCategories();
+    const totalPages = Math.ceil(articles.total / limit);
+    res.render('articles/search', {
+        title: 'Bài báo',
+        totalPages: totalPages,
+        currentPage: page,
+        empty: articles.results.length === 0,
+        articles: articles.results,
+        categoryGroups,
+        categories
+    });
 }

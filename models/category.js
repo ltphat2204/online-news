@@ -70,6 +70,7 @@ export const searchCategoryByName = async(search, k, s) => {
     return result;
 }
 
+
 export const searchCategoryByEditors = async(editor) => {
     const result = await database("editor_category")
                         .join("categories", "editor_category.category_id", "=", "categories.id")
@@ -85,5 +86,13 @@ export const removeCategoryByEditors = async(id) => {
 
 export const insertCategoryByEditors = async(dataList) => {
     const result = await database("editor_category").insert(dataList);
+    return result;
+}
+
+export const getCategoryByCategoryGroup = async (name) => {
+    const result = await database("categories")
+                            .select("categories.id", "categories.name", "categories.group_id", "category_groups.name as group_name", "categories.description")  
+                            .join("category_groups", "categories.group_id", "category_groups.id")
+                            .where("category_groups.name", name);
     return result;
 }

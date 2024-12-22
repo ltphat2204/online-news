@@ -1,0 +1,110 @@
+<div class="article col-9 border-right p-0 min-vh-100">
+    <div class="col-12 p-0">
+        <form action="" class="d-flex form-inline col-12 p-0 pt-2" id="searchForm">
+            <input class="form-control mr-2 col-10 " type="text" placeholder="Tìm kiếm...">
+            <button class="btn btn-outline-primary" id ="articleSearch" type="submit">
+                <i class="bi bi-search"></i> Tìm kiếm
+            </button>
+            <div class="filter mt-2 col-12 d-flex p-0">
+                <div class="form-group col-md-4 p-0">
+                    <label for="inputCategoryGroup">Danh mục</label>
+                    <select id="inputCategoryGroup" class="form-control col-12">
+                        {{#each categoryGroups}}
+                        <option value="{{this.name}}" class="categoryGroupOption">{{this.name}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="inputCategory">Chuyên mục</label>
+                    <select id="inputCategory" class="form-control col-12">
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+    <div>
+
+    </div>
+    {{#if this.empty}}
+    <div class="card mt-2 border-0 text-center">Hiện chưa có bài viết</div>
+    {{/if}}
+    {{#each articles}}
+    <div class="card mt-2 border-0">
+        <div class="row no-gutters mt-2 mr-2 border-bottom" style="min-height: 200px;">
+            <div class="col-md-4">
+                <img src="{{this.thumbnail}}" alt="thumbnail bài báo"
+                    style="width: 100%; height: 200px; object-fit: cover;">
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title">{{limitCharacters this.title 50}}</h5>
+                    <p class="card-text">{{limitCharacters this.abstract 100}}</p>
+                    <p class="card-text" style="position: absolute; bottom: 0; left: 20;"><small
+                            class="text-muted">{{formatDate this.created_at}}</small></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/each}}
+
+</div>
+<div class="pb-2"></div>
+
+
+<script> //script cho nút chọn categoryGroup
+    $(document).ready(function () {
+        // Bắt sự kiện change của select
+        var firstOptionValue = $('#inputCategoryGroup option:first').val();
+        fetchCategories(firstOptionValue);
+
+        $('#inputCategoryGroup').change(function () {
+            // Lấy giá trị của option đã chọn
+            var selectedValue = $(this).val();
+            fetchCategories(selectedValue);
+        });
+
+
+        function fetchCategories(selectedValue) {
+            fetch(`/articles/searchCategory?categoryGroup=${selectedValue}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    var selectList = $('#inputCategory');
+                    selectList.empty();
+                    // Nếu dữ liệu trả về là một mảng, thêm các option vào select
+                    if (Array.isArray(data.categories)) {
+                        data.categories.forEach(category => {
+                            selectList.append(`<option value="${category.name}">${category.name}</option>`);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching categories:', error);
+                });
+        }
+    });
+</script>
+
+
+<script>//script search button
+    $(document).ready(function () {
+        $('#articleSearch').click(function (e) {
+            e.preventDefault();
+            var searchValue = $('#searchForm input').val();
+            var categoryGroup = $('#inputCategoryGroup').val();
+            var category = $('#inputCategory').val();
+            window.location.href = `/articles/search?search=${encodeURIComponent(searchValue)}&categoryGroup=${encodeURIComponent(categoryGroup)}&category=${encodeURIComponent(category)}`;
+        });
+    });
+</script>

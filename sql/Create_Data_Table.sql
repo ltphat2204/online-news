@@ -92,6 +92,11 @@ CREATE INDEX ON "users" ("pen_name");
 CREATE INDEX ON "articles" ("status", "published_at");
 CREATE INDEX ON "articles" ("view_count");
 
+--Create index for full text search
+CREATE INDEX article_full_text_search_idx 
+ON "articles" 
+USING gin(to_tsvector('simple', "title"));
+
 -- Foreign Keys
 ALTER TABLE "social_networks" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 ALTER TABLE "categories" ADD FOREIGN KEY ("group_id") REFERENCES "category_groups" ("id");
