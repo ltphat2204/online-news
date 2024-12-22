@@ -2,18 +2,25 @@ import { create } from 'express-handlebars';
 import { dateHelpers } from '../utils/dateHelpers.js';
 import { numberHelpers } from '../utils/numberHelpers.js';
 import { stringHelpers } from '../utils/stringHelpers.js';
+import hbs_section from 'express-handlebars-sections';
 
 export default function setup(app, dirname) {
     const hbs = create({
         helpers: {
             ...dateHelpers,
             ...numberHelpers,
-            ...stringHelpers
+            ...stringHelpers,
+            fill_section: hbs_section()
         },
         extname: '.hbs',
         defaultLayout: 'main'
     });
 
+    hbs.handlebars.registerHelper('includes', function(array, value) {
+        if (!array)
+            return false;
+        return array.includes(value);
+    });
     // Config view engine with handlebars
     // Set the view file as .hbs
     app.engine('hbs', hbs.engine);

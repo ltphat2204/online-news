@@ -10,6 +10,7 @@ import database from './config/database.js';
 import AdminRoutes from './routes/admin/index.js';
 import AuthRoutes from './routes/auth/index.js';
 import setLayout from './middlewares/setLayout.js';
+import passport from './config/passport.js';
 
 // Setup
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -17,6 +18,7 @@ const app = express();
 setupViewEngine(app, __dirname);
 
 app.set('trust proxy', 1);
+
 app.use(session({
     secret: 'SECRET_KEY',
     resave: false,
@@ -24,10 +26,13 @@ app.use(session({
     cookie: {}
 }));
 
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use(setLayout);
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(express.json({ limit: '50mb' }));
 
 // Config route for static files
 app.use('/statics', express.static(join(__dirname, 'public')));
@@ -37,6 +42,14 @@ app.use('/', IndexRoutes);
 app.use('/articles', ArticleRoutes);
 app.use('/admin', AdminRoutes);
 app.use('/auth', AuthRoutes);
+
+// Xử lý lỗi 404
+app.use((req, res) => {
+  res.status(404).render('404', {
+      title: 'Không tìm thấy trang',
+      message: 'Rất tiếc, trang bạn tìm kiếm không tồn tại.'
+  });
+});
 
 // Run app
 const PORT = process.env.PORT || 3000;

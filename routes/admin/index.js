@@ -4,10 +4,12 @@ import userRouter from './user.js';
 import categoryRouter from './category.js';
 import hashtagRouter from './hashtags.js';
 import authorizeRole from '../../middlewares/authorizeRole.js';
-import articleRouter from './articles.js'
+import articleRouter from './articles.js';
+import assignRouter from './assign.js';
 
 const router = express.Router();
-router.use('/',authorizeRole(['admin','writer','editor']));
+router.use('/', authorizeRole(['admin','writer','editor']));
+router.use('/assign', authorizeRole(['admin']), assignRouter);
 
 router.get('/', (req, res) => {
     res.render('admin/home', {

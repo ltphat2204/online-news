@@ -1,4 +1,4 @@
-import { getAllArticles, getArticleInfoById, getArticlesByCategory, addComment, getCommentsByArticleId, fullTextSearchArticles } from "../models/articles.js";
+import { getAllArticles, getArticleInfoById, getArticlesByCategory, addComment, getCommentsByArticleId, getHashtagsByArticleId, fullTextSearchArticles } from "../models/articles.js";
 import { getAllCategoryGroups } from "../models/category_group.js";
 import { getAllCategories } from "../models/category.js";
 
@@ -28,9 +28,19 @@ const addInlineStylesToMedia = (content) => {
 export const showArticle = async (req, res) => {
     if (req.query.id) {
         const article = await getArticleInfoById(req.query.id);
+        if (!article) {
+            res.render('404', {
+                title: 'Không tìm thấy trang',
+                message: 'Rất tiếc, bài báo bạn tìm kiếm không tồn tại.'
+            });
+            return;
+        }
+        
         article.content = addInlineStylesToMedia(article.content);
         const category_articles = await getArticlesByCategory(article.category_id, article.id);
         const comments = await getCommentsByArticleId(article.id);
+        const hashtags = await getHashtagsByArticleId(article.id);
+        article.hashtags = hashtags; 
         res.render('articles/detail', {
             title: article.title,
             article,
