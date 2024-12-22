@@ -73,7 +73,7 @@ export const searchCategoryByName = async(search, k, s) => {
 export const searchCategoryByEditors = async(editor) => {
     const result = await database("editor_category")
                         .join("categories", "editor_category.category_id", "=", "categories.id")
-                        .select("categories.name")
+                        .select("categories.name", "editor_category.category_id")
                         .where("editor_category.editor_id", editor);
     return result;
 }

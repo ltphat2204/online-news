@@ -48,7 +48,7 @@
                             data-toggle="modal" 
                             data-target="#editAssignModal"
                             data-fullname="{{fullname}}"
-                            data-category-names="{{categoryNames}}">
+                            data-category-ids="{{categoryIds}}">
                         Sửa
                     </button>
                 </td>
@@ -85,13 +85,10 @@
         </div>
         <div class="form-group">
           <label for="editAssignCategoryNames">Chuyên mục quản lý</label>
-          <div class="checkbox-group">
+          <div class="checkbox-group" id="editAssignCategoryNames">
             {{#each this.categories}}
               <div class="checkbox-item">
-                <input type="checkbox" name="group_id[]" id="group_{{id}}" value="{{id}}"
-                {{#if (includes ../categoryNames name)}}
-                   checked
-                {{/if}}>
+                <input type="checkbox" name="group_id[]" id="group_{{id}}" value="{{id}}">
                 <label for="group_{{id}}">{{name}}</label>
               </div>              
             {{/each}}
@@ -113,16 +110,16 @@ $(document).ready(function() {
         var button = $(event.relatedTarget);
         var id = button.data('id');
         var fullname = button.data('fullname');
-        var categoryNames = button.data('category-names');
-
-        console.log(fullname);
-        console.log(categoryNames);
+        var categoryIds = button.data('category-ids').split(',');
         
         var modal = $(this);
 
         modal.find('#editAssignId').val(id);
         modal.find('#editAssignName').val(fullname);
-        modal.find('#editAssignCategoryNames').val(categoryNames);
+
+        for (let id of categoryIds) {
+          modal.find('#editAssignCategoryNames').find(`#group_${id}`).prop('checked', true);
+        }
     });
 });
 </script>

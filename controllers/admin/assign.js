@@ -15,11 +15,10 @@ export const getEditorLists = async (req, res) => {
 
     const editorsCategories = await Promise.all(editors.map(async (editor) => {
         const categories = await searchCategoryByEditors(editor.id);
-
-        const categoryNames = categories.map(category => category.name);
         return {
             ...editor,
-            categoryNames: categoryNames
+            categoryNames: categories.map(category => category.name),
+            categoryIds: categories.map(category => category.category_id)
         };
     }));
 
