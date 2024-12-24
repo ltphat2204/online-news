@@ -68,6 +68,23 @@ export const getArticleInfoById = async (id) => {
         .first();
 }
 
+export const getArticleByEditors = async (searchTerm = "", limit, offset) => {
+    const result =  await database("articles")
+                .select(
+                    "articles.abstract as abstract",
+                    "users.fullname as fullname",
+                    "categories.name as category",
+                    "articles.status as status"
+                )
+                .join("users", "articles.editor_id", "users.id")
+                .leftJoin("categories", "articles.category_id", "categories.id")
+                .whereLike("abstract", `%${searchTerm}%`)
+                .orWhereLike("fullname", `%${searchTerm}%`)
+                .offset(offset)
+                .limit(limit);
+    return result;
+}
+
 export const getArticlesByCategory = async (category_id, current_article_id, limit = 5) => {
     return await database("articles")
         .select("articles.*", "categories.name as category_name")
