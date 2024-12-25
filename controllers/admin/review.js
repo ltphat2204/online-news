@@ -7,13 +7,11 @@ export const getArticleList = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
 
     const n = await countDraftArticles(searchTerm);
-    console.log(n);
     const totalPages = Math.ceil(n / limit);
     const pageItems = [];
 
     const offset = (page - 1) * limit;
     const articles = await getArticleByEditors(searchTerm, limit, offset);
-    console.log(articles);
     for (let i = 1; i <= totalPages; i++) {
         const item = {
             value: i,
@@ -47,4 +45,11 @@ export const updateArticle = async (req, res) => {
 
     await updateArticleHashtag(newArticle.id, newHashtag);
     res.redirect("/admin/review")
+}
+
+export const disapproveArticle = async (req, res) => {
+    const article = req.body;
+    console.log(article);
+    await updateArticleById(article.id, article);
+    res.redirect("/admin/review");
 }

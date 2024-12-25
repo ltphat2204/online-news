@@ -49,11 +49,10 @@
                             data-status = "{{status}}">
                         Duyệt
                     </button>
-                    <button class="btn btn-danger disprove-review"
+                    <button class="btn btn-danger disapprove-review"
                             data-id = "{{id}}"
                             data-toggle = "modal"
-                            data-target = "#disproveReviewModal"
-                            data-category = "{{category}}"
+                            data-target = "#disapproveReviewModal"
                             data-status = "{{status}}">
                         Từ chối
                     </button>
@@ -107,11 +106,11 @@
   </div>
 </div>
 
-<div class="modal fade" id="disproveReviewModal" tabindex="-1" aria-labelledby="disproveReviewTitle" aria-hidden="true">
+<div class="modal fade" id="disapproveReviewModal" tabindex="-1" aria-labelledby="disapproveReviewTitle" aria-hidden="true">
   <div class="modal-dialog">
     <form class="modal-content" method="post" action="/admin/review/disapprove">
       <div class="modal-header">
-        <h5 class="modal-title" id="disproveReviewModalTitle">Từ chối bài</h5>
+        <h5 class="modal-title" id="disapproveReviewModalTitle">Từ chối bài</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -119,8 +118,10 @@
       
       <div class="modal-body">
         <div class="form-group">
+          <input type="hidden" id="disapproveReviewId" name="id">
+          <input type="hidden" id="disapproveStatus" name="status">
           <label for="categoryName">Lý do từ chối</label>
-          <textarea class="form-control" id="reason" name="reason"></textarea>
+          <textarea class="form-control" id="disapproveRejectReason" name="reject_reason"></textarea>
         </div>
       </div>
       <div class="modal-footer">
@@ -148,6 +149,17 @@ $(document).ready(function() {
         modal.find('#editCategoryGroup').val(category);
         modal.find('#editHashtags').val(hashtags);
         modal.find('#editStatus').val(status);
+    });
+    $('#disapproveReviewModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+
+        var id = button.data('id');
+
+        var status = "rejected";
+        var modal = $(this);
+
+        modal.find('#disapproveReviewId').val(id);
+        modal.find('#disapproveStatus').val(status);
     });
 });
 </script>
