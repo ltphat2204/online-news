@@ -23,3 +23,8 @@ export const deleteHashtag = async (id) => {
     const result = await database("hashtags").where("id", id).del();
     return result;
 }
+
+export const getHashtagID = async (hashtag) => {
+    const result = await database("hashtags").select("id").where("tag_name", hashtag).first();
+    return result;
+}

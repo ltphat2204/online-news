@@ -27,6 +27,19 @@ export const countArticles = async (search = "") => {
     return result.total;
 };
 
+export const countDraftArticles = async (search = "") => {
+    let query = database("articles");
+
+    if (search) {
+        query = query.whereLike("title", `%${search}%`)
+            .orWhereLike("abstract", `%${search}%`)
+            .orWhereLike("content", `%${search}%`);
+    }
+
+    const result = await query.count("* as total").where("status", "draft").first();
+    return result.total;
+};
+
 export const createArticle = async (article) => {
     const result = await database("articles").insert(article);
     return result;
@@ -41,6 +54,11 @@ export const deleteArticleById = async (id) => {
 
 export const updateArticleById = async (id, article) => {
     const result = await database("articles").where("id", id).update(article);
+    return result;
+}
+
+export const updateArticleHashtag = async (id, hashtag) => {
+    const result = await database("article_tag").where("article_id", id).update(hashtag);
     return result;
 }
 
@@ -71,15 +89,24 @@ export const getArticleInfoById = async (id) => {
 export const getArticleByEditors = async (searchTerm = "", limit, offset) => {
     const result =  await database("articles")
                 .select(
-                    "articles.abstract as abstract",
+                    "articles.*",
+                    "hashtags.tag_name as hashtags",
                     "users.fullname as fullname",
                     "categories.name as category",
-                    "articles.status as status"
                 )
                 .join("users", "articles.editor_id", "users.id")
+                .join("article_tag", "articles.id", "article_tag.article_id")
+                .join("hashtags", "article_tag.tag_id", "hashtags.id")
                 .leftJoin("categories", "articles.category_id", "categories.id")
-                .whereLike("abstract", `%${searchTerm}%`)
-                .orWhereLike("fullname", `%${searchTerm}%`)
+                .where(builder => {  
+                    builder  
+                        .where("articles.status", "draft")  
+                        .andWhere(subBuilder => {  
+                            subBuilder  
+                                .whereLike("articles.abstract", `%${searchTerm}%`)  
+                                .orWhereLike("users.fullname", `%${searchTerm}%`)  
+                        });  
+                })  
                 .offset(offset)
                 .limit(limit);
     return result;
