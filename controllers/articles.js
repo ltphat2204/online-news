@@ -61,24 +61,40 @@ export const postComment = async (req, res) => {
 
 
 export const searchArticles = async (req, res) => {
-    const searchQuery = req.query.search||"";
-    const categoryGroup = req.query.categoryGroup||"";
-    const category = req.query.category||"";
-    const page = req.query.page||1;
+    const categoryGroups = await getAllCategoryGroups();
+    const categories = await getAllCategories()||"";
+    if(Object.keys(req.query).length === 0)
+    {
+        res.render('articles/search', {
+            title: 'Bài báo',
+            empty: true,
+            message: "Hãy bắt đầu tìm kiếm điều bạn quan tâm!",
+            categoryGroups: categoryGroups,
+        }); 
+    }
+    const searchQuery = req.query.search || "";
+    const categoryGroup = req.query.categoryGroup || "";
+    const category = req.query.category || "";
+    const page = req.query.page || 1;
     const limit = req.query.limit || 5;
-    const offset = (page-1) * limit || 0;
+    const offset = (page - 1) * limit || 0;
 
     const articles = await fullTextSearchArticles(searchQuery, categoryGroup, category, limit, offset);
-    const categoryGroups = await getAllCategoryGroups();
-    const categories = await getAllCategories();
+
     const totalPages = Math.ceil(articles.total / limit);
     res.render('articles/search', {
         title: 'Bài báo',
-        totalPages: totalPages,
-        currentPage: page,
+        pagination: {
+            totalPages: parseInt(totalPages, 10),
+            currentPage: parseInt(page, 10),
+            query: searchQuery,
+            categoryGroup: categoryGroup,
+            category: category
+        },
         empty: articles.results.length === 0,
         articles: articles.results,
         categoryGroups,
-        categories
+        categories,
+        message: "Chúng tôi rất tiếc! Nhưng hãy thử với các từ khóa khác để tìm được nội dung mong muốn."
     });
 }
