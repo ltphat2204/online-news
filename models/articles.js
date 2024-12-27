@@ -107,6 +107,7 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
         let results, count;
         const categoryGroupCondition = categoryGroup !== '' ? "category_groups.name" : null;
         const categoryCondition = category !== '' ? "categories.name" : null;
+        
         if (searchQuery === "") {
             count = await database('articles')
                 .join("categories", "articles.category_id", "categories.id")
