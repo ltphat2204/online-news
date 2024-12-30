@@ -1,7 +1,7 @@
 import database from "../config/database.js";
 
 export const createHashtags = async (hashtags) => {
-    const result = await database("hashtags").insert(hashtags)
+    const result = await database("hashtags").insert(hashtags).returning("id");
     return result;
 }
 
@@ -23,3 +23,13 @@ export const deleteHashtag = async (id) => {
     const result = await database("hashtags").where("id", id).del();
     return result;
 }
+
+export const getAllHashtags = async () => {
+    const result = await database("hashtags").select("*");
+    return result;
+};
+
+export const addArticleTag = async (articleId, tagId) => {
+    const result = await database("article_tag").insert({ article_id: articleId, tag_id: tagId });
+    return result;
+};

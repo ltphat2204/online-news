@@ -1,4 +1,5 @@
 import database from "../config/database.js";
+import { createHashtags, addArticleTag } from "./hashtags.js";
 
 export const getAllArticles = async (search = "", offset = 0, limit = 5) => {
     if (search) {
@@ -28,7 +29,7 @@ export const countArticles = async (search = "") => {
 };
 
 export const createArticle = async (article) => {
-    const result = await database("articles").insert(article);
+    const result = await database("articles").insert(article).returning("id");
     return result;
 }
 export const getArticleById = async (id) => {
@@ -152,5 +153,25 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
     } catch (error) {
         console.error('Error searching articles:', error);
         throw error;
+    }
+};
+
+export const addArticleHashtags = async (articleId, hashtags) => {
+    const existingHashtags = hashtags.filter(tag => !tag.startsWith('new-'));
+    const newHashtags = hashtags.filter(tag => tag.startsWith('new-')).map(tag => ({ tag_name: tag.replace('new-', '') }));
+
+    // Insert new hashtags into the database and retrieve their IDs
+    const newHashtagIds = [];
+    for (const newTag of newHashtags) {
+        const [result] = await createHashtags([newTag]);
+        newHashtagIds.push(result[0].id);
+    }
+
+    // Combine existing and new hashtag IDs
+    const allHashtagIds = [...existingHashtags, ...newHashtagIds];
+
+    // Insert into the article_tag table
+    for (const tagId of allHashtagIds) {
+        await addArticleTag(articleId, tagId);
     }
 };

@@ -17,11 +17,11 @@
             <textarea rows="3" class="form-control" id="abstract" name="abstract" required></textarea>
         </div>
         <div class="form-group">
-            <label for="abstract">Ảnh bìa</label>
+            <label for="thumbnail">Ảnh bìa</label>
             <input type="file" id="thumbnail" name="thumbnail">
         </div>
         <div class="form-group">
-            <label for="categoryDescription">Chuyên mục</label>
+            <label for="category_id">Chuyên mục</label>
             <select class="custom-select" name="category_id" id="category_id">
               {{#each this.categories}}
                 <option value="{{id}}">{{name}}</option>
@@ -29,7 +29,22 @@
             </select>
         </div>
         <div class="form-group">
-            <label for="abstract">Nội dung</label>
+            <label for="hashtags">Hashtags</label>
+            <div id="selected-hashtags" style="display: none; flex-wrap: wrap; border: 1px solid #ccc; padding: 10px; border-radius: 5px; background-color: #f9f9f9; margin-bottom: 10px;">
+                <!-- Selected hashtags will appear here -->
+            </div>
+            <div style="display: flex; align-items: center;">
+                <select id="available-hashtags" style="flex: 1; padding: 8px; border-radius: 5px; border: 1px solid #ddd; font-size: 14px; margin-right: 10px;">
+                    <option value="" disabled selected>Chọn hashtag</option>
+                    {{#each this.hashtags}}
+                    <option value="{{id}}">{{tag_name}}</option>
+                    {{/each}}
+                </select>
+                <button type="button" id="add-new-hashtag" style="padding: 8px 15px; background-color: #28a745; color: white; border: none; border-radius: 5px; font-size: 14px; cursor: pointer;">Thêm mới</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="content">Nội dung</label>
             <textarea id="summernote" name="content"></textarea>
         </div>
         <div class="form-group">
@@ -38,10 +53,141 @@
     </form>
 </div>
 
+<!-- Modal for Adding New Hashtag -->
+<div class="modal fade" id="addHashtagModal" tabindex="-1" aria-labelledby="addHashtagModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addHashtagModalLabel">Thêm Hashtag Mới</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addHashtagForm">
+                    <div class="form-group">
+                        <label for="newHashtagName">Nhập tên Hashtag</label>
+                        <input type="text" class="form-control" id="newHashtagName" placeholder="Nhập tên hashtag" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                <button type="button" id="saveNewHashtag" class="btn btn-primary">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     $(document).ready(function() {
+        // Initialize summernote
         $('#summernote').summernote({
             height: 500
+        });
+
+        // Handle hashtag selection
+        const selectedHashtagsContainer = document.getElementById('selected-hashtags');
+        const availableHashtagsSelect = document.getElementById('available-hashtags');
+
+        availableHashtagsSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            if (!selectedOption) return;
+
+            const hashtagId = selectedOption.value;
+            const hashtagName = selectedOption.text;
+
+            // Check if hashtag is already selected
+            if (document.querySelector(`#selected-hashtags [data-id="${hashtagId}"]`)) {
+                alert('Hashtag đã được chọn.');
+                return;
+            }
+
+            // Create a badge for the selected hashtag
+            const badge = document.createElement('a');
+            badge.className = 'badge';
+            badge.setAttribute('data-id', hashtagId);
+            badge.style.cssText = `
+                display: inline-flex;
+                align-items: center;
+                background-color: #f8d7da;
+                color: #721c24;
+                padding: 8px 12px;
+                margin: 5px;
+                border-radius: 20px;
+                border: 1px solid #f5c6cb;
+                font-size: 14px;
+                text-decoration: none;
+                font-weight: bold;
+                cursor: pointer;
+            `;
+
+            const badgeText = document.createElement('span');
+            badgeText.textContent = hashtagName;
+            badge.appendChild(badgeText);
+
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.innerHTML = '&times;';
+            removeButton.style.cssText = `
+                background: none;
+                border: none;
+                color: #721c24;
+                font-size: 16px;
+                margin-left: 8px;
+                cursor: pointer;
+            `;
+            removeButton.addEventListener('click', function() {
+                selectedHashtagsContainer.removeChild(badge);
+                document.querySelector(`input[name="hashtags[]"][value="${hashtagId}"]`).remove();
+                if (selectedHashtagsContainer.children.length === 0) {
+                    selectedHashtagsContainer.style.display = 'none';
+                }
+            });
+
+            badge.appendChild(removeButton);
+            selectedHashtagsContainer.appendChild(badge);
+
+            // Add hidden input for the selected hashtag
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'hashtags[]';
+            input.value = hashtagId;
+            selectedHashtagsContainer.appendChild(input);
+
+            // Show the container if it was hidden
+            selectedHashtagsContainer.style.display = 'flex';
+
+            // Reset the select box
+            this.selectedIndex = 0;
+        });
+
+        // Handle opening the modal
+        document.getElementById('add-new-hashtag').addEventListener('click', function() {
+            $('#addHashtagModal').modal('show');
+        });
+
+        // Handle saving new hashtag
+        document.getElementById('saveNewHashtag').addEventListener('click', function() {
+            const newHashtagName = document.getElementById('newHashtagName').value.trim();
+            if (newHashtagName) {
+                const newOption = document.createElement('option');
+                newOption.value = `new-${newHashtagName}`; // Use the hashtag name directly
+                newOption.textContent = newHashtagName;
+                availableHashtagsSelect.appendChild(newOption);
+
+                // Automatically select and add the new hashtag
+                availableHashtagsSelect.value = newOption.value;
+                availableHashtagsSelect.dispatchEvent(new Event('change'));
+
+                // Close the modal
+                $('#addHashtagModal').modal('hide');
+
+                // Clear the input field
+                document.getElementById('newHashtagName').value = '';
+            } else {
+                alert('Vui lòng nhập tên hashtag.');
+            }
         });
     });
 </script>
