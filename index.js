@@ -5,11 +5,14 @@ import { fileURLToPath } from 'url';
 import setupViewEngine from './config/viewEngine.js';
 import IndexRoutes from './routes/index.js';
 import ArticleRoutes from './routes/articles.js';
+import category_groupRoutes from './routes/category_groups.js';
 import './config/environment.js';
 import database from './config/database.js';
 import AdminRoutes from './routes/admin/index.js';
 import AuthRoutes from './routes/auth/index.js';
 import setLayout from './middlewares/setLayout.js';
+import preloadNavBar from './middlewares/preloadCategoryGroups.js'; 
+
 import passport from './config/passport.js';
 
 // Setup
@@ -30,6 +33,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(setLayout);
+app.use(preloadNavBar);
 
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(express.json({ limit: '50mb' }));
@@ -42,13 +46,14 @@ app.use('/', IndexRoutes);
 app.use('/articles', ArticleRoutes);
 app.use('/admin', AdminRoutes);
 app.use('/auth', AuthRoutes);
+app.use('/category_group', category_groupRoutes);
 
 // Xử lý lỗi 404
 app.use((req, res) => {
-  res.status(404).render('404', {
-      title: 'Không tìm thấy trang',
-      message: 'Rất tiếc, trang bạn tìm kiếm không tồn tại.'
-  });
+    res.status(404).render('404', {
+        title: 'Không tìm thấy trang',
+        message: 'Rất tiếc, trang bạn tìm kiếm không tồn tại.'
+    });
 });
 
 // Run app
