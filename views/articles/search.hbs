@@ -1,107 +1,132 @@
-<div class="article col-9 border-right p-0 min-vh-100">
-    <div class="col-12 p-0">
-        <form action="" class="d-flex form-inline col-12 p-0 pt-2" id="searchForm">
-            <input class="form-control mr-2 col-10 " type="text" placeholder="Tìm kiếm...">
-            <button class="btn btn-outline-primary" id="articleSearch" type="submit">
-                <i class="bi bi-search"></i> Tìm kiếm
-            </button>
-            <div class="filter mt-2 col-12 d-flex p-0">
-                <div class="form-group col-md-4 p-0">
-                    <label for="inputCategoryGroup">Danh mục</label>
-                    <select id="inputCategoryGroup" class="form-control col-12">
-                        <!-- Option mặc định -->
-                        <option value=""selected><b>Tất cả danh mục</b></option>
-                        {{#each categoryGroups}}
-                        <option value="{{this.name}}" class="categoryGroupOption">{{this.name}}</option>
-                        {{/each}}
-                    </select>
-                </div>
-                <div class="form-group col-md-4">
-                    <label for="inputCategory">Chuyên mục</label>
-                    <select id="inputCategory" class="form-control col-12">
-                    </select>
-                </div>
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-md-9 border-right p-4 min-vh-100">
+            <!-- Tìm kiếm -->
+            <div class="col-12 p-0">
+                <form action="" class="form-inline col-12 p-3 bg-light rounded shadow-sm" id="searchForm">
+                    <!-- Input tìm kiếm -->
+                    <div class="input-group mb-3 col-12">
+                        <input class="form-control" type="text" placeholder="Tìm kiếm..." aria-label="Tìm kiếm">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-primary" id="articleSearch" type="submit">
+                                <i class="bi bi-search"></i> Tìm kiếm
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Bộ lọc -->
+                    <div class="row col-12 p-0">
+                        <div class="form-group col-md-6">
+                            <label for="inputCategoryGroup" class="font-weight-bold mr-3 ml-3">Danh mục</label>
+                            <select id="inputCategoryGroup" class="form-control">
+                                <!-- Option mặc định -->
+                                <option value="" selected>Tất cả danh mục</option>
+                                {{#each categoryGroups}}
+                                <option value="{{this.name}}" class="categoryGroupOption">{{this.name}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="inputCategory" class="font-weight-bold mr-3 ml-3">Chuyên mục</label>
+                            <select id="inputCategory" class="form-control">
+                                <!-- Options được đổ qua fetch -->
+                            </select>
+                        </div>
+                    </div>
+                </form>
             </div>
-        </form>
-    </div>
 
-
-    <div>
-
-    </div>
-    {{#if this.empty}}
-    <div class="card mt-2 border-0 text-center">{{this.message}}</div>
-    {{/if}}
-    {{#each articles}}
-    <div class="card mt-2 border-0">
-        <div class="row no-gutters mt-2 mr-2 border-bottom" style="min-height: 200px;">
-            <div class="col-md-4">
-                <img src="{{this.thumbnail}}" alt="thumbnail bài báo"
-                    style="width: 100%; height: 200px; object-fit: cover;">
-            </div>
-            <div class="col-md-8">
-                <div class="card-body">
-                    <h5 class="card-title">{{limitCharacters this.title 50}}</h5>
-                    <p class="card-text">{{limitCharacters this.abstract 100}}</p>
-                    <p class="card-text" style="position: absolute; bottom: 0; left: 20;"><small
-                            class="text-muted">{{formatDate this.created_at}}</small></p>
-                </div>
-            </div>
-        </div>
-    </div>
-    {{/each}}
-    <!-- Phân trang -->
-    {{#if (gt pagination.totalPages 1)}}
-    <nav aria-label="Page navigation">
-        <ul class="pagination justify-content-center">
-
-            <!-- Nút Previous -->
-            {{#if (gt pagination.currentPage 1)}}
-            <li class="page-item">
-                <a class="page-link"
-                    href="/articles/search?search={{pagination.query}}&page={{getPrevious pagination.currentPage}}&categoryGroup={{pagination.categoryGroup}}&category={{pagination.category}}"
-                    aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
-                </a>
-            </li>
-            {{else}}
-            <li class="page-item disabled">
-                <a class="page-link" href="#" aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
-                </a>
-            </li>
+            <!-- Hiển thị thông báo nếu không có bài viết -->
+            {{#if this.empty}}
+            <div class="alert alert-warning text-center mt-4 p-3 rounded">{{this.message}}</div>
             {{/if}}
 
-            <!-- Hiển thị các trang -->
-            {{#each (range 1 pagination.totalPages) as |page|}}
-            <li class="page-item {{#if (eq page ../pagination.currentPage)}}active{{/if}}">
-                <a class="page-link {{#if (eq page ../pagination.currentPage)}}text-white bg-primary{{/if}}"
-                    href="/articles/search?search={{../pagination.query}}&page={{page}}&categoryGroup={{../pagination.categoryGroup}}&category={{../pagination.category}}">
-                    {{page}}
-                </a>
-            </li>
+            <!-- Danh sách bài viết -->
+            {{#each articles}}
+            <a href="/articles?id={{this.id}}" class="text-decoration-none">
+                <div class="card mt-4 border shadow-sm">
+                    <div class="row no-gutters">
+                        <!-- Hình ảnh -->
+                        <div class="col-md-4 d-flex align-items-center">
+                            <img src="{{this.thumbnail}}" alt="thumbnail bài báo" class="card-img"
+                                style="height: 180px; object-fit: cover; border-radius: 10px;">
+                        </div>
+                        <!-- Nội dung -->
+                        <div class="col-md-8">
+                            <div class="card-body " style ="min-height: 180px;">
+                                <h5 class="card-title font-weight-bold text-primary">{{limitCharacters this.title 50}}
+                                </h5>
+                                <p class="card-text text-secondary mb-2">{{limitCharacters this.abstract 100}}</p>
+                                <p class="card-text position-absolute" style="bottom: 10px; right: 20px;">
+                                    <small class="text-muted">{{formatDate this.created_at}}</small>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
             {{/each}}
 
-            <!-- Nút Next -->
-            {{#if (lt pagination.currentPage pagination.totalPages)}}
-            <li class="page-item">
-                <a class="page-link"
-                    href="/articles/search?search={{pagination.query}}&page={{getNext pagination.currentPage}}&categoryGroup={{pagination.categoryGroup}}&category={{pagination.category}}"
-                    aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
-                </a>
-            </li>
-            {{else}}
-            <li class="page-item disabled">
-                <a class="page-link" href="#" aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
-                </a>
-            </li>
-            {{/if}}
+            <!-- Phân trang -->
+            {{#if (gt pagination.totalPages 1)}}
+            <nav class ="mt-4" aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
 
-        </ul>
-    </nav>
-    {{/if}}
+                    <!-- Nút Previous -->
+                    {{#if (gt pagination.currentPage 1)}}
+                    <li class="page-item">
+                        <a class="page-link"
+                            href="/articles/search?search={{pagination.query}}&page={{getPrevious pagination.currentPage}}&categoryGroup={{pagination.categoryGroup}}&category={{pagination.category}}"
+                            aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {{else}}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {{/if}}
+
+                    <!-- Hiển thị các trang -->
+                    {{#each (range 1 pagination.totalPages) as |page|}}
+                    <li class="page-item {{#if (eq page ../pagination.currentPage)}}active{{/if}}">
+                        <a class="page-link {{#if (eq page ../pagination.currentPage)}}text-white bg-primary{{/if}}"
+                            href="/articles/search?search={{../pagination.query}}&page={{page}}&categoryGroup={{../pagination.categoryGroup}}&category={{../pagination.category}}">
+                            {{page}}
+                        </a>
+                    </li>
+                    {{/each}}
+
+                    <!-- Nút Next -->
+                    {{#if (lt pagination.currentPage pagination.totalPages)}}
+                    <li class="page-item">
+                        <a class="page-link"
+                            href="/articles/search?search={{pagination.query}}&page={{getNext pagination.currentPage}}&categoryGroup={{pagination.categoryGroup}}&category={{pagination.category}}"
+                            aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    {{else}}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    {{/if}}
+
+                </ul>
+            </nav>
+            {{/if}}
+        </div>
+
+        <!-- Phần sidebar (nếu có) -->
+        <div class="col-md-3 bg-light p-4">
+            <h5 class="font-weight-bold">Sidebar</h5>
+            <p>Phần nội dung bên cạnh (nếu cần).</p>
+        </div>
+    </div>
 </div>
 <div class="pb-2"></div>
 

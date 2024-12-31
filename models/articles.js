@@ -190,3 +190,17 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
         throw error;
     }
 };
+
+export const getArticlesByCategoryID = async (id, k, s) => {
+    const count = await database("articles")
+        .join("categories", "articles.category_id", "categories.id")
+        .where("categories.id", id)
+        .count("* as total").first();
+    
+    const articles = await database("articles")
+        .select("articles.*", "categories.name as category_name", "categories.description as category_description")
+        .join("categories", "articles.category_id", "categories.id")
+        .where("categories.id", id)
+        .limit(k).offset(s);
+        return { total: count.total, articles: articles };
+}

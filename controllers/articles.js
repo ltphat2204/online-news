@@ -71,6 +71,7 @@ export const searchArticles = async (req, res) => {
             message: "Hãy bắt đầu tìm kiếm điều bạn quan tâm!",
             categoryGroups: categoryGroups,
         }); 
+        return;
     }
     const searchQuery = req.query.search || "";
     const categoryGroup = req.query.categoryGroup || "";
@@ -97,4 +98,5 @@ export const searchArticles = async (req, res) => {
         categories,
         message: "Chúng tôi rất tiếc! Nhưng hãy thử với các từ khóa khác để tìm được nội dung mong muốn."
     });
+    return;
 }
