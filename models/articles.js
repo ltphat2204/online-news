@@ -152,10 +152,9 @@ export const getHashtagsByArticleId = async (article_id) => {
 };
 
 export const fullTextSearchArticles = async (searchQuery, categoryGroup, category, k, s) => {
-    // k is limit and s is offset
     try {
         if (k === undefined || s === undefined) {
-            k = 10; // Default limit
+            k = 5; // Default limit
             s = 0;  // Default offset
         }
 
@@ -178,7 +177,7 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
                         queryBuilder.andWhere(categoryCondition, category);
                     }
                 })
-                .where("articles.status", "published") // Only fetch published articles
+                .andWhere("articles.status", "published") // Ensure only published articles
                 .count("* as total")
                 .first();
 
@@ -204,8 +203,8 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
                         queryBuilder.andWhere(categoryCondition, category);
                     }
                 })
-                .where("articles.status", "published") // Only fetch published articles
-                .orderByRaw('is_premium DESC, articles.published_at DESC') // Sort with premium first
+                .andWhere("articles.status", "published") // Ensure only published articles
+                .orderByRaw('is_premium DESC, articles.published_at DESC') // Sort by premium first, then newest
                 .limit(k)
                 .offset(s);
         } else {
@@ -214,19 +213,15 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
                 .join("categories", "articles.category_id", "categories.id")
                 .join("category_groups", "categories.group_id", "category_groups.id")
                 .modify((queryBuilder) => {
-                    queryBuilder.whereRaw(
-                        "search_vector @@ plainto_tsquery('vietnamese', immutable_unaccent(?))",
-                        [searchQuery]
-                    );
-                    queryBuilder.orWhereRaw(
-                        "immutable_unaccent(title) ILIKE ?", [`%${searchQuery}%`]
-                    );
-                    queryBuilder.orWhereRaw(
-                        "immutable_unaccent(abstract) ILIKE ?", [`%${searchQuery}%`]
-                    );
-                    queryBuilder.orWhereRaw(
-                        "immutable_unaccent(content) ILIKE ?", [`%${searchQuery}%`]
-                    );
+                    queryBuilder.where(function () {
+                        this.whereRaw(
+                            "search_vector @@ plainto_tsquery('vietnamese', immutable_unaccent(?))",
+                            [searchQuery]
+                        )
+                        .orWhereRaw("immutable_unaccent(title) ILIKE ?", [`%${searchQuery}%`])
+                        .orWhereRaw("immutable_unaccent(abstract) ILIKE ?", [`%${searchQuery}%`])
+                        .orWhereRaw("immutable_unaccent(content) ILIKE ?", [`%${searchQuery}%`]);
+                    });
                     if (categoryGroupCondition) {
                         queryBuilder.andWhere(categoryGroupCondition, categoryGroup);
                     }
@@ -234,7 +229,7 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
                         queryBuilder.andWhere(categoryCondition, category);
                     }
                 })
-                .where("articles.status", "published") // Only fetch published articles
+                .andWhere("articles.status", "published") // Ensure only published articles
                 .count("* as total")
                 .first();
 
@@ -253,19 +248,15 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
                 .join("category_groups", "categories.group_id", "category_groups.id")
                 .join("users", "articles.author_id", "users.id")
                 .modify((queryBuilder) => {
-                    queryBuilder.whereRaw(
-                        "search_vector @@ plainto_tsquery('vietnamese', immutable_unaccent(?))",
-                        [searchQuery]
-                    );
-                    queryBuilder.orWhereRaw(
-                        "immutable_unaccent(title) ILIKE ?", [`%${searchQuery}%`]
-                    );
-                    queryBuilder.orWhereRaw(
-                        "immutable_unaccent(abstract) ILIKE ?", [`%${searchQuery}%`]
-                    );
-                    queryBuilder.orWhereRaw(
-                        "immutable_unaccent(content) ILIKE ?", [`%${searchQuery}%`]
-                    );
+                    queryBuilder.where(function () {
+                        this.whereRaw(
+                            "search_vector @@ plainto_tsquery('vietnamese', immutable_unaccent(?))",
+                            [searchQuery]
+                        )
+                        .orWhereRaw("immutable_unaccent(title) ILIKE ?", [`%${searchQuery}%`])
+                        .orWhereRaw("immutable_unaccent(abstract) ILIKE ?", [`%${searchQuery}%`])
+                        .orWhereRaw("immutable_unaccent(content) ILIKE ?", [`%${searchQuery}%`]);
+                    });
                     if (categoryGroupCondition) {
                         queryBuilder.andWhere(categoryGroupCondition, categoryGroup);
                     }
@@ -273,8 +264,8 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
                         queryBuilder.andWhere(categoryCondition, category);
                     }
                 })
-                .where("articles.status", "published") // Only fetch published articles
-                .orderBy("articles.published_at", "desc") // Sort by newest
+                .andWhere("articles.status", "published") // Ensure only published articles
+                .orderByRaw('is_premium DESC, articles.published_at DESC') // Sort by premium first, then newest
                 .limit(k)
                 .offset(s);
         }
@@ -289,22 +280,44 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
 
 
 
+
 export const getArticlesByCategoryID = async (id, k, s) => {
-    const count = await database("articles")
-        .join("categories", "articles.category_id", "categories.id")
-        .where("categories.id", id)
-        .andWhere("articles.status", "published") // Only fetch published articles
-        .count("* as total").first();
-    
-    const articles = await database("articles")
-        .select("articles.*", "categories.name as category_name", "categories.description as category_description")
-        .join("categories", "articles.category_id", "categories.id")
-        .where("categories.id", id)
-        .andWhere("articles.status", "published") // Only fetch published articles
-        .orderByRaw('is_premium DESC, articles.published_at DESC') // Sort with premium first
-        .limit(k).offset(s);
-        return { total: count.total, articles: articles };
-}
+    try {
+        if (k === undefined || s === undefined) {
+            k = 5; // Default limit
+            s = 0;  // Default offset
+        }
+
+        // Count total articles by category ID
+        const count = await database("articles")
+            .join("categories", "articles.category_id", "categories.id")
+            .where("categories.id", id)
+            .andWhere("articles.status", "published") // Ensure only published articles
+            .count("* as total")
+            .first();
+
+        // Fetch articles by category ID
+        const articles = await database("articles")
+            .select(
+                "articles.*",
+                "categories.name as category_name",
+                "categories.description as category_description"
+            )
+            .join("categories", "articles.category_id", "categories.id")
+            .where("categories.id", id)
+            .andWhere("articles.status", "published") // Ensure only published articles
+            .orderByRaw('is_premium DESC, articles.published_at DESC') // Sort by premium first, then newest
+            .limit(k)
+            .offset(s);
+
+        // Return total count and articles
+        return { total: count.total, articles };
+    } catch (error) {
+        console.error("Error fetching articles by category ID:", error);
+        
+        throw error;
+    }
+};
 
 export const addArticleHashtags = async (articleId, hashtags) => {
     const existingHashtags = hashtags.filter(tag => !tag.startsWith('new-'));
