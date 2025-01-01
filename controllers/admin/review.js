@@ -1,5 +1,5 @@
 import { getArticleByEditors, countDraftArticles, updateArticleById, updateArticleHashtag } from "../../models/articles.js";
-import { getHashtagID } from "../../models/hashtags.js";
+import { getHashtagID, getAllHashtags } from "../../models/hashtags.js";
 import { getEditorByUsername } from "../../models/user.js";
 
 export const getArticleList = async (req, res) => {
@@ -13,6 +13,7 @@ export const getArticleList = async (req, res) => {
 
     const offset = (page - 1) * limit;
     const articles = await getArticleByEditors(searchTerm, limit, offset);
+    const hashtags = await getAllHashtags();
 
     for (let i = 1; i <= totalPages; i++) {
         const item = {
@@ -27,6 +28,7 @@ export const getArticleList = async (req, res) => {
         title: 'Duyệt bài',
         empty: articles.length === 0,
         articles,
+        hashtags,
         pageItems: pageItems,
         searchTerm: searchTerm,
         user: req.session.authUser
@@ -40,12 +42,12 @@ export const updateArticle = async (req, res) => {
         id: article.id,
         status: article.status,
         editor_id: editorID.id,
+        published_at: article.published_at,
         category_id: article.category_id
     };
     await updateArticleById(newArticle.id, newArticle);
-    const hashtagID = await getHashtagID(article.hashtags);
     const newHashtag = {
-        tag_id: hashtagID.id
+        tag_id: article.hashtags
     };
 
     await updateArticleHashtag(newArticle.id, newHashtag);
