@@ -86,7 +86,11 @@
             <li class="p-3 border-bottom">
                 <a href="/admin/articles" class="d-flex align-items-center">
                     <i class="bi bi-file-earmark-text mr-2"></i>
+                    {{#if (eq authUser.role 'editor')}}
+                    Duyệt bài
+                    {{else}}
                     Bài viết
+                    {{/if}}
                 </a>
             </li>
             {{#if (eq authUser.role 'admin')}}
