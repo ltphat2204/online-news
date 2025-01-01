@@ -92,10 +92,6 @@ CREATE INDEX ON "users" ("pen_name");
 CREATE INDEX ON "articles" ("status", "published_at");
 CREATE INDEX ON "articles" ("view_count");
 
---Create index for full text search
-CREATE INDEX article_full_text_search_idx 
-ON "articles" 
-USING gin(to_tsvector('simple', "title"));
 
 -- Foreign Keys
 ALTER TABLE "social_networks" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
@@ -109,3 +105,47 @@ ALTER TABLE "comment" ADD FOREIGN KEY ("author_id") REFERENCES "users" ("id");
 ALTER TABLE "comment" ADD FOREIGN KEY ("article_id") REFERENCES "articles" ("id");
 ALTER TABLE "editor_category" ADD FOREIGN KEY ("editor_id") REFERENCES "users" ("id");
 ALTER TABLE "editor_category" ADD FOREIGN KEY ("category_id") REFERENCES "categories" ("id");
+
+-- Setup for FTSearch
+-- Add search_vector column
+ALTER TABLE articles ADD COLUMN search_vector tsvector;
+-- Create extension remove accents
+CREATE EXTENSION IF NOT EXISTS unaccent;
+
+-- Create extension pg_trgm
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
+-- Create vietnamese config
+CREATE TEXT SEARCH CONFIGURATION vietnamese (COPY = simple);
+
+-- Use unaccent for vietnamese config
+ALTER TEXT SEARCH CONFIGURATION vietnamese
+ALTER MAPPING FOR asciiword, word
+WITH unaccent, simple;
+
+-- Create immutable function for unaccent
+CREATE OR REPLACE FUNCTION immutable_unaccent(text)
+RETURNS text AS $$
+BEGIN
+  RETURN unaccent($1);
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
+-- Create index for articles using immutable_unaccent
+CREATE INDEX idx_title_trgm ON articles USING gin (immutable_unaccent(title) gin_trgm_ops);
+CREATE INDEX idx_abstract_trgm ON articles USING gin (immutable_unaccent(abstract) gin_trgm_ops);
+CREATE INDEX idx_content_trgm ON articles USING gin (immutable_unaccent(content) gin_trgm_ops);
+
+-- Create trigger for articles
+CREATE OR REPLACE FUNCTION update_search_vector()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.search_vector := to_tsvector('vietnamese', immutable_unaccent(NEW.title || ' ' || NEW.abstract || ' ' || NEW.content));
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_update_search_vector
+BEFORE INSERT OR UPDATE ON articles
+FOR EACH ROW
+EXECUTE FUNCTION update_search_vector();
