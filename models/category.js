@@ -61,6 +61,11 @@ export const countSearchCategories = async (search) => {
     return result;
 }
 
+export const getCategoryById = async (id) => {
+    const result = await database("categories").where("id", id).first();
+    return result;
+}
+
 export const searchCategoryByName = async(search, k, s) => {
     const result = await database("categories")
                             .select("categories.id", "categories.name", "categories.group_id", "category_groups.name as group_name", "categories.description")
