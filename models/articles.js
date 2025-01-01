@@ -306,6 +306,7 @@ export const getArticlesByCategoryID = async (id, k, s) => {
         return { total: count.total, articles };
     } catch (error) {
         console.error("Error fetching articles by category ID:", error);
+        
         throw error;
     }
 };
