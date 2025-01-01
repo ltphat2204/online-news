@@ -6,7 +6,7 @@
                 <form action="" class="form-inline col-12 p-3 bg-light rounded shadow-sm" id="searchForm">
                     <!-- Input tìm kiếm -->
                     <div class="input-group mb-3 col-12">
-                        <input class="form-control" type="text" placeholder="Tìm kiếm..." aria-label="Tìm kiếm">
+                        <input class="form-control" type="text" placeholder="Tìm kiếm..." value="{{#if pagination.query}}{{pagination.query}}{{else}}{{/if}}" aria-label="Tìm kiếm">
                         <div class="input-group-append">
                             <button class="btn btn-outline-primary" id="articleSearch" type="submit">
                                 <i class="bi bi-search"></i> Tìm kiếm
@@ -58,7 +58,7 @@
                                 </h5>
                                 <p class="card-text text-secondary mb-2">{{limitCharacters this.abstract 100}}</p>
                                 <p class="card-text position-absolute" style="bottom: 10px; right: 20px;">
-                                    <small class="text-muted">{{formatDate this.created_at}}</small>
+                                    <small class="text-muted">{{formatDate this.published_at}}</small>
                                 </p>
                             </div>
                         </div>

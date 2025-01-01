@@ -53,9 +53,9 @@
                                     Logout
                                 </a>
                             </div>
-                            <form class="search-form">
+                            <form class="search-form" action="/articles/search" method="GET">
                                 <div class="search-container">
-                                    <input type="text" class="search-input" placeholder="Tìm kiếm...">
+                                    <input type="text" class="search-input" placeholder="Tìm kiếm..." name = "search">
                                     <i class="nav-link bi bi-search search-icon" style="cursor: pointer"></i>
                                 </div>
                             </form>
@@ -63,9 +63,9 @@
                     {{else}}
                         <li class="nav-item nav-item-group" style="font-size: 1.2rem;">
                             <a class="nav-link" href="/auth/login"><i class="bi bi-person-circle"></i> Đăng nhập</a>
-                            <form class="search-form">
+                            <form class="search-form" action="/articles/search" method="GET">
                                 <div class="search-container">
-                                    <input type="text" class="search-input" placeholder="Tìm kiếm...">
+                                    <input type="text" class="search-input" placeholder="Tìm kiếm..." name = "search">
                                     <i class="nav-link bi bi-search search-icon" style="cursor: pointer"></i>
                                 </div>
                             </form>

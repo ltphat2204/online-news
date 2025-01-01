@@ -147,15 +147,19 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
     // k is limit and s is offset
     try {
         if (k === undefined || s === undefined) {
-            k = total;
-            s = 0;
+            k = 10; // Default limit
+            s = 0;  // Default offset
         }
+
         let results, count;
-        const categoryGroupCondition = categoryGroup !== '' ? "category_groups.name" : null;
-        const categoryCondition = category !== '' ? "categories.name" : null;
-        
+
+        // Conditions for categoryGroup and category filters
+        const categoryGroupCondition = categoryGroup ? "category_groups.name" : null;
+        const categoryCondition = category ? "categories.name" : null;
+
         if (searchQuery === "") {
-            count = await database('articles')
+            // Count total articles without search query
+            count = await database("articles")
                 .join("categories", "articles.category_id", "categories.id")
                 .join("category_groups", "categories.group_id", "category_groups.id")
                 .modify((queryBuilder) => {
@@ -166,9 +170,11 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
                         queryBuilder.andWhere(categoryCondition, category);
                     }
                 })
-                .count("* as total").first();
+                .count("* as total")
+                .first();
 
-                results = await database('articles')
+            // Fetch articles without search query
+            results = await database("articles")
                 .select(
                     "articles.*",
                     "categories.id as category_id",
@@ -189,24 +195,40 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
                         queryBuilder.andWhere(categoryCondition, category);
                     }
                 })
-                .limit(k).offset(s);
-        }
-        else {
-            count = await database('articles')
-                .whereRaw("to_tsvector('simple', title || ' ' || abstract || ' ' || content) @@ plainto_tsquery('simple', ?)", [searchQuery])
+                .orderBy("articles.published_at", "desc") // Sort by newest
+                .limit(k)
+                .offset(s);
+        } else {
+            // Count total articles with search query
+            count = await database("articles")
                 .join("categories", "articles.category_id", "categories.id")
                 .join("category_groups", "categories.group_id", "category_groups.id")
                 .modify((queryBuilder) => {
+                    queryBuilder.whereRaw(
+                        "search_vector @@ plainto_tsquery('vietnamese', immutable_unaccent(?))",
+                        [searchQuery]
+                    );
+                    queryBuilder.orWhereRaw(
+                        "immutable_unaccent(title) ILIKE ?", [`%${searchQuery}%`]
+                    );
+                    queryBuilder.orWhereRaw(
+                        "immutable_unaccent(abstract) ILIKE ?", [`%${searchQuery}%`]
+                    );
+                    queryBuilder.orWhereRaw(
+                        "immutable_unaccent(content) ILIKE ?", [`%${searchQuery}%`]
+                    );
                     if (categoryGroupCondition) {
-                        queryBuilder.where(categoryGroupCondition, categoryGroup);
+                        queryBuilder.andWhere(categoryGroupCondition, categoryGroup);
                     }
                     if (categoryCondition) {
                         queryBuilder.andWhere(categoryCondition, category);
                     }
                 })
-                .count("* as total").first();
+                .count("* as total")
+                .first();
 
-            results = await database('articles')
+            // Fetch articles with search query
+            results = await database("articles")
                 .select(
                     "articles.*",
                     "categories.id as category_id",
@@ -216,26 +238,44 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
                     "users.id as author_id",
                     "users.fullname as author_name"
                 )
-                .whereRaw("to_tsvector('simple', title || ' ' || abstract || ' ' || content) @@ plainto_tsquery('simple', ?)", [searchQuery])
                 .join("categories", "articles.category_id", "categories.id")
                 .join("category_groups", "categories.group_id", "category_groups.id")
                 .join("users", "articles.author_id", "users.id")
                 .modify((queryBuilder) => {
+                    queryBuilder.whereRaw(
+                        "search_vector @@ plainto_tsquery('vietnamese', immutable_unaccent(?))",
+                        [searchQuery]
+                    );
+                    queryBuilder.orWhereRaw(
+                        "immutable_unaccent(title) ILIKE ?", [`%${searchQuery}%`]
+                    );
+                    queryBuilder.orWhereRaw(
+                        "immutable_unaccent(abstract) ILIKE ?", [`%${searchQuery}%`]
+                    );
+                    queryBuilder.orWhereRaw(
+                        "immutable_unaccent(content) ILIKE ?", [`%${searchQuery}%`]
+                    );
                     if (categoryGroupCondition) {
-                        queryBuilder.where(categoryGroupCondition, categoryGroup);
+                        queryBuilder.andWhere(categoryGroupCondition, categoryGroup);
                     }
                     if (categoryCondition) {
                         queryBuilder.andWhere(categoryCondition, category);
                     }
                 })
-                .limit(k).offset(s);
+                .orderBy("articles.published_at", "desc") // Sort by newest
+                .limit(k)
+                .offset(s);
         }
-        return { total: count.total, results: results }
+
+        // Return results
+        return { total: count.total, results };
     } catch (error) {
-        console.error('Error searching articles:', error);
+        console.error("Error searching articles:", error);
         throw error;
     }
 };
+
+
 
 export const getArticlesByCategoryID = async (id, k, s) => {
     const count = await database("articles")
@@ -247,6 +287,7 @@ export const getArticlesByCategoryID = async (id, k, s) => {
         .select("articles.*", "categories.name as category_name", "categories.description as category_description")
         .join("categories", "articles.category_id", "categories.id")
         .where("categories.id", id)
+        .orderBy("articles.published_at", "desc") // Sort by newest
         .limit(k).offset(s);
         return { total: count.total, articles: articles };
 }
