@@ -8,6 +8,7 @@ import passport from '../../config/passport.js';
 const router = express.Router();
 
 router.get("/register", (req, res) => {
+  res.locals.SITE_KEY = process.env.RECAPTCHA_SITE_KEY;
   res.render("auth/register", {
     title: "Đăng ký",
   });

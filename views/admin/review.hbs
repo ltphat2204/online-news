@@ -1,7 +1,7 @@
 <div class="container bg-light p-3 rounded-lg shadow">
     <div class="d-flex">
         <h1>
-            Duyệt bài
+            Duyệt bài 
         </h1>
     </div>
 </div>
@@ -46,6 +46,7 @@
                             data-target="#editReviewModal"
                             data-category = "{{category}}"
                             data-hashtags = "{{hashtags}}"
+                            data-editor = "{{../user.username}}"
                             data-status = "{{status}}">
                         Duyệt
                     </button>
@@ -53,6 +54,7 @@
                             data-id = "{{id}}"
                             data-toggle = "modal"
                             data-target = "#disapproveReviewModal"
+                            data-editor = "{{../user.username}}"
                             data-status = "{{status}}">
                         Từ chối
                     </button>
@@ -86,17 +88,30 @@
         <div class="form-group">
           <input type="hidden" id="editReviewId" name="id">
           <input type="hidden" id="editStatus" name="status">
-          <label for="categoryName">Tên chuyên mục</label>
-          <select class="custom-select" name="category_id" id="editCategoryGroup">
+          <input type="hidden" id="editEditorName" name="editor_id">
+          <label for="category_id">Tên chuyên mục</label>
+          <select class="custom-select" name="category_id" id="editCategoryGroup" required>
             {{#each this.categories}}
               <option value="{{id}}">{{name}}</option>
             {{/each}}
           </select>
         </div>
-        <div class="form-group">
-          <label for="hashtags">Tên thẻ</label>
-          <input type="text" class="form-control" id="editHashtags" name="hashtags" required>
+        <div class="form-group">  
+          <label for="editHashtags">Tên thẻ</label>  
+          <select class="custom-select" name="hashtags" id="editHashtags" required>  
+            {{#each this.hashtags}}  
+              <option value="{{id}}">{{tag_name}}</option>  
+            {{/each}}  
+          </select>  
         </div>
+        <div class="form-group">  
+          <label for="editPublishDate">Thời gian xuất bản</label>  
+          <input type="datetime-local"   
+                class="form-control"   
+                id="editPublishDate"   
+                name="published_at"   
+                required>  
+        </div>  
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
@@ -120,6 +135,7 @@
         <div class="form-group">
           <input type="hidden" id="disapproveReviewId" name="id">
           <input type="hidden" id="disapproveStatus" name="status">
+          <input type="hidden" id="disapproveEditorName" name="editor_id">
           <label for="categoryName">Lý do từ chối</label>
           <textarea class="form-control" id="disapproveRejectReason" name="reject_reason"></textarea>
         </div>
@@ -134,32 +150,46 @@
 
 <script>
 $(document).ready(function() {
-    // Edit Modal Population
     $('#editReviewModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget);
 
         var id = button.data('id');
         var category = button.data('category');
         var hashtags = button.data('hashtags');
-
+        var editor = button.data('editor');
         var status = "approved";
         var modal = $(this);
 
+        var now = new Date();  
+        var year = now.getFullYear();  
+        var month = (now.getMonth() + 1).toString().padStart(2, '0');  
+        var day = now.getDate().toString().padStart(2, '0');  
+        var hours = now.getHours().toString().padStart(2, '0');  
+        var minutes = now.getMinutes().toString().padStart(2, '0');  
+        var defaultDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;  
+
         modal.find('#editReviewId').val(id);
-        modal.find('#editCategoryGroup').val(category);
-        modal.find('#editHashtags').val(hashtags);
+        modal.find('#editEditorName').val(editor);
         modal.find('#editStatus').val(status);
+        modal.find('#editCategoryGroup option').filter(function() {  
+            return $(this).text().trim() === category.trim();  
+        }).prop('selected', true);
+        modal.find('#editHashtags option').filter(function() {  
+            return $(this).text().trim() === hashtags.trim();  
+        }).prop('selected', true);  
+        modal.find('#editPublishDate').val(defaultDateTime); 
     });
     $('#disapproveReviewModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget);
 
         var id = button.data('id');
-
+        var editor = button.data('editor');
         var status = "rejected";
         var modal = $(this);
 
         modal.find('#disapproveReviewId').val(id);
         modal.find('#disapproveStatus').val(status);
+        modal.find('#disapproveEditorName').val(editor);
     });
 });
 </script>

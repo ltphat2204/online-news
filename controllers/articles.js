@@ -73,7 +73,7 @@ export const searchArticles = async (req, res) => {
         }); 
         return;
     }
-    const searchQuery = req.query.search || "";
+    const searchQuery = req.query.search.trim() || "";
     const categoryGroup = req.query.categoryGroup || "";
     const category = req.query.category || "";
     const page = req.query.page || 1;
@@ -81,7 +81,6 @@ export const searchArticles = async (req, res) => {
     const offset = (page - 1) * limit || 0;
 
     const articles = await fullTextSearchArticles(searchQuery, categoryGroup, category, limit, offset);
-
     const totalPages = Math.ceil(articles.total / limit);
     res.render('articles/search', {
         title: 'Bài báo',
