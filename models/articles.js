@@ -50,6 +50,7 @@ export const getArticleById = async (id) => {
 }
 
 export const deleteArticleById = async (id) => {
+    await database("article_tag").where("article_id", id).del();
     await database("articles").where("id", id).del();
 }
 
