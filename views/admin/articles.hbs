@@ -1,72 +1,408 @@
 <div class="container bg-light p-3 rounded-lg shadow">
-  <div class="d-flex">
+  <div class="d-flex justify-content-between align-items-center">
     <h1>
-      Quản lý bài viết
+      {{#if (eq authUser.role 'writer')}}
+        Bài viết của bạn
+      {{else if (eq authUser.role 'editor')}}
+        Duyệt bài viết
+      {{else}}
+        Quản lý bài viết
+      {{/if}}
     </h1>
-    <button class="btn btn-primary ml-auto" onclick="window.location.href = '/admin/articles/create'">
-      Thêm bài viết
+    {{#if (eq authUser.role 'writer')}}
+    <button class="btn btn-primary ml-2" onclick="window.location.href = '/admin/articles/create'">
+      <i class="bi bi-plus-circle"></i> Thêm bài viết
     </button>
+    {{/if}}
   </div>
 </div>
 
 <div class="container bg-light p-3 rounded-lg shadow my-4">
-  <form class="form-inline ml-auto mr-3" method="get" action="/admin/articles">
-    <div class="input-group mb-3">
-      <input type="text" class="form-control" placeholder="Tìm kiếm bài viết" name="search" value="{{this.searchTerm}}">
-      <div class="input-group-append">
-        <button class="btn btn-primary" type="submit">
-          <i class="bi bi-search"></i>
-        </button>
-      </div>
-    </div>
-  </form>
-  <table class="table">
-    <thead>
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">Ảnh bìa</th>
-        <th scope="col">Tiêu đề</th>
-        <th scope="col">Nội dung</th>
-        <th scope="col">Chuyên mục</th>
-        <th scope="col">Trạng thái</th>
-        <th scope="col">&nbsp;</th>
-      </tr>
-    </thead>
-    <tbody>
-      {{#if this.empty}}
-      <tr>
-        <td colspan="7" class="text-center">Hiện chưa có bài viết nào</td>
-      </tr>
+  <!-- Tabs -->
+  <ul class="nav nav-tabs" id="articleTabs" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active" id="draft-tab" data-toggle="tab" href="#draft" role="tab" aria-controls="draft"
+        aria-selected="true">Chờ duyệt</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="approved-tab" data-toggle="tab" href="#approved" role="tab" aria-controls="approved"
+        aria-selected="false">Đã duyệt</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="published-tab" data-toggle="tab" href="#published" role="tab" aria-controls="published"
+        aria-selected="false">Xuất bản</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="rejected-tab" data-toggle="tab" href="#rejected" role="tab" aria-controls="rejected"
+        aria-selected="false">Bị từ chối</a>
+    </li>
+  </ul>
+
+  <!-- Tab Content -->
+  <div class="tab-content" id="articleTabContent">
+    <!-- Chờ duyệt -->
+    <div class="tab-pane fade show active" id="draft" role="tabpanel" aria-labelledby="draft-tab">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col" style="width: 5%;">#</th>
+            <th scope="col" style="width: 10%;">Ảnh bìa</th>
+            <th scope="col" style="width: 25%;">Tiêu đề</th>
+            <th scope="col" style="width: 35%;">Nội dung</th>
+            <th scope="col" style="width: 15%;">Chuyên mục</th>
+            <th scope="col" style="width: 10%;">&nbsp;</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each draftArticles}}
+          <tr data-id="{{id}}">
+            <th scope="row">{{getNextPageIndex ../currentPage @index ../limit}}</th>
+            <td><img src="{{thumbnail}}" height="auto" width="70" alt="Ảnh bìa"></td>
+            <td>{{title}}</td>
+            <td>{{abstract}}</td>
+            <td>{{category}}</td>
+            <td>
+              {{#if (eq ../authUser.role 'writer')}}
+              <button class="btn btn-primary btn-sm"
+                style="width: 80px; text-align: center; padding: 5px 10px; font-size: 14px; background-color: #007bff; border-color: #007bff; color: white;"
+                onclick="window.location.href = '/admin/articles/edit?id={{id}}'">
+                Sửa
+              </button>
+              {{/if}}
+              {{#if (eq ../authUser.role 'admin')}}
+              <button class="btn btn-primary btn-sm"
+                style="width: 80px; text-align: center; padding: 5px 10px; font-size: 14px; background-color: #007bff; border-color: #007bff; color: white;"
+                onclick="window.location.href = '/admin/articles/edit?id={{id}}'">
+                Sửa
+              </button>
+              <button class="btn btn-success btn-sm"
+                style="width: 80px; text-align: center; padding: 5px 10px; font-size: 14px; background-color: #28a745; border-color: #28a745; color: white;"
+                onclick="window.location.href = '/admin/articles/publish?id={{id}}'">
+                Xuất bản
+              </button>
+              <button class="btn btn-danger btn-sm"
+                style="width: 80px; text-align: center; padding: 5px 10px; font-size: 14px; background-color: #dc3545; border-color: #dc3545; color: white;"
+                data-toggle="modal" data-target="#deleteArticleModal" data-id="{{id}}">
+                Xóa
+              </button>
+              {{/if}}
+              {{#if (eq ../authUser.role 'editor')}}
+              <button class="btn btn-success btn-sm"
+                style="width: 80px; text-align: center; padding: 5px 10px; font-size: 14px; background-color: #28a745; border-color: #28a745; color: white;"
+                data-toggle="modal" data-target="#editReviewModal" data-id="{{id}}" data-category="{{category}}"
+                data-hashtags="{{hashtags}}">
+                Duyệt
+              </button>
+              <button class="btn btn-warning btn-sm"
+                style="width: 80px; text-align: center; padding: 5px 10px; font-size: 14px; background-color: #ffc107; border-color: #ffc107; color: black;"
+                data-toggle="modal" data-target="#disapproveReviewModal" data-id="{{id}}">
+                Từ chối
+              </button>
+              {{/if}}
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+      <!-- Phân trang cho Chờ duyệt -->
+      {{#if (gt totalDraftPages 1)}}
+      <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+          <!-- Nút Previous -->
+          {{#if (gt currentPage 1)}}
+          <li class="page-item">
+            <a class="page-link" href="/admin/articles?page={{subtract currentPage 1}}&search={{searchTerm}}"
+              aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+          {{else}}
+          <li class="page-item disabled">
+            <a class="page-link" href="#" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+          {{/if}}
+
+          <!-- Hiển thị các trang -->
+          {{#each draftPageItems}}
+          <li class="page-item {{status}}">
+            <a class="page-link" href="/admin/articles?page={{value}}&search={{searchTerm}}">{{value}}</a>
+          </li>
+          {{/each}}
+
+          <!-- Nút Next -->
+          {{#if (lt currentPage totalDraftPages)}}
+          <li class="page-item">
+            <a class="page-link" href="/admin/articles?page={{add currentPage 1}}&search={{searchTerm}}"
+              aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+          {{else}}
+          <li class="page-item disabled">
+            <a class="page-link" href="#" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+          {{/if}}
+        </ul>
+      </nav>
       {{/if}}
-      {{#each this.articles}}
-      <tr data-id="{{id}}">
-        <th scope="row">{{getNext @index}}</th>
-        <td><img src="{{thumbnail}}" height="auto" width="70"></td>
-        <td>{{title}}</td>
-        <td>{{abstract}}</td>
-        <td>{{category}}</td>
-        <td>{{status}}</td>
-        <td>
-          <button class="btn btn-primary" onclick="window.location.href = '/admin/articles/edit?id={{id}}'">
-            Sửa
-          </button>
-          <button class="btn btn-danger" data-toggle="modal" data-target="#deleteArticleModal" data-id="{{id}}">
-            Xóa
-          </button>
-        </td>
-      </tr>
-      {{/each}}
-    </tbody>
-  </table>
-  <nav aria-label="...">
-    <ul class="pagination">
-      {{#each this.pageItems}}
-      <li class="page-item {{status}}">
-        <a class="page-link" href="/admin/articles?page={{value}}&search={{searchTerm}}">{{value}}</a>
-      </li>
-      {{/each}}
-    </ul>
-  </nav>
+    </div>
+
+    <!-- Đã duyệt -->
+    <div class="tab-pane fade" id="approved" role="tabpanel" aria-labelledby="approved-tab">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col" style="width: 5%;">#</th>
+            <th scope="col" style="width: 10%;">Ảnh bìa</th>
+            <th scope="col" style="width: 25%;">Tiêu đề</th>
+            <th scope="col" style="width: 35%;">Nội dung</th>
+            <th scope="col" style="width: 15%;">Chuyên mục</th>
+            <th scope="col" style="width: 10%;">&nbsp;</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each approvedArticles}}
+          <tr data-id="{{id}}">
+            <th scope="row">{{getNextPageIndex ../currentPage @index ../limit}}</th>
+            <td><img src="{{thumbnail}}" height="auto" width="70" alt="Ảnh bìa"></td>
+            <td>{{title}}</td>
+            <td>{{abstract}}</td>
+            <td>{{category}}</td>
+            <td>
+              <div class="btn-group">
+                {{#if (eq ../authUser.role 'admin')}}
+                <button class="btn btn-success btn-sm"
+                  style="width: 80px; text-align: center; padding: 5px 10px; font-size: 14px; background-color: #28a745; border-color: #28a745; color: white;"
+                  onclick="window.location.href = '/admin/articles/publish?id={{id}}'">
+                  Xuất bản
+                </button>
+                <button class="btn btn-danger btn-sm"
+                  style="width: 80px; text-align: center; padding: 5px 10px; font-size: 14px; background-color: #dc3545; border-color: #dc3545; color: white;"
+                  data-toggle="modal" data-target="#deleteArticleModal" data-id="{{id}}">
+                  Xóa
+                </button>
+                {{/if}}
+              </div>
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+      <!-- Phân trang cho Đã duyệt -->
+      {{#if (gt totalApprovedPages 1)}}
+      <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+          <!-- Nút Previous -->
+          {{#if (gt currentPage 1)}}
+          <li class="page-item">
+            <a class="page-link" href="/admin/articles?page={{subtract currentPage 1}}&search={{searchTerm}}"
+              aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+          {{else}}
+          <li class="page-item disabled">
+            <a class="page-link" href="#" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+          {{/if}}
+
+          <!-- Hiển thị các trang -->
+          {{#each approvedPageItems}}
+          <li class="page-item {{status}}">
+            <a class="page-link" href="/admin/articles?page={{value}}&search={{searchTerm}}">{{value}}</a>
+          </li>
+          {{/each}}
+
+          <!-- Nút Next -->
+          {{#if (lt currentPage totalApprovedPages)}}
+          <li class="page-item">
+            <a class="page-link" href="/admin/articles?page={{add currentPage 1}}&search={{searchTerm}}"
+              aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+          {{else}}
+          <li class="page-item disabled">
+            <a class="page-link" href="#" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+          {{/if}}
+        </ul>
+      </nav>
+      {{/if}}
+    </div>
+
+    <!-- Xuất bản -->
+    <div class="tab-pane fade" id="published" role="tabpanel" aria-labelledby="published-tab">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col" style="width: 5%;">#</th>
+            <th scope="col" style="width: 10%;">Ảnh bìa</th>
+            <th scope="col" style="width: 25%;">Tiêu đề</th>
+            <th scope="col" style="width: 35%;">Nội dung</th>
+            <th scope="col" style="width: 15%;">Chuyên mục</th>
+            <th scope="col" style="width: 10%;">&nbsp;</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{!-- Hiển thị bài viết đã xuất bản --}}
+          {{#each publishedArticles}}
+          <tr data-id="{{id}}">
+            <th scope="row">{{getNextPageIndex ../currentPage @index ../limit}}</th>
+            <td><img src="{{thumbnail}}" height="auto" width="70" alt="Ảnh bìa"></td>
+            <td>{{title}}</td>
+            <td>{{abstract}}</td>
+            <td>{{category}}</td>
+            <td>
+              <button class="btn btn-danger btn-sm"
+                style="width: 80px; text-align: center; padding: 5px 10px; font-size: 14px; background-color: #dc3545; border-color: #dc3545; color: white;"
+                data-toggle="modal" data-target="#deleteArticleModal" data-id="{{id}}">
+                Xóa
+              </button>
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+      <!-- Phân trang cho Xuất bản -->
+      {{#if (gt totalPublishedPages 1)}}
+      <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+          <!-- Nút Previous -->
+          {{#if (gt currentPage 1)}}
+          <li class="page-item">
+            <a class="page-link" href="/admin/articles?page={{subtract currentPage 1}}&search={{searchTerm}}"
+              aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+          {{else}}
+          <li class="page-item disabled">
+            <a class="page-link" href="#" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+          {{/if}}
+
+          <!-- Hiển thị các trang -->
+          {{#each publishedPageItems}}
+          <li class="page-item {{status}}">
+            <a class="page-link" href="/admin/articles?page={{value}}&search={{searchTerm}}">{{value}}</a>
+          </li>
+          {{/each}}
+
+          <!-- Nút Next -->
+          {{#if (lt currentPage totalPublishedPages)}}
+          <li class="page-item">
+            <a class="page-link" href="/admin/articles?page={{add currentPage 1}}&search={{searchTerm}}"
+              aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+          {{else}}
+          <li class="page-item disabled">
+            <a class="page-link" href="#" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+          {{/if}}
+        </ul>
+      </nav>
+      {{/if}}
+    </div>
+
+    <!-- Bị từ chối -->
+    <div class="tab-pane fade" id="rejected" role="tabpanel" aria-labelledby="rejected-tab">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col" style="width: 5%;">#</th>
+            <th scope="col" style="width: 10%;">Ảnh bìa</th>
+            <th scope="col" style="width: 25%;">Tiêu đề</th>
+            <th scope="col" style="width: 35%;">Nội dung</th>
+            <th scope="col" style="width: 15%;">Chuyên mục</th>
+            <th scope="col" style="width: 10%;">&nbsp;</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each rejectedArticles}}
+          <tr data-id="{{id}}">
+            <th scope="row">{{getNextPageIndex ../currentPage @index ../limit}}</th>
+            <td><img src="{{thumbnail}}" height="auto" width="70" alt="Ảnh bìa"></td>
+            <td>{{title}}</td>
+            <td>{{abstract}}</td>
+            <td>{{category}}</td>
+            <td>
+              <div class="btn-group">
+                {{!-- Writer chỉ sửa bài viết của họ --}}
+                {{#if (eq ../authUser.role 'writer')}}
+                <button class="btn btn-primary btn-sm"
+                  style="width: 80px; text-align: center; padding: 5px 10px; font-size: 14px; background-color: #007bff; border-color: #007bff; color: white;"
+                  onclick="window.location.href = '/admin/articles/edit?id={{id}}'">
+                  Sửa
+                </button>
+                {{/if}}
+              </div>
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+      <!-- Phân trang cho Bị từ chối -->
+      {{#if (gt totalRejectedPages 1)}}
+      <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+          <!-- Nút Previous -->
+          {{#if (gt currentPage 1)}}
+          <li class="page-item">
+            <a class="page-link" href="/admin/articles?page={{subtract currentPage 1}}&search={{searchTerm}}"
+              aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+          {{else}}
+          <li class="page-item disabled">
+            <a class="page-link" href="#" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+          {{/if}}
+
+          <!-- Hiển thị các trang -->
+          {{#each rejectedPageItems}}
+          <li class="page-item {{status}}">
+            <a class="page-link" href="/admin/articles?page={{value}}&search={{searchTerm}}">{{value}}</a>
+          </li>
+          {{/each}}
+
+          <!-- Nút Next -->
+          {{#if (lt currentPage totalRejectedPages)}}
+          <li class="page-item">
+            <a class="page-link" href="/admin/articles?page={{add currentPage 1}}&search={{searchTerm}}"
+              aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+          {{else}}
+          <li class="page-item disabled">
+            <a class="page-link" href="#" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+          {{/if}}
+        </ul>
+      </nav>
+      {{/if}}
+    </div>
+  </div>
 </div>
 
 <div class="modal fade" id="deleteArticleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -90,15 +426,103 @@
   </div>
 </div>
 
+<div class="modal fade" id="editReviewModal" tabindex="-1" aria-labelledby="editReviewTitle" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" method="post" action="/admin/review/approve">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editReviewModalTitle">Duyệt bài</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <input type="hidden" id="editReviewId" name="id">
+          <input type="hidden" id="editStatus" name="status">
+          <label for="categoryName">Tên chuyên mục</label>
+          <select class="custom-select" name="category_id" id="editCategoryGroup">
+            {{#each this.categories}}
+            <option value="{{id}}">{{name}}</option>
+            {{/each}}
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="hashtags">Tên thẻ</label>
+          <input type="text" class="form-control" id="editHashtags" name="hashtags" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+        <button type="submit" class="btn btn-primary">Duyệt bài</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal fade" id="disapproveReviewModal" tabindex="-1" aria-labelledby="disapproveReviewTitle"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" method="post" action="/admin/review/disapprove">
+      <div class="modal-header">
+        <h5 class="modal-title" id="disapproveReviewModalTitle">Từ chối bài</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <input type="hidden" id="disapproveReviewId" name="id">
+          <input type="hidden" id="disapproveStatus" name="status">
+          <label for="categoryName">Lý do từ chối</label>
+          <textarea class="form-control" id="disapproveRejectReason" name="reject_reason"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+        <button type="submit" class="btn btn-primary">Từ chối</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
   $(document).ready(function () {
-    // Edit Modal Population
+    // Populate delete modal with article ID
     $('#deleteArticleModal').on('show.bs.modal', function (event) {
       var button = $(event.relatedTarget);
       var id = button.data('id');
 
       var modal = $(this);
       modal.find('#deleteId').val(id);
+    });
+    // Edit Modal Population
+    $('#editReviewModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+
+        var id = button.data('id');
+        var category = button.data('category');
+        var hashtags = button.data('hashtags');
+
+        var status = "approved";
+        var modal = $(this);
+
+        modal.find('#editReviewId').val(id);
+        modal.find('#editCategoryGroup').val(category);
+        modal.find('#editHashtags').val(hashtags);
+        modal.find('#editStatus').val(status);
+    });
+    $('#disapproveReviewModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+
+        var id = button.data('id');
+
+        var status = "rejected";
+        var modal = $(this);
+
+        modal.find('#disapproveReviewId').val(id);
+        modal.find('#disapproveStatus').val(status);
     });
   });
 </script>
