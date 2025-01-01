@@ -45,7 +45,7 @@ VALUES
 	(gen_random_uuid(), 'dienanh');
 
 INSERT INTO articles (
-	id, title, abstract, content, category_id, author_id, editor_id, created_at
+	id, title, abstract, content, category_id, author_id, created_at
 )
 VALUES
 	(gen_random_uuid(), 
@@ -66,7 +66,6 @@ Giới chức Hàn Quốc chưa bình luận về các phát biểu của Triề
 </p>',
 (SELECT id FROM categories WHERE name = 'Tin thế giới'),
 (SELECT id FROM users WHERE role = 'writer' AND username = 'writer1'),
-(SELECT id FROM users WHERE role = 'editor' AND username = 'editor1'),
 now()),
 	(gen_random_uuid(), 
 'Hà Nội tiếp tục trễ hẹn dự án vành đai 1',
@@ -86,7 +85,6 @@ Dự án vành đai 1 đoạn Hoàng Cầu - Voi Phục có tổng mức đầu 
 </p>',
 (SELECT id FROM categories WHERE name = 'Tin trong nước'),
 (SELECT id FROM users WHERE role = 'writer' AND username = 'writer1'),
-(SELECT id FROM users WHERE role = 'editor' AND username = 'editor1'),
 now()),
 	(gen_random_uuid(),
 'Việt Nam cần đầu tư AI vào khu vực công, giáo dục',
@@ -109,7 +107,6 @@ Bà có hơn 300 bài báo được bình duyệt bao gồm cả AI, học máy,
 </p>',
 (SELECT id FROM categories WHERE name = 'Trí tuệ nhân tạo'),
 (SELECT id FROM users WHERE role = 'writer' AND username = 'writer1'),
-(SELECT id FROM users WHERE role = 'editor' AND username = 'editor1'),
 now()),
 	(gen_random_uuid(),
 'Robot hình cầu lưỡng cư hỗ trợ cảnh sát Trung Quốc tuần tra',
@@ -128,7 +125,6 @@ Hiện tại, chi phí sản xuất RT-G là khoảng 41.400 - 55.200 USD. Với
 </p>',
 (SELECT id FROM categories WHERE name = 'Robot'),
 (SELECT id FROM users WHERE role = 'writer' AND username = 'writer1'),
-(SELECT id FROM users WHERE role = 'editor' AND username = 'editor1'),
 now()),
 	(gen_random_uuid(),
 'Việt Nam nhập thịt và phụ phẩm nhiều kỷ lục',
@@ -148,7 +144,6 @@ Nhập khẩu thịt giá rẻ đang mang lại nhiều lựa chọn hơn cho ng
 </p>',
 (SELECT id FROM categories WHERE name = 'Nông sản'),
 (SELECT id FROM users WHERE role = 'writer' AND username = 'writer1'),
-(SELECT id FROM users WHERE role = 'editor' AND username = 'editor1'),
 now()),
 	(gen_random_uuid(),
 'Dị ứng hải sản có được tiêm vaccine?',
@@ -171,7 +166,6 @@ Cục Y tế dự phòng khuyến cáo thời tiết chuyển lạnh, độ ẩm
 </p>',
 (SELECT id FROM categories WHERE name = 'Hải sản'),
 (SELECT id FROM users WHERE role = 'writer' AND username = 'writer1'),
-(SELECT id FROM users WHERE role = 'editor' AND username = 'editor1'),
 now()),
 	(gen_random_uuid(),
 'Những kỷ lục khó bị phá ở ASEAN Cup',
@@ -192,7 +186,6 @@ HLV thành công nhất là Radojko Avramovic. Ông giúp Singapore ba lần vô
 </p>',
 (SELECT id FROM categories WHERE name = 'Bóng đá'),
 (SELECT id FROM users WHERE role = 'writer' AND username = 'writer1'),
-(SELECT id FROM users WHERE role = 'editor' AND username = 'editor1'),
 now()),
 	(gen_random_uuid(),
 'Chung kết giải bóng rổ trẻ 2024 - trận đấu mãn nhãn người xem',
@@ -218,7 +211,6 @@ Hai đội dường như không còn quan tâm về kết quả trận đấu m�
 </p>',
 (SELECT id FROM categories WHERE name = 'Bóng rổ'),
 (SELECT id FROM users WHERE role = 'writer' AND username = 'writer1'),
-(SELECT id FROM users WHERE role = 'editor' AND username = 'editor1'),
 now()),
 	(gen_random_uuid(),
 'Legion Esports thắng áp đảo tại chung kết Mobile Legends: Bang Bang',
@@ -247,7 +239,6 @@ Sau gần 3 giờ thi đấu, Legion Esports đã giành chiến thắng tuyệt
 </p>',
 (SELECT id FROM categories WHERE name = 'Esports'),
 (SELECT id FROM users WHERE role = 'writer' AND username = 'writer1'),
-(SELECT id FROM users WHERE role = 'editor' AND username = 'editor1'),
 now()),
 	(gen_random_uuid(),
 'Djokovic bắt đầu mùa mới cuối năm nay',
@@ -270,7 +261,6 @@ Trở lại ATP Tour tại Brisbane International, Djokovic tranh tài với ĐK
 </p>',
 (SELECT id FROM categories WHERE name = 'Tennis'),
 (SELECT id FROM users WHERE role = 'writer' AND username = 'writer1'),
-(SELECT id FROM users WHERE role = 'editor' AND username = 'editor1'),
 now()),
 	(gen_random_uuid(),
 'Đinh Lập Nhân gỡ hòa ở chung kết cờ vua thế giới 2024',
@@ -293,7 +283,6 @@ Ván cờ tiêu chuẩn áp chót sẽ diễn ra từ 16h thứ Tư 11/12, giờ
 </p>',
 (SELECT id FROM categories WHERE name = 'Các môn khác'),
 (SELECT id FROM users WHERE role = 'writer' AND username = 'writer1'),
-(SELECT id FROM users WHERE role = 'editor' AND username = 'editor1'),
 now()),
 	(gen_random_uuid(),
 'Nhạc sĩ Huy Tuấn: "8Wonder là điểm hẹn của sao quốc tế"',
@@ -322,7 +311,6 @@ Nhạc sĩ cho rằng người trong nghề không quá bất ngờ khi 8Wonder 
 </p>',
 (SELECT id FROM categories WHERE name = 'Âm nhạc'),
 (SELECT id FROM users WHERE role = 'writer' AND username = 'writer1'),
-(SELECT id FROM users WHERE role = 'editor' AND username = 'editor1'),
 now()),
 	(gen_random_uuid(),
 'Lý Hải hướng dẫn Lê Tuấn Khang diễn xuất',
@@ -345,7 +333,6 @@ Lật mặt 8 pha trộn nhiều thể loại, từ hài, tâm lý - tình cảm
 </p>',
 (SELECT id FROM categories WHERE name = 'Điện ảnh'),
 (SELECT id FROM users WHERE role = 'writer' AND username = 'writer1'),
-(SELECT id FROM users WHERE role = 'editor' AND username = 'editor1'),
 now()),
 	(gen_random_uuid(),
 'Giới trẻ Việt theo đuổi mốt trang điểm "bling bling"',
@@ -366,7 +353,6 @@ Các ca sĩ Hàn Quốc lăng xê mốt này từ năm 2018. Sau concert Blackpi
 </p>',
 (SELECT id FROM categories WHERE name = 'Thời trang'),
 (SELECT id FROM users WHERE role = 'writer' AND username = 'writer1'),
-(SELECT id FROM users WHERE role = 'editor' AND username = 'editor1'),
 now());
 
 INSERT INTO article_tag

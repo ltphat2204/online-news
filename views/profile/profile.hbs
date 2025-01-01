@@ -8,12 +8,7 @@
                 <div class="mt-3">  
                     <p><i class="bi bi-person-badge"></i> {{profile.fullname}}</p>  
                     <p><i class="bi bi-envelope"></i> {{profile.email}}</p>  
-                    <p><i class="bi bi-calendar3"></i> Joined {{formatDate profile.created_at}}</p>  
-                    {{#if profile.is_premium}}  
-                        <span class="badge badge-warning">  
-                            <i class="bi bi-star-fill"></i> Premium Writer  
-                        </span>  
-                    {{/if}}  
+                    <p><i class="bi bi-calendar3"></i> Joined {{formatDate profile.created_at}}</p>
                 </div>  
             </div>  
         </div>  
@@ -30,6 +25,7 @@
                 </h4>  
 
                 {{#if articles.length}}  
+                    {{authUser.username}}
                     <div class="list-group">  
                         {{#each articles}}  
                             <a href="/articles?id={{this.id}}" class="list-group-item list-group-item-action">  

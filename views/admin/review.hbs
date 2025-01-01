@@ -1,7 +1,7 @@
 <div class="container bg-light p-3 rounded-lg shadow">
     <div class="d-flex">
         <h1>
-            Duyệt bài
+            Duyệt bài 
         </h1>
     </div>
 </div>
@@ -46,6 +46,7 @@
                             data-target="#editReviewModal"
                             data-category = "{{category}}"
                             data-hashtags = "{{hashtags}}"
+                            data-editor = "{{../user.username}}"
                             data-status = "{{status}}">
                         Duyệt
                     </button>
@@ -53,6 +54,7 @@
                             data-id = "{{id}}"
                             data-toggle = "modal"
                             data-target = "#disapproveReviewModal"
+                            data-editor = "{{../user.username}}"
                             data-status = "{{status}}">
                         Từ chối
                     </button>
@@ -86,6 +88,7 @@
         <div class="form-group">
           <input type="hidden" id="editReviewId" name="id">
           <input type="hidden" id="editStatus" name="status">
+          <input type="hidden" id="editEditorName" name="editor_id">
           <label for="categoryName">Tên chuyên mục</label>
           <select class="custom-select" name="category_id" id="editCategoryGroup">
             {{#each this.categories}}
@@ -120,6 +123,7 @@
         <div class="form-group">
           <input type="hidden" id="disapproveReviewId" name="id">
           <input type="hidden" id="disapproveStatus" name="status">
+          <input type="hidden" id="disapproveEditorName" name="editor_id">
           <label for="categoryName">Lý do từ chối</label>
           <textarea class="form-control" id="disapproveRejectReason" name="reject_reason"></textarea>
         </div>
@@ -141,12 +145,13 @@ $(document).ready(function() {
         var id = button.data('id');
         var category = button.data('category');
         var hashtags = button.data('hashtags');
-
+        var editor = button.data('editor');
         var status = "approved";
         var modal = $(this);
 
         modal.find('#editReviewId').val(id);
         modal.find('#editCategoryGroup').val(category);
+        modal.find('#editEditorName').val(editor);
         modal.find('#editHashtags').val(hashtags);
         modal.find('#editStatus').val(status);
     });
@@ -154,12 +159,13 @@ $(document).ready(function() {
         var button = $(event.relatedTarget);
 
         var id = button.data('id');
-
+        var editor = button.data('editor');
         var status = "rejected";
         var modal = $(this);
 
         modal.find('#disapproveReviewId').val(id);
         modal.find('#disapproveStatus').val(status);
+        modal.find('#disapproveEditorName').val(editor);
     });
 });
 </script>
