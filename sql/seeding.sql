@@ -29,11 +29,15 @@ VALUES
 	(gen_random_uuid(), 'editor1', crypt('editor1',gen_salt('bf')), 'editor', 'patuan22@clc.fitus.edu.vn','Phùng Anh Tuấn');
 INSERT INTO hashtags
 VALUES
+	(gen_random_uuid(), 'thegioi'),
+	(gen_random_uuid(), 'trongnuoc'),
 	(gen_random_uuid(), 'congnghe'),
 	(gen_random_uuid(), 'AI'),
 	(gen_random_uuid(), 'bongda'),
 	(gen_random_uuid(), 'bongro'),
+	(gen_random_uuid(), 'esports'),
 	(gen_random_uuid(), 'tennis'),
+	(gen_random_uuid(), 'thethao'),
 	(gen_random_uuid(), 'nongsan'),
 	(gen_random_uuid(), 'haisan'),
 	(gen_random_uuid(), 'thoitrang'),
@@ -364,3 +368,4 @@ Các ca sĩ Hàn Quốc lăng xê mốt này từ năm 2018. Sau concert Blackpi
 (SELECT id FROM users WHERE role = 'writer' AND username = 'writer1'),
 (SELECT id FROM users WHERE role = 'editor' AND username = 'editor1'),
 now());
+

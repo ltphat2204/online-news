@@ -1,4 +1,5 @@
 import database from "../config/database.js";
+import { createHashtags, addArticleTag } from "./hashtags.js";
 
 export const getAllArticles = async (search = "", offset = 0, limit = 5) => {
     if (search) {
@@ -27,8 +28,21 @@ export const countArticles = async (search = "") => {
     return result.total;
 };
 
+export const countDraftArticles = async (search = "") => {
+    let query = database("articles");
+
+    if (search) {
+        query = query.whereLike("title", `%${search}%`)
+            .orWhereLike("abstract", `%${search}%`)
+            .orWhereLike("content", `%${search}%`);
+    }
+
+    const result = await query.count("* as total").where("status", "draft").first();
+    return result.total;
+};
+
 export const createArticle = async (article) => {
-    const result = await database("articles").insert(article);
+    const result = await database("articles").insert(article).returning("id");
     return result;
 }
 export const getArticleById = async (id) => {
@@ -41,6 +55,11 @@ export const deleteArticleById = async (id) => {
 
 export const updateArticleById = async (id, article) => {
     const result = await database("articles").where("id", id).update(article);
+    return result;
+}
+
+export const updateArticleHashtag = async (id, hashtag) => {
+    const result = await database("article_tag").where("article_id", id).update(hashtag);
     return result;
 }
 
@@ -66,6 +85,32 @@ export const getArticleInfoById = async (id) => {
         .join("users", "articles.author_id", "users.id")
         .where("articles.id", id)
         .first();
+}
+
+export const getArticleByEditors = async (searchTerm = "", limit, offset) => {
+    const result =  await database("articles")
+                .select(
+                    "articles.*",
+                    "hashtags.tag_name as hashtags",
+                    "users.fullname as fullname",
+                    "categories.name as category",
+                )
+                .join("users", "articles.editor_id", "users.id")
+                .join("article_tag", "articles.id", "article_tag.article_id")
+                .join("hashtags", "article_tag.tag_id", "hashtags.id")
+                .leftJoin("categories", "articles.category_id", "categories.id")
+                .where(builder => {  
+                    builder  
+                        .where("articles.status", "draft")  
+                        .andWhere(subBuilder => {  
+                            subBuilder  
+                                .whereLike("articles.abstract", `%${searchTerm}%`)  
+                                .orWhereLike("users.fullname", `%${searchTerm}%`)  
+                        });  
+                })  
+                .offset(offset)
+                .limit(limit);
+    return result;
 }
 
 export const getArticlesByCategory = async (category_id, current_article_id, limit = 5) => {
@@ -204,3 +249,23 @@ export const getArticlesByCategoryID = async (id, k, s) => {
         .limit(k).offset(s);
         return { total: count.total, articles: articles };
 }
+
+export const addArticleHashtags = async (articleId, hashtags) => {
+    const existingHashtags = hashtags.filter(tag => !tag.startsWith('new-'));
+    const newHashtags = hashtags.filter(tag => tag.startsWith('new-')).map(tag => ({ tag_name: tag.replace('new-', '') }));
+
+    // Insert new hashtags into the database and retrieve their IDs
+    const newHashtagIds = [];
+    for (const newTag of newHashtags) {
+        const [result] = await createHashtags([newTag]);
+        newHashtagIds.push(result[0].id);
+    }
+
+    // Combine existing and new hashtag IDs
+    const allHashtagIds = [...existingHashtags, ...newHashtagIds];
+
+    // Insert into the article_tag table
+    for (const tagId of allHashtagIds) {
+        await addArticleTag(articleId, tagId);
+    }
+};

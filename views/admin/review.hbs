@@ -1,0 +1,165 @@
+<div class="container bg-light p-3 rounded-lg shadow">
+    <div class="d-flex">
+        <h1>
+            Duyệt bài
+        </h1>
+    </div>
+</div>
+
+<div class="container bg-light p-3 rounded-lg shadow my-4">
+    <form class="form-inline ml-auto mr-3" method="get" action="/admin/review">
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="Tìm kiếm editor" name="search" value="{{this.searchTerm}}">
+          <div class="input-group-append">
+            <button class="btn btn-primary" type="submit">
+            <i class="bi bi-search"></i>
+            </button>
+          </div>
+      </div>
+    </form>
+    <table class="table">
+        <thead>
+            <tr>
+            <th scope="col">#</th>
+            <th scope="col">Người phụ trách</th>
+            <th scope="col">Chuyên mục</th>
+            <th scope="col">Bài báo</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#if this.empty}}
+            <tr>
+                <td colspan="5" class="text-center">Hiện chưa có bài viết nào</td>
+            </tr>
+            {{/if}}
+            {{#each this.articles}}
+            <tr data-id="{{id}}">
+                <th scope="row">{{getNext @index}}</th>
+                <td>{{fullname}}</td>
+                <td>{{category}}</td>
+                <td>{{abstract}}</td>
+                <td>
+                    <button class="btn btn-primary edit-review" 
+                            data-id="{{id}}"
+                            data-hashtag-id = "{{hashtag}}"
+                            data-toggle="modal" 
+                            data-target="#editReviewModal"
+                            data-category = "{{category}}"
+                            data-hashtags = "{{hashtags}}"
+                            data-status = "{{status}}">
+                        Duyệt
+                    </button>
+                    <button class="btn btn-danger disapprove-review"
+                            data-id = "{{id}}"
+                            data-toggle = "modal"
+                            data-target = "#disapproveReviewModal"
+                            data-status = "{{status}}">
+                        Từ chối
+                    </button>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    <nav aria-label="...">
+        <ul class="pagination">
+        {{#each this.pageItems}}
+        <li class="page-item">
+            <a class="page-link" href="/admin/review?page={{value}}&search={{searchTerm}}">{{value}}</a>
+        </li>
+        {{/each}}
+        </ul>
+    </nav>
+</div>
+
+<div class="modal fade" id="editReviewModal" tabindex="-1" aria-labelledby="editReviewTitle" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" method="post" action="/admin/review/approve">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editReviewModalTitle">Duyệt bài</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="form-group">
+          <input type="hidden" id="editReviewId" name="id">
+          <input type="hidden" id="editStatus" name="status">
+          <label for="categoryName">Tên chuyên mục</label>
+          <select class="custom-select" name="category_id" id="editCategoryGroup">
+            {{#each this.categories}}
+              <option value="{{id}}">{{name}}</option>
+            {{/each}}
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="hashtags">Tên thẻ</label>
+          <input type="text" class="form-control" id="editHashtags" name="hashtags" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+        <button type="submit" class="btn btn-primary">Duyệt bài</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal fade" id="disapproveReviewModal" tabindex="-1" aria-labelledby="disapproveReviewTitle" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" method="post" action="/admin/review/disapprove">
+      <div class="modal-header">
+        <h5 class="modal-title" id="disapproveReviewModalTitle">Từ chối bài</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="form-group">
+          <input type="hidden" id="disapproveReviewId" name="id">
+          <input type="hidden" id="disapproveStatus" name="status">
+          <label for="categoryName">Lý do từ chối</label>
+          <textarea class="form-control" id="disapproveRejectReason" name="reject_reason"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+        <button type="submit" class="btn btn-primary">Từ chối</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Edit Modal Population
+    $('#editReviewModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+
+        var id = button.data('id');
+        var category = button.data('category');
+        var hashtags = button.data('hashtags');
+
+        var status = "approved";
+        var modal = $(this);
+
+        modal.find('#editReviewId').val(id);
+        modal.find('#editCategoryGroup').val(category);
+        modal.find('#editHashtags').val(hashtags);
+        modal.find('#editStatus').val(status);
+    });
+    $('#disapproveReviewModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+
+        var id = button.data('id');
+
+        var status = "rejected";
+        var modal = $(this);
+
+        modal.find('#disapproveReviewId').val(id);
+        modal.find('#disapproveStatus').val(status);
+    });
+});
+</script>

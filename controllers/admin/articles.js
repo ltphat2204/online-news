@@ -1,4 +1,5 @@
-import { countArticles, createArticle, deleteArticleById, getAllArticles, getArticleById, updateArticleById } from "../../models/articles.js";
+import { countArticles, createArticle, deleteArticleById, getAllArticles, getArticleById, updateArticleById, addArticleHashtags } from "../../models/articles.js";
+import { getAllHashtags } from "../../models/hashtags.js";
 
 const LIMIT = 5;
 
@@ -29,19 +30,30 @@ export const getArticles = async (req, res) => {
 }
 
 export const postArticle = async (req, res) => {
-    const article = req.body;
-    const author_id = req.session.authUser.id;
-    console.log(article);
-    await createArticle({ ...article, author_id });
+    try {
+        const { hashtags, ...article } = req.body; 
+        const author_id = req.session.authUser.id;
 
-    res.redirect("/admin/articles");
-}
+        const result = await createArticle({ ...article, author_id });
+        const articleId = result[0].id;
+
+        // Add hashtags to the article
+        await addArticleHashtags(articleId, hashtags || []);
+
+        res.redirect('/admin/articles');
+    } catch (error) {
+        console.error('Error creating article:', error);
+        res.status(500).send('Internal Server Error');
+    }
+};
 
 export const createArticleView = async (req, res) => {
+    const hashtags = await getAllHashtags();
     res.render("admin/create_article", {
         title: "Tạo bài viết",
-        categories: res.locals.categories
-    })
+        categories: res.locals.categories,
+        hashtags
+    });
 }
 
 export const editArticle = async (req, res) => {
