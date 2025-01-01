@@ -1,7 +1,16 @@
 import { getAllCategoryGroups } from '../models/category_group.js';
+import { getAllCategories } from '../models/category.js';
 
-export default async function preloadCategoryGroups(req, res, next) {
+const preloadNavBar = async (req, res, next) => {
     const categoryGroups = await getAllCategoryGroups();
-    res.locals.categoryGroups = categoryGroups;
+    const categoryGroupsWithCategories = await Promise.all(categoryGroups.map(async (categoryGroup) => ({
+        id: categoryGroup.id,
+        name: categoryGroup.name,
+        description: categoryGroup.description,
+        categories: await getAllCategories(categoryGroup.id)
+    })));
+    res.locals.categoryGroupsWithCategories = categoryGroupsWithCategories;
     next();
-}
+};
+
+export default preloadNavBar;
