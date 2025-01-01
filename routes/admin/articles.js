@@ -5,7 +5,7 @@ import autoUploadFile from '../../middlewares/autoUploadFiles.js';
 
 const router = express.Router();
 
-router.get('/', getArticles);
+router.get('/', preloadCategories, getArticles);
 router.get('/create', preloadCategories, createArticleView);
 router.post('/create', autoUploadFile, postArticle);
 router.get('/edit', preloadCategories, editArticleView);

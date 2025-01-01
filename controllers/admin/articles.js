@@ -42,6 +42,8 @@ export const getArticles = async (req, res) => {
         article.hashtags = await getHashtagsByArticleId(article.id);
     }
 
+    const categories = await res.locals.categories;
+
     res.render("admin/articles", {
         title: "Bài viết",
         empty: articles.length === 0,
@@ -60,7 +62,8 @@ export const getArticles = async (req, res) => {
         totalPublishedPages,
         totalRejectedPages,
         limit: LIMIT,
-        allHashtags
+        allHashtags,
+        categories
     });
 };
 
