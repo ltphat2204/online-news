@@ -77,8 +77,22 @@ export const handleLogout = async (req, res) => {
 }
 
 export const handleRegister = async (req, res) => {
+    var user = {};
+    user.email = req.body.email;
+    user.username = req.body.username;
+    user.fullname = req.body.fullname;
+    user.password = req.body.password;
+    user.role = "subscriber";
+    const hashedPassword = await hashPassword(user.password);
+    user.password = hashedPassword;
+    await createUser(user);
+    res.redirect("/auth/login");
+};
+
+export const checkAvailable = async (req, res) => {
     const SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY;
-    const token = req.body['g-recaptcha-response'];
+    const token = req.query.token;
+    
     try {
         // Xác minh reCAPTCHA token
         const response = await fetch(`https://www.google.com/recaptcha/api/siteverify`, {
@@ -87,19 +101,20 @@ export const handleRegister = async (req, res) => {
             body: `secret=${SECRET_KEY}&response=${token}`,
         });
         const result = await response.json();
-
         if (result.success && result.score >= 0.5) {
             // Token hợp lệ, tiếp tục xử lý đăng ký
-            var user = {};
-            user.email = req.body.email;
-            user.username = req.body.username;
-            user.fullname = req.body.fullname;
-            user.password = req.body.password;
-            user.role = "subscriber";
-            const hashedPassword = await hashPassword(user.password);
-            user.password = hashedPassword;
-            await createUser(user);
-            res.redirect("/auth/login");
+            const user = req.query.username;
+            const email = req.query.email;
+
+            const old_name = await getUserByUsername(user);
+            const old_email = await getUserByEmail(email);
+
+            const response = {
+                userExist: !old_name,
+                emailExist: !old_email
+            }
+
+            return res.json(response);
         } else {
             res.status(400).send('reCAPTCHA không hợp lệ.');
         }
@@ -107,19 +122,4 @@ export const handleRegister = async (req, res) => {
         console.error(error.message);
         res.status(500).send('Lỗi khi xác minh reCAPTCHA.');
     }
-};
-
-export const checkAvailable = async (req, res) => {
-    const user = req.query.username;
-    const email = req.query.email;
-
-    const old_name = await getUserByUsername(user);
-    const old_email = await getUserByEmail(email);
-
-    const response = {
-        userExist: !old_name,
-        emailExist: !old_email
-    }
-
-    return res.json(response);
 }
