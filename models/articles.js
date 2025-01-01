@@ -96,7 +96,8 @@ export const getArticleByEditors = async (searchTerm = "", limit, offset) => {
                     "users.fullname as fullname",
                     "categories.name as category",
                 )
-                .join("users", "articles.editor_id", "users.id")
+                .join("editor_category", "articles.category_id", "editor_category.category_id")
+                .join("users", "editor_category.editor_id", "users.id")
                 .join("article_tag", "articles.id", "article_tag.article_id")
                 .join("hashtags", "article_tag.tag_id", "hashtags.id")
                 .leftJoin("categories", "articles.category_id", "categories.id")
@@ -111,6 +112,13 @@ export const getArticleByEditors = async (searchTerm = "", limit, offset) => {
                 })  
                 .offset(offset)
                 .limit(limit);
+    return result;
+}
+
+export const getArticlesByWriterUsername = async (username) => {
+    const result = await database("articles").select("articles.title", "articles.id")
+                                        .join("users", "users.id", "articles.author_id")
+                                        .where("users.username", username);
     return result;
 }
 

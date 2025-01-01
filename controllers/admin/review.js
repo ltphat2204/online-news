@@ -1,5 +1,6 @@
 import { getArticleByEditors, countDraftArticles, updateArticleById, updateArticleHashtag } from "../../models/articles.js";
-import { getHashtagID } from "../../models/hashtags.js";
+import { getHashtagID, getAllHashtags } from "../../models/hashtags.js";
+import { getEditorByUsername } from "../../models/user.js";
 
 export const getArticleList = async (req, res) => {
     const limit = 5;
@@ -12,6 +13,8 @@ export const getArticleList = async (req, res) => {
 
     const offset = (page - 1) * limit;
     const articles = await getArticleByEditors(searchTerm, limit, offset);
+    const hashtags = await getAllHashtags();
+
     for (let i = 1; i <= totalPages; i++) {
         const item = {
             value: i,
@@ -25,22 +28,26 @@ export const getArticleList = async (req, res) => {
         title: 'Duyệt bài',
         empty: articles.length === 0,
         articles,
+        hashtags,
         pageItems: pageItems,
-        searchTerm: searchTerm
+        searchTerm: searchTerm,
+        user: req.session.authUser
     });
 }
 
 export const updateArticle = async (req, res) => {
     const article = req.body;
+    const editorID = await getEditorByUsername(article.editor_id);
     const newArticle = {
         id: article.id,
         status: article.status,
+        editor_id: editorID.id,
+        published_at: article.published_at,
         category_id: article.category_id
     };
     await updateArticleById(newArticle.id, newArticle);
-    const hashtagID = await getHashtagID(article.hashtags);
     const newHashtag = {
-        tag_id: hashtagID.id
+        tag_id: article.hashtags
     };
 
     await updateArticleHashtag(newArticle.id, newHashtag);
@@ -49,7 +56,15 @@ export const updateArticle = async (req, res) => {
 
 export const disapproveArticle = async (req, res) => {
     const article = req.body;
-    console.log(article);
-    await updateArticleById(article.id, article);
+    const editorID = await getEditorByUsername(article.editor_id);
+    const newArticle = {
+        id: article.id,
+        status: article.status,
+        editor_id: editorID.id,
+        category_id: article.category_id,
+        reject_reason: article.reject_reason
+    };
+
+    await updateArticleById(newArticle.id, newArticle);
     res.redirect("/admin/review");
 }
