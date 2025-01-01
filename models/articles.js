@@ -270,3 +270,24 @@ export const addArticleHashtags = async (articleId, hashtags) => {
         await addArticleTag(articleId, tagId);
     }
 };
+
+export const getArticlesByAuthor = async (authorId) => {
+    return await database('articles').where('author_id', authorId).select('*');
+};
+
+export const getArticlesByCategoryIds = async (categoryIds, search = "", offset = 0, limit = 5) => {
+    let query = database("articles")
+        .select("articles.*", "categories.name as category")
+        .join("categories", "articles.category_id", "categories.id")
+        .whereIn("articles.category_id", categoryIds);
+
+    if (search) {
+        query = query.andWhere(builder => {
+            builder.whereLike("title", `%${search}%`)
+                .orWhereLike("abstract", `%${search}%`)
+                .orWhereLike("content", `%${search}%`);
+        });
+    }
+
+    return await query.offset(offset).limit(limit);
+};

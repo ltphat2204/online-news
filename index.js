@@ -39,6 +39,12 @@ app.use(preloadNavBar);
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(express.json({ limit: '50mb' }));
 
+app.use((req, res, next) => {
+    res.locals.authUser = req.session.authUser;
+    res.locals.auth = req.session.auth || false;
+    next();
+});
+
 // Config route for static files
 app.use('/statics', express.static(join(__dirname, 'public')));
 
