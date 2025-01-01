@@ -170,6 +170,7 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
                         queryBuilder.andWhere(categoryCondition, category);
                     }
                 })
+                .where("articles.status", "published") // Only fetch published articles
                 .count("* as total")
                 .first();
 
@@ -195,7 +196,8 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
                         queryBuilder.andWhere(categoryCondition, category);
                     }
                 })
-                .orderBy("articles.published_at", "desc") // Sort by newest
+                .where("articles.status", "published") // Only fetch published articles
+                .orderByRaw('is_premium DESC, articles.published_at DESC') // Sort with premium first
                 .limit(k)
                 .offset(s);
         } else {
@@ -224,6 +226,7 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
                         queryBuilder.andWhere(categoryCondition, category);
                     }
                 })
+                .where("articles.status", "published") // Only fetch published articles
                 .count("* as total")
                 .first();
 
@@ -262,6 +265,7 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
                         queryBuilder.andWhere(categoryCondition, category);
                     }
                 })
+                .where("articles.status", "published") // Only fetch published articles
                 .orderBy("articles.published_at", "desc") // Sort by newest
                 .limit(k)
                 .offset(s);
@@ -281,13 +285,15 @@ export const getArticlesByCategoryID = async (id, k, s) => {
     const count = await database("articles")
         .join("categories", "articles.category_id", "categories.id")
         .where("categories.id", id)
+        .andWhere("articles.status", "published") // Only fetch published articles
         .count("* as total").first();
     
     const articles = await database("articles")
         .select("articles.*", "categories.name as category_name", "categories.description as category_description")
         .join("categories", "articles.category_id", "categories.id")
         .where("categories.id", id)
-        .orderBy("articles.published_at", "desc") // Sort by newest
+        .andWhere("articles.status", "published") // Only fetch published articles
+        .orderByRaw('is_premium DESC, articles.published_at DESC') // Sort with premium first
         .limit(k).offset(s);
         return { total: count.total, articles: articles };
 }

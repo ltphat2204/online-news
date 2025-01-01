@@ -1,9 +1,12 @@
-import { getUserByEmail,
+import {
+    getUserByEmail,
     getUserByUsername,
     createUser
 } from "../models/user.js";
-import { comparePassword,
-    hashPassword} from "../utils/cryptography.js";
+import {
+    comparePassword,
+    hashPassword
+} from "../utils/cryptography.js";
 import { getSocialNetworkByUserId } from "../models/social_network.js";
 
 export const handleLogin = async (req, res) => {
@@ -44,7 +47,7 @@ export const handleLogin = async (req, res) => {
             return;
         }
     }
-    
+
     req.session.auth = true;
     req.session.authUser = {
         id: old_user.id,
@@ -56,43 +59,67 @@ export const handleLogin = async (req, res) => {
 }
 
 export const handleLogout = async (req, res) => {
-    req.logout(function(err) {
+    req.logout(function (err) {
         if (err) {
-          console.error(err);
-          return res.status(500).send("Error during logout");
-        }
-        
-        req.session.destroy(function(err) {
-          if (err) {
             console.error(err);
-            return res.status(500).send("Error destroying session");
-          }
-          
-          res.redirect('/');
+            return res.status(500).send("Error during logout");
+        }
+
+        req.session.destroy(function (err) {
+            if (err) {
+                console.error(err);
+                return res.status(500).send("Error destroying session");
+            }
+
+            res.redirect('/');
         });
-      });
+    });
 }
 
 export const handleRegister = async (req, res) => {
-    const user = req.body;
+    var user = {};
+    user.email = req.body.email;
+    user.username = req.body.username;
+    user.fullname = req.body.fullname;
+    user.password = req.body.password;
     user.role = "subscriber";
     const hashedPassword = await hashPassword(user.password);
     user.password = hashedPassword;
     await createUser(user);
     res.redirect("/auth/login");
-}
+};
 
 export const checkAvailable = async (req, res) => {
-    const user = req.query.username;
-    const email = req.query.email;
+    const SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY;
+    const token = req.query.token;
+    
+    try {
+        // Xác minh reCAPTCHA token
+        const response = await fetch(`https://www.google.com/recaptcha/api/siteverify`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `secret=${SECRET_KEY}&response=${token}`,
+        });
+        const result = await response.json();
+        if (result.success && result.score >= 0.5) {
+            // Token hợp lệ, tiếp tục xử lý đăng ký
+            const user = req.query.username;
+            const email = req.query.email;
 
-    const old_name = await getUserByUsername(user);
-    const old_email = await getUserByEmail(email);
+            const old_name = await getUserByUsername(user);
+            const old_email = await getUserByEmail(email);
 
-    const response = {
-        userExist: !old_name,
-        emailExist: !old_email
+            const response = {
+                userExist: !old_name,
+                emailExist: !old_email
+            }
+
+            return res.json(response);
+        } else {
+            res.status(400).send('reCAPTCHA không hợp lệ.');
+        }
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send('Lỗi khi xác minh reCAPTCHA.');
     }
-
-    return res.json(response);
 }

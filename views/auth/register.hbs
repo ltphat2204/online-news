@@ -1,76 +1,52 @@
 {{#fill_section 'js'}}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-  $('#register').on('submit', async function (e) {
+  document.getElementById('register').addEventListener('submit', async function (e) {
     e.preventDefault();
-    const email = $('#email').val();
-    const username = $('#username').val();
-    const fullname = $('#fullname').val();
-    const password = $('#password').val();
-
-    if (email.length === 0) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Lỗi',
-        text: 'Vui lòng nhập email'
-      });
+    const email = document.getElementById('email').value.trim();
+    const username = document.getElementById('username').value.trim();
+    const fullname = document.getElementById('fullname').value.trim();
+    const password = document.getElementById('password').value.trim();
+    
+    if (!email) {
+      Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Vui lòng nhập email' });
       return;
     }
-    if (username.length === 0) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Lỗi',
-        text: 'Vui lòng nhập username'
-      });
+    if (!username) {
+      Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Vui lòng nhập username' });
       return;
     }
-    if (fullname.length === 0) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Lỗi',
-        text: 'Vui lòng nhập họ và tên'
-      });
+    if (!fullname) {
+      Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Vui lòng nhập họ và tên' });
       return;
     }
-    if (password.length === 0) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Lỗi',
-        text: 'Vui lòng nhập mật khẩu'
-      });
+    if (!password) {
+      Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Vui lòng nhập mật khẩu' });
       return;
     }
     if (password.length < 8) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Lỗi',
-        text: 'Mật khẩu quá ngắn, ít nhất phải chứa 8 ký tự'
-      });
+      Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Mật khẩu quá ngắn, ít nhất phải chứa 8 ký tự' });
       return;
     }
-    const url = `/auth/is-available?username=${username}&email=${email}`;
+
     try {
-      const response = await fetch(url);
+      // Thực hiện reCAPTCHA
+      const token = await grecaptcha.execute('{{SITE_KEY}}', { action: 'register' });
+      console.log(username, email, token);
+      // Kiểm tra tài khoản hoặc email đã tồn tại
+      const response = await fetch(`/auth/is-available?username=${username}&email=${email}&token=${token}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      });
       if (!response.ok) {
-        throw new Error(`Response status: ${response.status}`);
+        throw new Error(`Lỗi khi kiểm tra tài khoản: ${response.status}`);
       }
 
       const data = await response.json();
-      console.log(data);
       if (!data.userExist) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Lỗi',
-          text: 'Username này đã tồn tại!'
-        });
-        return;
-      }
-      else if (!data.emailExist) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Lỗi',
-          text: 'Email này đã tồn tại'
-        })
+        Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Username này đã tồn tại!' });
+      } else if (!data.emailExist) {
+        Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Email này đã tồn tại!' });
       } else {
         Swal.fire({
           title: "Đăng ký thành công",
@@ -78,15 +54,18 @@
           icon: "success"
         }).then((result) => {
           if (result.isConfirmed) {
-            $('#register').off('submit').submit();
+            document.getElementById('register').submit();
           }
         });
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error.message);
+      Swal.fire({
+        icon: 'error',
+        title: 'Lỗi',
+        text: 'Đã xảy ra lỗi. Vui lòng thử lại!'
+      });
     }
-
   });
 </script>
 {{/fill_section}}
@@ -129,30 +108,15 @@
 
     <div class="d-grid gap-2">
       <a href="/auth/google" class="btn custom-social-btn w-100 d-flex align-items-center mb-3">
-        <img
-          src="/statics/assets/Google.png"
-          alt="Google Logo"
-          class="me-2"
-          style="width: 28px; height: 28px;"
-        />
+        <img src="/statics/assets/Google.png" alt="Google Logo" class="me-2" style="width: 28px; height: 28px;" />
         <span>Đăng nhập bằng Google</span>
       </a>
       <a href="/auth/facebook" class="btn custom-social-btn w-100 d-flex align-items-center mb-3">
-        <img
-          src="/statics/assets/Facebook.png"
-          alt="Facebook Logo"
-          class="me-2"
-          style="width: 28px; height: 28px;"
-        />
+        <img src="/statics/assets/Facebook.png" alt="Facebook Logo" class="me-2" style="width: 28px; height: 28px;" />
         <span>Đăng nhập bằng Facebook</span>
       </a>
       <a href="/auth/github" class="btn custom-social-btn w-100 d-flex align-items-center mb-3">
-        <img
-          src="/statics/assets/Github.png"
-          alt="Github Logo"
-          class="me-2"
-          style="width: 28px; height: 28px;"
-        />
+        <img src="/statics/assets/Github.png" alt="Github Logo" class="me-2" style="width: 28px; height: 28px;" />
         <span>Đăng nhập bằng Github</span>
       </a>
     </div>
