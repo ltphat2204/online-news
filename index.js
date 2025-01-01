@@ -10,6 +10,7 @@ import './config/environment.js';
 import database from './config/database.js';
 import AdminRoutes from './routes/admin/index.js';
 import AuthRoutes from './routes/auth/index.js';
+import ProfileRoutes from './routes/profile.js';
 import CategoryRoutes from './routes/category.js';
 import setLayout from './middlewares/setLayout.js';
 import preloadNavBar from './middlewares/preloadCategoryGroups.js'; 
@@ -49,6 +50,7 @@ app.use('/admin', AdminRoutes);
 app.use('/auth', AuthRoutes);
 app.use('/category_group', category_groupRoutes);
 app.use('/category', CategoryRoutes);
+app.use('/profile', ProfileRoutes);
 
 // Xử lý lỗi 404
 app.use((req, res) => {
