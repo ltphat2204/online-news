@@ -79,6 +79,7 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function() {
         // Initialize summernote
@@ -90,7 +91,7 @@
         const selectedHashtagsContainer = document.getElementById('selected-hashtags');
         const availableHashtagsSelect = document.getElementById('available-hashtags');
 
-        availableHashtagsSelect.addEventListener('change', function() {
+        availableHashtagsSelect.addEventListener('change', function(e) {
             const selectedOption = this.options[this.selectedIndex];
             if (!selectedOption) return;
 
@@ -99,7 +100,12 @@
 
             // Check if hashtag is already selected
             if (document.querySelector(`#selected-hashtags [data-id="${hashtagId}"]`)) {
-                alert('Hashtag đã được chọn.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Hashtag đã được chọn',
+                    text: 'Vui chọn hashtag khác'
+                });
+                this.selectedIndex = 0;
                 return;
             }
 
