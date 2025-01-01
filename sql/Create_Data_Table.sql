@@ -42,6 +42,7 @@ CREATE TABLE "articles" (
   "title" varchar UNIQUE NOT NULL,
   "abstract" text,
   "content" text NOT NULL,
+  "youtube_url" varchar,
   "thumbnail" varchar,
   "is_premium" boolean DEFAULT false,
   "view_count" int DEFAULT 0,

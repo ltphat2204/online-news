@@ -79,6 +79,7 @@
         </button>
       </div>
       <div class="modal-body">
+        <input type="hidden" name="id" id="deleteId">
         <p>Bạn có chắc chắn muốn xóa bài viết?</p>
       </div>
       <div class="modal-footer">
@@ -88,3 +89,16 @@
     </form>
   </div>
 </div>
+
+<script>
+  $(document).ready(function () {
+    // Edit Modal Population
+    $('#deleteArticleModal').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget);
+      var id = button.data('id');
+
+      var modal = $(this);
+      modal.find('#deleteId').val(id);
+    });
+  });
+</script>

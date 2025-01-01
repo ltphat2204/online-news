@@ -66,10 +66,17 @@ export const editArticle = async (req, res) => {
 export const editArticleView = async (req, res) => {
     const { id } = req.query;
     const article = await getArticleById(id);
+    const categories = res.locals.categories.map(c => {
+        return {
+            ...c,
+            selected: c.id == article.category_id
+        }
+    }
+    )
 
     res.render("admin/edit_article", {
         title: "Sửa bài viết",
-        categories: res.locals.categories,
+        categories,
         article
     })
 }
