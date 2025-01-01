@@ -80,18 +80,20 @@
             <li class="nav-item">
                 <a class="nav-link active" href="/"><i style="color: #3A7CC4" class="bi bi-house-door-fill"></i></a>
             </li>
-            {{#each categoryGroups}}
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">{{group_name}}</a>
-                    <div class="dropdown-menu">
-                        {{#each this.categories}}
-                            <a class="dropdown-item" href="/category/{{id}}">{{name}}</a>
-                        {{/each}}
-                    </div>
-                </li>
+            {{#each categoryGroupsWithCategories}}
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="/category_group/{{this.id}}" role="button"
+                    aria-expanded="false">{{this.name}}</a>
+                <div class="dropdown-menu">
+                    {{#each this.categories}}
+                    <a class="dropdown-item" href="/category/{{this.id}}">{{this.name}}</a>
+                    {{/each}}
+                </div>
+            </li>
             {{/each}}
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false"><i class="bi bi-list"></i></a>
+                <a class="nav-link dropdown-toggle" href="#" role="button" aria-expanded="false">
+                    <i class="bi bi-list"></i></a>
                 <div class="dropdown-menu">
                     <a class="dropdown-item" href="#">something</a>
                     <a class="dropdown-item" href="#">some some some</a>
@@ -99,10 +101,26 @@
             </li>
         </ul>
     </div>
-    <div class="container shadow mb-5" style="background-color: white; min-height: 100svh;">
+    <div class="container shadow mb-4" style="background-color: white; min-height: 75svh;">
         {{{ body }}}
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
+        crossorigin="anonymous"></script>
     <script src="/statics/scripts/global.js"></script>
+    <script>
+        // Enable hover dropdowns
+        document.querySelectorAll('.nav-item.dropdown').forEach(function (dropdown) {
+            dropdown.addEventListener('mouseover', function () {
+                this.classList.add('show');
+                this.querySelector('.dropdown-menu').classList.add('show');
+            });
+            dropdown.addEventListener('mouseout', function () {
+                this.classList.remove('show');
+                this.querySelector('.dropdown-menu').classList.remove('show');
+            });
+        });
+    </script>
 </body>
+
 </html>
