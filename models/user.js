@@ -67,7 +67,7 @@ export const getEditors = async (searchTerm = "", limit, offset) => {
 }
 
 export const getWriterByUsername = async (username) => {
-    const result = await database("users").select("*").where("role", "writer").andWhere("username", username);
+    const result = await database("users").select("*").where("role", "writer").andWhere("username", username).first();
     return result;
 }
 

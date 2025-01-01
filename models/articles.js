@@ -114,7 +114,7 @@ export const getArticleByEditors = async (searchTerm = "", limit, offset) => {
 }
 
 export const getArticlesByWriterUsername = async (username) => {
-    const result = await database("articles").select("articles.title")
+    const result = await database("articles").select("articles.title", "articles.id")
                                         .join("users", "users.id", "articles.author_id")
                                         .where("users.username", username);
     return result;
