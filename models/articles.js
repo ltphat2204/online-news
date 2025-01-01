@@ -113,6 +113,13 @@ export const getArticleByEditors = async (searchTerm = "", limit, offset) => {
     return result;
 }
 
+export const getArticlesByWriterID = async (id) => {
+    const result = await database("articles").select("articles.title")
+                                        .join("users", "users.id", "atricles.author_id")
+                                        .where("users.id", id);
+    return result;
+}
+
 export const getArticlesByCategory = async (category_id, current_article_id, limit = 5) => {
     return await database("articles")
         .select("articles.*", "categories.name as category_name")

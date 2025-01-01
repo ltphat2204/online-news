@@ -45,7 +45,7 @@ VALUES
 	(gen_random_uuid(), 'dienanh');
 
 INSERT INTO articles (
-	id, title, abstract, content, category_id, author_id, editor_id, published_at
+	id, title, abstract, content, category_id, author_id, editor_id, created_at
 )
 VALUES
 	(gen_random_uuid(), 
@@ -369,3 +369,47 @@ Các ca sĩ Hàn Quốc lăng xê mốt này từ năm 2018. Sau concert Blackpi
 (SELECT id FROM users WHERE role = 'editor' AND username = 'editor1'),
 now());
 
+INSERT INTO article_tag
+VALUES 
+	(gen_random_uuid(), 
+	(SELECT id FROM articles WHERE title='Triều Tiên nói Hàn Quốc đang "hỗn loạn"'),
+	(SELECT id FROM hashtags WHERE tag_name='thegioi')),
+	(gen_random_uuid(), 
+	(SELECT id FROM articles WHERE title='Hà Nội tiếp tục trễ hẹn dự án vành đai 1'),
+	(SELECT id FROM hashtags WHERE tag_name='trongnuoc')),
+	(gen_random_uuid(), 
+	(SELECT id FROM articles WHERE title='Việt Nam cần đầu tư AI vào khu vực công, giáo dục'),
+	(SELECT id FROM hashtags WHERE tag_name='AI')),
+	(gen_random_uuid(), 
+	(SELECT id FROM articles WHERE title='Robot hình cầu lưỡng cư hỗ trợ cảnh sát Trung Quốc tuần tra'),
+	(SELECT id FROM hashtags WHERE tag_name='congnghe')),
+	(gen_random_uuid(), 
+	(SELECT id FROM articles WHERE title='Việt Nam nhập thịt và phụ phẩm nhiều kỷ lục'),
+	(SELECT id FROM hashtags WHERE tag_name='nongsan')),
+	(gen_random_uuid(), 
+	(SELECT id FROM articles WHERE title='Dị ứng hải sản có được tiêm vaccine?'),
+	(SELECT id FROM hashtags WHERE tag_name='haisan')),
+	(gen_random_uuid(), 
+	(SELECT id FROM articles WHERE title='Những kỷ lục khó bị phá ở ASEAN Cup'),
+	(SELECT id FROM hashtags WHERE tag_name='bongda')),
+	(gen_random_uuid(), 
+	(SELECT id FROM articles WHERE title='Chung kết giải bóng rổ trẻ 2024 - trận đấu mãn nhãn người xem'),
+	(SELECT id FROM hashtags WHERE tag_name='bongro')),
+	(gen_random_uuid(), 
+	(SELECT id FROM articles WHERE title='Legion Esports thắng áp đảo tại chung kết Mobile Legends: Bang Bang'),
+	(SELECT id FROM hashtags WHERE tag_name='esports')),
+	(gen_random_uuid(), 
+	(SELECT id FROM articles WHERE title='Djokovic bắt đầu mùa mới cuối năm nay'),
+	(SELECT id FROM hashtags WHERE tag_name='tennis')),
+	(gen_random_uuid(), 
+	(SELECT id FROM articles WHERE title='Đinh Lập Nhân gỡ hòa ở chung kết cờ vua thế giới 2024'),
+	(SELECT id FROM hashtags WHERE tag_name='thethao')),
+	(gen_random_uuid(), 
+	(SELECT id FROM articles WHERE title='Nhạc sĩ Huy Tuấn: "8Wonder là điểm hẹn của sao quốc tế"'),
+	(SELECT id FROM hashtags WHERE tag_name='amnhac')),
+	(gen_random_uuid(), 
+	(SELECT id FROM articles WHERE title='Lý Hải hướng dẫn Lê Tuấn Khang diễn xuất'),
+	(SELECT id FROM hashtags WHERE tag_name='dienanh')),
+	(gen_random_uuid(), 
+	(SELECT id FROM articles WHERE title='Giới trẻ Việt theo đuổi mốt trang điểm "bling bling"'),
+	(SELECT id FROM hashtags WHERE tag_name='thoitrang'));
