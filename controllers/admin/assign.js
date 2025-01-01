@@ -28,7 +28,7 @@ export const getEditorLists = async (req, res) => {
             isActive: i === page,
             searchTerm: searchTerm
         }
-        pageItems.push(item);``
+        pageItems.push(item);
     }
 
     res.render("admin/assign", {

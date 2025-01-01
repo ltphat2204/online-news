@@ -8,7 +8,7 @@ import {
     countSearchCategories,
     searchCategoryByName,
     getCategoryByCategoryGroup} from "../models/category.js";
-
+    import { getArticlesByCategoryID } from "../models/articles.js";
 export const getRender = async (req, res) => {
     res.render('admin/category')
 }
@@ -85,4 +85,29 @@ export const searchCategoryByCategoryGroup = async (req, res) => {
     const categoryGroup = req.query.categoryGroup;
     const categories = await getCategoryByCategoryGroup(categoryGroup);
     res.json({ categories });
+}
+
+export const getArticlesByCategoryIDController = async (req, res) => {
+    const { id } = req.params;
+    const page = req.query.page||1;
+    const limit = req.query.limit || 5;
+    const offset = (page-1) * limit || 0;
+    const data = await getArticlesByCategoryID(id, limit, offset);
+    const articles = data.articles;
+    const totalPages = Math.ceil(data.total / limit);
+    res.render('category/detail',
+        {
+            title: articles[0].category_name,
+            description: articles[0].category_description,
+            ID: id, 
+            articles: articles,
+            empty: articles.length === 0,
+            pagination: {
+                limit: parseInt(limit, 10),
+                totalRows: articles.length,
+                currentPage: parseInt(page, 10),
+                totalPages: parseInt(totalPages, 10),
+            }
+        }
+     );
 }
