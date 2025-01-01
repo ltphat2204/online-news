@@ -1,6 +1,5 @@
-import { countArticles, createArticle, deleteArticleById, getAllArticles, getArticlesByAuthor, getArticleById, updateArticleById, addArticleHashtags, getArticlesByCategoryIds } from "../../models/articles.js";
+import { createArticle, deleteArticleById, getArticleById, updateArticleById, addArticleHashtags, fetchArticlesByRole, getHashtagsByArticleId } from "../../models/articles.js";
 import { getAllHashtags } from "../../models/hashtags.js";
-import { getEditorCategories } from "../../models/editor_category.js";
 
 const LIMIT = 5;
 
@@ -8,20 +7,9 @@ export const getArticles = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const offset = (page - 1) * LIMIT;
     const searchTerm = req.query.search || '';
-    let articles, totalArticles;
+    const authUser = req.session.authUser;
 
-    if (req.session.authUser.role === 'admin') {
-        articles = await getAllArticles(searchTerm, 0, Number.MAX_SAFE_INTEGER); 
-        totalArticles = await countArticles(searchTerm);
-    } else if (req.session.authUser.role === 'writer') {
-        articles = await getArticlesByAuthor(req.session.authUser.id, searchTerm, 0, Number.MAX_SAFE_INTEGER); 
-        totalArticles = articles.length;
-    } else if (req.session.authUser.role === 'editor') {
-        const editorCategories = await getEditorCategories(req.session.authUser.id);
-        const categoryIds = editorCategories.map(category => category.category_id);
-        articles = await getArticlesByCategoryIds(categoryIds, searchTerm, 0, Number.MAX_SAFE_INTEGER);
-        totalArticles = articles.length;
-    }
+    const articles = await fetchArticlesByRole(authUser.role, authUser.id, searchTerm);
 
     const draftArticles = articles.filter(article => article.status === 'draft');
     const approvedArticles = articles.filter(article => article.status === 'approved');
@@ -33,41 +21,25 @@ export const getArticles = async (req, res) => {
     const totalPublishedPages = Math.ceil(publishedArticles.length / LIMIT);
     const totalRejectedPages = Math.ceil(rejectedArticles.length / LIMIT);
 
-    const draftPageItems = [];
-    const approvedPageItems = [];
-    const publishedPageItems = [];
-    const rejectedPageItems = [];
-
-    for (let i = 1; i <= totalDraftPages; i++) {
-        draftPageItems.push({
-            value: i,
-            status: i == page ? "active" : "",
+    const generatePageItems = (totalPages) => {
+        return Array.from({ length: totalPages }, (_, i) => ({
+            value: i + 1,
+            status: i + 1 === page ? "active" : "",
             searchTerm: searchTerm
-        });
-    }
+        }));
+    };
 
-    for (let i = 1; i <= totalApprovedPages; i++) {
-        approvedPageItems.push({
-            value: i,
-            status: i == page ? "active" : "",
-            searchTerm: searchTerm
-        });
-    }
+    const draftPageItems = generatePageItems(totalDraftPages);
+    const approvedPageItems = generatePageItems(totalApprovedPages);
+    const publishedPageItems = generatePageItems(totalPublishedPages);
+    const rejectedPageItems = generatePageItems(totalRejectedPages);
 
-    for (let i = 1; i <= totalPublishedPages; i++) {
-        publishedPageItems.push({
-            value: i,
-            status: i == page ? "active" : "",
-            searchTerm: searchTerm
-        });
-    }
+    // Fetch all hashtags for the editor
+    const allHashtags = await getAllHashtags();
 
-    for (let i = 1; i <= totalRejectedPages; i++) {
-        rejectedPageItems.push({
-            value: i,
-            status: i == page ? "active" : "",
-            searchTerm: searchTerm
-        });
+    // Fetch categories and hashtags for each draft article
+    for (const article of draftArticles) {
+        article.hashtags = await getHashtagsByArticleId(article.id);
     }
 
     res.render("admin/articles", {
@@ -87,19 +59,19 @@ export const getArticles = async (req, res) => {
         totalApprovedPages,
         totalPublishedPages,
         totalRejectedPages,
-        limit: LIMIT
+        limit: LIMIT,
+        allHashtags
     });
-}
+};
 
 export const postArticle = async (req, res) => {
     try {
-        const { hashtags, ...article } = req.body; 
+        const { hashtags, ...article } = req.body;
         const author_id = req.session.authUser.id;
 
         const result = await createArticle({ ...article, author_id });
         const articleId = result[0].id;
 
-        // Add hashtags to the article
         await addArticleHashtags(articleId, hashtags || []);
 
         res.redirect('/admin/articles');

@@ -1,5 +1,6 @@
 import database from "../config/database.js";
 import { createHashtags, addArticleTag } from "./hashtags.js";
+import { getEditorCategories } from "./editor_category.js";
 
 export const getAllArticles = async (search = "", offset = 0, limit = 5) => {
     if (search) {
@@ -89,28 +90,28 @@ export const getArticleInfoById = async (id) => {
 }
 
 export const getArticleByEditors = async (searchTerm = "", limit, offset) => {
-    const result =  await database("articles")
-                .select(
-                    "articles.*",
-                    "hashtags.tag_name as hashtags",
-                    "users.fullname as fullname",
-                    "categories.name as category",
-                )
-                .join("users", "articles.editor_id", "users.id")
-                .join("article_tag", "articles.id", "article_tag.article_id")
-                .join("hashtags", "article_tag.tag_id", "hashtags.id")
-                .leftJoin("categories", "articles.category_id", "categories.id")
-                .where(builder => {  
-                    builder  
-                        .where("articles.status", "draft")  
-                        .andWhere(subBuilder => {  
-                            subBuilder  
-                                .whereLike("articles.abstract", `%${searchTerm}%`)  
-                                .orWhereLike("users.fullname", `%${searchTerm}%`)  
-                        });  
-                })  
-                .offset(offset)
-                .limit(limit);
+    const result = await database("articles")
+        .select(
+            "articles.*",
+            "hashtags.tag_name as hashtags",
+            "users.fullname as fullname",
+            "categories.name as category",
+        )
+        .join("users", "articles.editor_id", "users.id")
+        .join("article_tag", "articles.id", "article_tag.article_id")
+        .join("hashtags", "article_tag.tag_id", "hashtags.id")
+        .leftJoin("categories", "articles.category_id", "categories.id")
+        .where(builder => {
+            builder
+                .where("articles.status", "draft")
+                .andWhere(subBuilder => {
+                    subBuilder
+                        .whereLike("articles.abstract", `%${searchTerm}%`)
+                        .orWhereLike("users.fullname", `%${searchTerm}%`)
+                });
+        })
+        .offset(offset)
+        .limit(limit);
     return result;
 }
 
@@ -153,7 +154,7 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
         let results, count;
         const categoryGroupCondition = categoryGroup !== '' ? "category_groups.name" : null;
         const categoryCondition = category !== '' ? "categories.name" : null;
-        
+
         if (searchQuery === "") {
             count = await database('articles')
                 .join("categories", "articles.category_id", "categories.id")
@@ -168,7 +169,7 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
                 })
                 .count("* as total").first();
 
-                results = await database('articles')
+            results = await database('articles')
                 .select(
                     "articles.*",
                     "categories.id as category_id",
@@ -242,13 +243,13 @@ export const getArticlesByCategoryID = async (id, k, s) => {
         .join("categories", "articles.category_id", "categories.id")
         .where("categories.id", id)
         .count("* as total").first();
-    
+
     const articles = await database("articles")
         .select("articles.*", "categories.name as category_name", "categories.description as category_description")
         .join("categories", "articles.category_id", "categories.id")
         .where("categories.id", id)
         .limit(k).offset(s);
-        return { total: count.total, articles: articles };
+    return { total: count.total, articles: articles };
 }
 
 export const addArticleHashtags = async (articleId, hashtags) => {
@@ -271,8 +272,21 @@ export const addArticleHashtags = async (articleId, hashtags) => {
     }
 };
 
-export const getArticlesByAuthor = async (authorId) => {
-    return await database('articles').where('author_id', authorId).select('*');
+export const getArticlesByAuthor = async (authorId, search = "", offset = 0, limit = 5) => {
+    let query = database("articles")
+        .select("articles.*", "categories.name as category")
+        .join("categories", "articles.category_id", "categories.id")
+        .where("articles.author_id", authorId);
+
+    if (search) {
+        query = query.andWhere(builder => {
+            builder.whereLike("title", `%${search}%`)
+                .orWhereLike("abstract", `%${search}%`)
+                .orWhereLike("content", `%${search}%`);
+        });
+    }
+
+    return await query.offset(offset).limit(limit);
 };
 
 export const getArticlesByCategoryIds = async (categoryIds, search = "", offset = 0, limit = 5) => {
@@ -290,4 +304,19 @@ export const getArticlesByCategoryIds = async (categoryIds, search = "", offset 
     }
 
     return await query.offset(offset).limit(limit);
+};
+
+export const fetchArticlesByRole = async (role, userId, searchTerm) => {
+    switch (role) {
+        case 'admin':
+            return await getAllArticles(searchTerm, 0, Number.MAX_SAFE_INTEGER);
+        case 'writer':
+            return await getArticlesByAuthor(userId, searchTerm, 0, Number.MAX_SAFE_INTEGER);
+        case 'editor':
+            const editorCategories = await getEditorCategories(userId);
+            const categoryIds = editorCategories.map(category => category.category_id);
+            return await getArticlesByCategoryIds(categoryIds, searchTerm, 0, Number.MAX_SAFE_INTEGER);
+        default:
+            return [];
+    }
 };

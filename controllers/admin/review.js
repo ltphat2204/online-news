@@ -44,12 +44,12 @@ export const updateArticle = async (req, res) => {
     };
 
     await updateArticleHashtag(newArticle.id, newHashtag);
-    res.redirect("/admin/review")
+    res.redirect("/admin/articles")
 }
 
 export const disapproveArticle = async (req, res) => {
     const article = req.body;
     console.log(article);
     await updateArticleById(article.id, article);
-    res.redirect("/admin/review");
+    res.redirect("/admin/articles");
 }
