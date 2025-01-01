@@ -90,28 +90,6 @@ export const getArticleInfoById = async (id) => {
 }
 
 export const getArticleByEditors = async (searchTerm = "", limit, offset) => {
-    const result = await database("articles")
-        .select(
-            "articles.*",
-            "hashtags.tag_name as hashtags",
-            "users.fullname as fullname",
-            "categories.name as category",
-        )
-        .join("users", "articles.editor_id", "users.id")
-        .join("article_tag", "articles.id", "article_tag.article_id")
-        .join("hashtags", "article_tag.tag_id", "hashtags.id")
-        .leftJoin("categories", "articles.category_id", "categories.id")
-        .where(builder => {
-            builder
-                .where("articles.status", "draft")
-                .andWhere(subBuilder => {
-                    subBuilder
-                        .whereLike("articles.abstract", `%${searchTerm}%`)
-                        .orWhereLike("users.fullname", `%${searchTerm}%`)
-                });
-        })
-        .offset(offset)
-        .limit(limit);
     const result =  await database("articles")
                 .select(
                     "articles.*",
