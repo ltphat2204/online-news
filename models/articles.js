@@ -196,7 +196,7 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
                     }
                 })
                 .where("articles.status", "published") // Only fetch published articles
-                .orderBy("articles.published_at", "desc") // Sort by newest
+                .orderByRaw('is_premium DESC, articles.published_at DESC') // Sort with premium first
                 .limit(k)
                 .offset(s);
         } else {
@@ -292,7 +292,7 @@ export const getArticlesByCategoryID = async (id, k, s) => {
         .join("categories", "articles.category_id", "categories.id")
         .where("categories.id", id)
         .andWhere("articles.status", "published") // Only fetch published articles
-        .orderBy("articles.published_at", "desc") // Sort by newest
+        .orderByRaw('is_premium DESC, articles.published_at DESC') // Sort with premium first
         .limit(k).offset(s);
         return { total: count.total, articles: articles };
 }
