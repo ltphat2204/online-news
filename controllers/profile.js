@@ -1,5 +1,5 @@
 import { getArticlesByWriterUsername } from "../models/articles.js";
-import { getUserByUsername, editUser, getUserById } from "../models/user.js";
+import { getUserByUsername, editUser, getUserById, setPendingPremiumStatus } from "../models/user.js";
 import { comparePassword, hashPassword} from "../utils/cryptography.js";
 
 export const viewProfile = async (req, res) => {
@@ -43,4 +43,15 @@ export const verifyPassword = async (req, res) => {
     const hashedPassword = hashPassword(old_password);
     const isValid = await comparePassword(currentUser.password, hashedPassword);
     return res.json(isValid);
+}
+
+export const requestPremium = async (req, res) => {
+    const { id } = req.body;
+    try {
+            const result = await setPendingPremiumStatus(id);
+            res.json({ success: true, message: 'Thao tác thành công' });
+        } catch (error) {
+            console.error(`Error approving premium user with id ${id}:`, error);
+            res.status(500).send('Internal Server Error');
+        }
 }
