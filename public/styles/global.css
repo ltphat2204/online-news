@@ -49,29 +49,48 @@ p {
     font-weight: 500;
 }
 
-.premium-overlay {  
-    display: none;  
-    position: fixed;  
-    top: 0;  
-    left: 0;  
-    width: 100%;  
-    height: 100%;  
-    background-color: rgba(0, 0, 0, 0.7);  
-    z-index: 1050;  
-    justify-content: center;  
-    align-items: center;  
-}  
+.premium-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1050;
+    justify-content: center;
+    align-items: center;
+}
 
-.premium-content {  
-    background-color: white;  
-    padding: 2rem;  
-    border-radius: 8px;  
-    max-width: 400px;  
-    text-align: center;  
-    position: relative;  
-}  
+.premium-content {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    max-width: 400px;
+    text-align: center;
+    position: relative;
+}
 
-.blur-content {  
-    filter: blur(5px);  
-    pointer-events: none;  
-}  
+.blur-content {
+    filter: blur(5px);
+    pointer-events: none;
+}
+
+.nav-item-category:hover>.nav-link {
+    color: #FF4500;
+}
+
+.nav-item-category .dropdown-menu {
+    border-color: #FF4500;
+}
+
+.nav-item-category .dropdown-item {
+    border: 1px solid transparent;
+    transition: all 0.3s ease-in-out;
+}
+
+.nav-item-category .dropdown-item:hover {
+    border-color: #FF4500;
+    background-color: rgba(255, 69, 0, 0.1  );
+    transform: translateY(-2px);
+}
