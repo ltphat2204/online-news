@@ -1,5 +1,5 @@
 import express from "express";
-import { checkAvailable, handleLogin, handleLogout, handleRegister, handleForgotPassword } from "../../controllers/auth.js";
+import { checkAvailable, handleLogin, handleLogout, handleRegister, handleForgotPassword, handleChangePassword } from "../../controllers/auth.js";
 import passport from '../../config/passport.js';
 
 const router = express.Router();
@@ -25,6 +25,14 @@ router.get("/forgotPassword", (req, res) => {
   });
 });
 
+// router.get("/change-password", (req, res) => {
+//   const resetMode = !!req.session.resetEmail; // Kiểm tra session
+//   res.render("auth/changePassword", {
+//       title: "Đổi mật khẩu",
+//       resetMode,
+//   });
+// });
+
 router.get("/is-available", checkAvailable);
 
 router.post("/login", handleLogin);
@@ -32,6 +40,8 @@ router.post("/login", handleLogin);
 router.post("/logout", handleLogout);
 
 router.post("/forgotPassword", handleForgotPassword);
+
+router.post("/changePassword", handleChangePassword);
 
 router.get('/google',
   passport.authenticate('google', { scope: ['profile', 'email'] }));
