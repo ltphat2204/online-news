@@ -1,7 +1,8 @@
 import express from 'express';
-import { viewProfile } from '../controllers/profile.js';
+import { viewProfile, editProfile } from '../controllers/profile.js';
 const router = express.Router();
 
 router.get('/:username', viewProfile);
+router.post('/:username/edit', editProfile);
 
 export default router; 
