@@ -48,3 +48,30 @@ p {
     color: black;
     font-weight: 500;
 }
+
+.premium-overlay {  
+    display: none;  
+    position: fixed;  
+    top: 0;  
+    left: 0;  
+    width: 100%;  
+    height: 100%;  
+    background-color: rgba(0, 0, 0, 0.7);  
+    z-index: 1050;  
+    justify-content: center;  
+    align-items: center;  
+}  
+
+.premium-content {  
+    background-color: white;  
+    padding: 2rem;  
+    border-radius: 8px;  
+    max-width: 400px;  
+    text-align: center;  
+    position: relative;  
+}  
+
+.blur-content {  
+    filter: blur(5px);  
+    pointer-events: none;  
+}  

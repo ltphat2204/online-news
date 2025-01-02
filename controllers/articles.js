@@ -1,6 +1,7 @@
 import { getAllArticles, getArticleInfoById, getArticlesByCategory, addComment, getCommentsByArticleId, getHashtagsByArticleId, fullTextSearchArticles, increaseArticleViewCount, } from "../models/articles.js";
 import { getAllCategoryGroups } from "../models/category_group.js";
 import { getAllCategories } from "../models/category.js";
+import { getUserByUsername } from "../models/user.js";
 import moment from "moment";
 import { createPDF } from "../utils/pdf.js";
 
@@ -51,6 +52,7 @@ export const exportToPdf = async (req, res) => {
 export const showArticle = async (req, res) => {
     if (req.query.id) {
         const article = await getArticleInfoById(req.query.id);
+        const currentUsername = req.session.authUser.username;
         if (!article) {
             res.render('404', {
                 title: 'Không tìm thấy trang',
@@ -60,6 +62,7 @@ export const showArticle = async (req, res) => {
         }
         
         article.content = addInlineStylesToMedia(article.content);
+        const userInfo = await getUserByUsername(currentUsername);
         const category_articles = await getArticlesByCategory(article.category_id, article.id);
         const comments = await getCommentsByArticleId(article.id);
         const hashtags = await getHashtagsByArticleId(article.id);
@@ -76,8 +79,10 @@ export const showArticle = async (req, res) => {
         res.render('articles/detail', {
             title: article.title,
             article: { ...article, view_count: view},
+            isPremiumUser: (!userInfo.is_premium && userInfo.role == "subscriber"),
             category_articles,
             comments,
+            currentUsername,
             guest
         });
     } else {
