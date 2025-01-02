@@ -123,6 +123,11 @@ export const getArticlesByWriterUsername = async (username) => {
     return result;
 }
 
+export const increaseArticleViewCount = async (articleId) => {
+    const result = await database.raw('SELECT increment_view_count(?) AS view', [articleId]);
+    return result.rows[0].view;
+}
+
 export const getArticlesByCategory = async (category_id, current_article_id, limit = 5) => {
     return await database("articles")
         .select("articles.*", "categories.name as category_name")

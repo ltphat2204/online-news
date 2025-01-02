@@ -1,6 +1,7 @@
-import { getAllArticles, getArticleInfoById, getArticlesByCategory, addComment, getCommentsByArticleId, getHashtagsByArticleId, fullTextSearchArticles } from "../models/articles.js";
+import { getAllArticles, getArticleInfoById, getArticlesByCategory, addComment, getCommentsByArticleId, getHashtagsByArticleId, fullTextSearchArticles, increaseArticleViewCount } from "../models/articles.js";
 import { getAllCategoryGroups } from "../models/category_group.js";
 import { getAllCategories } from "../models/category.js";
+import moment from "moment";
 
 export const getArticles = async (req, res) => {
     const articles = await getAllArticles();
@@ -40,10 +41,17 @@ export const showArticle = async (req, res) => {
         const category_articles = await getArticlesByCategory(article.category_id, article.id);
         const comments = await getCommentsByArticleId(article.id);
         const hashtags = await getHashtagsByArticleId(article.id);
-        article.hashtags = hashtags; 
+        article.hashtags = hashtags;
+        let view = article.view_count;
+        
+        if (!req.session.viewCount || moment().diff(req.session.viewCount, 'minutes') > 60) {
+            req.session.viewCount = moment().format('YYYY-MM-DD hh:mm:ss');
+            view = await increaseArticleViewCount(article.id);
+        }
+
         res.render('articles/detail', {
             title: article.title,
-            article,
+            article: { ...article, view_count: view},
             category_articles,
             comments
         });
