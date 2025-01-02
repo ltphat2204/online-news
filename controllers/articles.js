@@ -49,11 +49,15 @@ export const showArticle = async (req, res) => {
             view = await increaseArticleViewCount(article.id);
         }
 
+        const guest = !req.session.auth;
+        console.log(req.session)
+
         res.render('articles/detail', {
             title: article.title,
             article: { ...article, view_count: view},
             category_articles,
-            comments
+            comments,
+            guest
         });
     } else {
         res.redirect('/');
