@@ -81,7 +81,8 @@ export const getArticleInfoById = async (id) => {
             "category_groups.id as group_id",
             "category_groups.name as group_name",
             "users.id as author_id",
-            "users.fullname as author_name"
+            "users.fullname as author_name",
+            "users.username as author_username"
         )
         .join("categories", "articles.category_id", "categories.id")
         .join("category_groups", "categories.group_id", "category_groups.id")
