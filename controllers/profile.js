@@ -8,7 +8,7 @@ export const viewProfile = async (req, res) => {
     const profile = await getUserByUsername(username);
     const articles = await getArticlesByWriterUsername(username);
 
-    res.render('profile/profile', {
+    res.render('profile/profile',  {
         title: `Profile - ${profile.username}`,
         profile: profile,
         articles: articles

@@ -4,4 +4,4 @@ const router = express.Router();
 
 router.get('/:username', viewProfile);
 
-export default router;
+export default router; 
