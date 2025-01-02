@@ -38,6 +38,7 @@ export const getArticleList = async (req, res) => {
 export const updateArticle = async (req, res) => {
     const article = req.body;
     const editorID = await getEditorByUsername(article.editor_id);
+
     const newArticle = {
         id: article.id,
         status: article.status,
