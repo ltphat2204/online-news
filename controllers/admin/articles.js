@@ -86,6 +86,15 @@ export const postArticle = async (req, res) => {
     }
 };
 
+export const publishNow = async (req, res) => {
+    const { id } = req.query;
+    const article = await getArticleById(id);
+
+    await updateArticleById(article.id, { ...article, status: 'published', published_at: new Date() });
+
+    res.redirect('/admin/articles');
+}
+
 export const createArticleView = async (req, res) => {
     const hashtags = await getAllHashtags();
     res.render("admin/create_article", {
