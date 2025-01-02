@@ -67,7 +67,7 @@ export const showArticle = async (req, res) => {
         let view = article.view_count;
         
         if (!req.session.viewCount || moment().diff(req.session.viewCount, 'minutes') > 60) {
-            req.session.viewCount = moment().format('YYYY-MM-DD hh:mm:ss');
+            req.session.viewCount = moment().format('YYYY-MM-DD HH:mm:ss');
             view = await increaseArticleViewCount(article.id);
         }
 
