@@ -1,5 +1,5 @@
 import { getArticleByEditors, countDraftArticles, updateArticleById, updateArticleHashtag } from "../../models/articles.js";
-import { getHashtagID, getAllHashtags } from "../../models/hashtags.js";
+import { getAllHashtags } from "../../models/hashtags.js";
 import { getEditorByUsername } from "../../models/user.js";
 
 export const getArticleList = async (req, res) => {
