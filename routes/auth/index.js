@@ -1,8 +1,5 @@
 import express from "express";
-import { checkAvailable,
-         handleLogin,
-         handleLogout,
-         handleRegister} from "../../controllers/auth.js";
+import { checkAvailable, handleLogin, handleLogout, handleRegister, handleForgotPassword } from "../../controllers/auth.js";
 import passport from '../../config/passport.js';
 
 const router = express.Router();
@@ -22,12 +19,19 @@ router.get("/login", (req, res) => {
   });
 });
 
+router.get("/forgotPassword", (req, res) => {
+  res.render("auth/forgotPassword", {
+    title: "Quên mật khẩu",
+  });
+});
+
 router.get("/is-available", checkAvailable);
 
 router.post("/login", handleLogin);
 
 router.post("/logout", handleLogout);
 
+router.post("/forgotPassword", handleForgotPassword);
 
 router.get('/google',
   passport.authenticate('google', { scope: ['profile', 'email'] }));

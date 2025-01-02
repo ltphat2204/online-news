@@ -1,13 +1,8 @@
-import {
-    getUserByEmail,
-    getUserByUsername,
-    createUser
-} from "../models/user.js";
-import {
-    comparePassword,
-    hashPassword
-} from "../utils/cryptography.js";
+import { getUserByEmail, getUserByUsername, createUser } from "../models/user.js";
+import { comparePassword, hashPassword } from "../utils/cryptography.js";
 import { getSocialNetworkByUserId } from "../models/social_network.js";
+import { sendOTP } from "../utils/mailSender.js";
+import { numberHelpers } from "../utils/numberHelpers.js";
 
 export const handleLogin = async (req, res) => {
     const user = req.body;
@@ -122,4 +117,62 @@ export const checkAvailable = async (req, res) => {
         console.error(error.message);
         res.status(500).send('Lỗi khi xác minh reCAPTCHA.');
     }
+}
+
+export const handleForgotPassword = async (req, res) => {
+    const user = req.body;
+
+    if (user.otp) {
+        console.log(user.otp);
+        console.log(user.realotp);
+        console.log(user);
+        if (parseInt(user.otp) !== parseInt(user.realotp)) {
+            res.render("auth/forgotPassword", {
+                title: "Sai mã OTP",
+                user: user,
+                userFound: true,
+                wrongOTP: true,
+                otp: user.realotp,
+            });
+            return;
+        }
+        else {
+            res.render("auth/changePassword", { 
+                title: "Đổi mật khẩu",
+                user: user
+            });
+        }
+    }
+    else {
+        const old_user = await getUserByEmail(user.email);
+
+        if (!old_user) {
+            res.render("auth/forgotPassword", {
+                title: "Quên mật khẩu",
+                userNotFound: true
+            });
+            return;
+        }
+        else {
+            const otp = numberHelpers.generateOTP(6);
+            await sendOTP(user.email, otp);
+    
+            res.render("auth/forgotPassword", {
+                title: "Quên mật khẩu",
+                otp: otp,
+                user: old_user,
+                userFound: true
+            });
+            return;
+        }
+    }
+
+    // req.session.auth = true;
+    // req.session.authUser = {
+    //     id: old_user.id,
+    //     username: old_user.username,
+    //     fullname: old_user.fullname,
+    //     role: old_user.role
+    // };
+    // res.redirect("/");
 }
