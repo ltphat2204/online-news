@@ -150,3 +150,25 @@ CREATE TRIGGER trg_update_search_vector
 BEFORE INSERT OR UPDATE ON articles
 FOR EACH ROW
 EXECUTE FUNCTION update_search_vector();
+
+-- Create function to increase view count
+CREATE OR REPLACE FUNCTION increment_view_count(p_article_id UUID)
+RETURNS INT
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    new_count INT;
+BEGIN
+    UPDATE articles
+    SET view_count = view_count + 1,
+        updated_at = NOW()
+    WHERE id = p_article_id
+    RETURNING view_count INTO new_count;
+    
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Article with ID % does not exist.', p_article_id;
+    END IF;
+    
+    RETURN new_count;
+END;
+$$;
