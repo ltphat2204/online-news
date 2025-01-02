@@ -1,31 +1,22 @@
-document.getElementById('notificationBell').addEventListener('click', function (event) {
-    event.stopPropagation();
-    var panel = document.getElementById('notificationPanel');
-    var userDropdown = document.querySelector('.dropdown-menu');
-    if (userDropdown.style.display === 'block') {
-        userDropdown.style.display = 'none';
-    }
-    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-});
-
-document.getElementById('dropdownMenuLink').addEventListener('click', function (event) {
-    event.stopPropagation();
-    var panel = document.getElementById('notificationPanel');
-    var userDropdown = document.querySelector('.dropdown-menu');
-    if (panel.style.display === 'block') {
-        panel.style.display = 'none';
-    }
-    userDropdown.style.display = userDropdown.style.display === 'none' ? 'block' : 'none';
-    this.classList.toggle('active');
-});
-
-document.addEventListener('click', function () {
-    var panel = document.getElementById('notificationPanel');
-    var userDropdown = document.querySelector('.dropdown-menu');
-    if (panel.style.display === 'block') {
-        panel.style.display = 'none';
-    }
-    if (userDropdown.style.display === 'block') {
-        userDropdown.style.display = 'none';
-    }
-});
+document.addEventListener("DOMContentLoaded", () => {
+    const notificationBell = document.getElementById("notificationBell");
+    const notificationPanel = document.getElementById("notificationPanel");
+  
+    // Toggle dropdown on icon click
+    notificationBell.addEventListener("click", (event) => {
+      event.stopPropagation(); // Ngăn click lan ra ngoài
+      notificationPanel.style.display =
+        notificationPanel.style.display === "block" ? "none" : "block";
+    });
+  
+    // Hide dropdown when clicking outside
+    document.addEventListener("click", () => {
+      notificationPanel.style.display = "none";
+    });
+  
+    // Prevent dropdown from hiding when clicking inside it
+    notificationPanel.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
+  });
+  
