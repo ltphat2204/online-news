@@ -1,4 +1,4 @@
-import { getAllArticles, getArticleInfoById, getArticlesByCategory, addComment, getCommentsByArticleId, getHashtagsByArticleId, fullTextSearchArticles, increaseArticleViewCount } from "../models/articles.js";
+import { getAllArticles, getArticleInfoById, getArticlesByCategory, addComment, getCommentsByArticleId, getHashtagsByArticleId, fullTextSearchArticles, increaseArticleViewCount, } from "../models/articles.js";
 import { getAllCategoryGroups } from "../models/category_group.js";
 import { getAllCategories } from "../models/category.js";
 import moment from "moment";

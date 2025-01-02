@@ -6,7 +6,7 @@
                     <strong>
                         <a href="/category_group/{{article.group_id}}"
                             class="text-primary text-uppercase">{{article.group_name}}</a>
-                    </strong> >
+                    </strong>
                     <strong>
                         <a href="/category/{{article.category_id}}"
                             class="text-primary text-uppercase">{{article.category_name}}</a>
@@ -52,7 +52,7 @@
             {{/if}}
             <hr>
             <div class="mt-4">
-                <h5>TIN NỔI BẬT</h5>
+                <h5>CÁC BÀI BÁO LIÊN QUAN</h5>
                 <hr>
                 <div class="card bg-light">
                     {{#each category_articles}}
@@ -86,7 +86,7 @@
                     <hr class="my-0">
                     {{/unless}}
                     {{else}}
-                    <p class="card-body">No other articles in this category.</p>
+                    <p class="card-body">Chưa có bài báo cùng chủ đề</p>
                     {{/each}}
                 </div>
             </div>
@@ -127,11 +127,15 @@
         </div>
         <div class="col-3 py-3">
             <div class="sticky-top">
-                <div class="mb-3">
-                    <h5>Related Articles</h5>
-                    <p>Placeholder for related articles content.</p>
-                </div>
-                <a href="/" class="btn btn-outline-primary mb-3">Back to Home</a>
+                <div class="mb-3">  
+                    <a href="#" target="_blank"> 
+                        <img src="/statics/assets/quang_cao.jpg"   
+                            alt="Cuộc thi Đại sứ Văn hóa đọc 2024"   
+                            class="img-fluid rounded shadow-sm"  
+                            style="width: 100%;">  
+                    </a>  
+                </div>  
+                <a href="/" class="btn btn-outline-primary mb-3 w-100">Về trang chủ</a> 
             </div>
         </div>
     </div>

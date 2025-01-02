@@ -134,6 +134,7 @@ export const getArticlesByCategory = async (category_id, current_article_id, lim
         .join("categories", "articles.category_id", "categories.id")
         .where("articles.category_id", category_id)
         .andWhere("articles.id", "!=", current_article_id)
+        .orderBy(database.raw('RANDOM()'))
         .limit(limit)
 
 };
