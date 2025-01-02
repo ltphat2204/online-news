@@ -42,7 +42,7 @@ export const getHashtagByID = async (id) => {
 export const searchHashtagArticles = async (id, limit, offset) => {
     const article_id = await database("article_tag").select("article_id as id").where("tag_id", id).limit(limit).offset(offset);
     const article_ids = article_id.map(item => item.id);
-    console.log(article_ids)
+
     const result = await database("articles")
                 .select(
                     "articles.*",
