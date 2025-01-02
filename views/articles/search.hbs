@@ -160,7 +160,7 @@
 <script> //script cho nút chọn categoryGroup
     $(document).ready(function () {
         var selectList = $('#inputCategory');
-        selectList.append(<option value="" selected><b>Tất cả chuyên mục</b></option>);
+        selectList.append(`<option value="" selected><b>Tất cả chuyên mục</b></option>`);
         // Bắt sự kiện change của select
         $('#inputCategoryGroup').change(function () {
             // Lấy giá trị của option đã chọn
@@ -170,7 +170,7 @@
 
 
         function fetchCategories(selectedValue) {
-            fetch(/articles/searchCategory?categoryGroup=${selectedValue}, {
+            fetch(`/articles/searchCategory?categoryGroup=${selectedValue}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -178,7 +178,7 @@
             })
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error(HTTP error! Status: ${response.status});
+                        throw new Error(`HTTP error! Status: ${response.status}`);
                     }
                     return response.json();
                 })
@@ -187,13 +187,13 @@
                     selectList.empty();
                     // Nếu dữ liệu trả về là một mảng, thêm các option vào select
                     if (Array.isArray(data.categories)) {
-                        selectList.append(<option value="" selected><b>Tất cả chuyên mục</b></option>);
+                        selectList.append(`<option value="" selected><b>Tất cả chuyên mục</b></option>`);
                         data.categories.forEach(category => {
-                            selectList.append(<option value="${category.name}">${category.name}</option>);
+                            selectList.append(`<option value="${category.name}">${category.name}</option>`);
                         });
                     }
                     else {
-                        selectList.append(<option value="" selected><b>Tất cả chuyên mục</b></option>);
+                        selectList.append(`<option value="" selected><b>Tất cả chuyên mục</b></option>`);
                     }
                 })
                 .catch(error => {
@@ -209,7 +209,7 @@
             var searchValue = $('#searchForm input').val();
             var categoryGroup = $('#inputCategoryGroup').val();
             var category = $('#inputCategory').val();
-            window.location.href = /articles/search?search=${encodeURIComponent(searchValue)}&categoryGroup=${encodeURIComponent(categoryGroup)}&category=${encodeURIComponent(category)};
+            window.location.href = `/articles/search?search=${encodeURIComponent(searchValue)}&categoryGroup=${encodeURIComponent(categoryGroup)}&category=${encodeURIComponent(category)}`;
         });
 
 
