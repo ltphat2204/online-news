@@ -12,7 +12,8 @@ CREATE TABLE "users" (
   "email" varchar UNIQUE NOT NULL,
   "fullname" varchar NOT NULL,
   "pen_name" varchar,
-  "dob" date
+  "dob" date,
+  "pending_premium" boolean DEFAULT false
 );
 
 CREATE TABLE "social_networks" (
@@ -83,6 +84,12 @@ CREATE TABLE "editor_category" (
   "id" UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   "editor_id" UUID NOT NULL,
   "category_id" UUID
+);
+
+CREATE TABLE settings (
+    id SERIAL PRIMARY KEY,
+    premium_extension_minutes INTERVAL NOT NULL DEFAULT '10080 minutes',
+    CONSTRAINT single_row_constraint CHECK (id = 1)
 );
 
 -- Indexes

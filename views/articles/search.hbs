@@ -6,7 +6,8 @@
                 <form action="" class="form-inline col-12 p-3 bg-light rounded shadow-sm" id="searchForm">
                     <!-- Input tìm kiếm -->
                     <div class="input-group mb-3 col-12">
-                        <input class="form-control" type="text" placeholder="Tìm kiếm..." value="{{#if pagination.query}}{{pagination.query}}{{else}}{{/if}}" aria-label="Tìm kiếm">
+                        <input class="form-control" type="text" placeholder="Tìm kiếm..."
+                            value="{{#if pagination.query}}{{pagination.query}}{{else}}{{/if}}" aria-label="Tìm kiếm">
                         <div class="input-group-append">
                             <button class="btn btn-outline-primary" id="articleSearch" type="submit">
                                 <i class="bi bi-search"></i> Tìm kiếm
@@ -52,14 +53,43 @@
                                 style="height: 180px; object-fit: cover; border-radius: 10px;">
                         </div>
                         <!-- Nội dung -->
-                        <div class="col-md-8">
-                            <div class="card-body " style ="min-height: 180px;">
-                                <h5 class="card-title font-weight-bold text-primary">{{limitCharacters this.title 50}}
-                                </h5>
-                                <p class="card-text text-secondary mb-2">{{limitCharacters this.abstract 100}}</p>
-                                <p class="card-text position-absolute" style="bottom: 10px; right: 20px;">
-                                    <small class="text-muted">{{formatDate this.published_at}}</small>
-                                </p>
+                        <div class="col-md-8 position-relative ">
+                            <div class="card-body" style="min-height: 180px;">
+                                <div class="row">
+                                    <h5 class="card-title font-weight-bold text-primary">
+                                        {{limitCharacters this.title 50}}
+                                    </h5>
+                                </div>
+                                <div class="row">
+                                    <p class="card-text text-secondary mb-2">
+                                        {{limitCharacters this.abstract 100}}
+                                    </p>
+                                </div>
+                                {{!-- <!-- Hashtags -->
+                                <div class="position-absolute" style="bottom: 10px; right: 250px;">
+                                    {{#each this.hashtags}}
+                                    <a href="/hashtags/{{this.id}}"
+                                        class="badge rounded-pill bg-light text-primary border border-secondary me-2 ml-1">
+                                        #{{this.tag_name}}
+                                    </a>
+                                    {{/each}}
+                                </div> --}}
+                                <!-- Ngày xuất bản -->
+                                <div class="row position-absolute w-100" style="bottom: 0;">
+                                    <div class="col d-flex flex-wrap">
+                                        {{#each this.hashtags}}
+                                        <a href="/hashtags/{{this.id}}"
+                                            class="badge rounded-pill bg-light text-primary border border-secondary me-2 mb-1">
+                                            #{{this.tag_name}}
+                                        </a>
+                                        {{/each}}
+                                    </div>
+                                    <div class="col-auto text-end">
+                                        <p class="card-text mb-0">
+                                            <small class="text-muted">{{formatDate ../this.published_at}}</small>
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -69,7 +99,7 @@
 
             <!-- Phân trang -->
             {{#if (gt pagination.totalPages 1)}}
-            <nav class ="mt-4" aria-label="Page navigation">
+            <nav class="mt-4" aria-label="Page navigation">
                 <ul class="pagination justify-content-center">
 
                     <!-- Nút Previous -->
