@@ -87,10 +87,12 @@
             <div class="comment-section mt-5 p-3 bg-light rounded">
                 <!-- Phần form gửi bình luận -->
                 <h5 class="mb-4">Chia sẻ ý kiến của bạn</h5>
-                <form action="/articles/{{article.id}}/comments" method="POST" class="mb-4">
+                <form action="/comments/{{article.id}}" method="POST" class="mb-4">
+                    {{#if guest}}
                     <div class="form-group mb-3">
                         <input type="text" class="form-control" name="guest_name" placeholder="Họ và tên" required>
                     </div>
+                    {{/if}}
                     <div class="form-group mb-3">
                         <textarea class="form-control" rows="4" name="content" placeholder="Chia sẻ ý kiến của bạn..."
                             required></textarea>
