@@ -9,6 +9,11 @@
                     <p><i class="bi bi-person-badge"></i> {{profile.fullname}}</p>  
                     <p><i class="bi bi-envelope"></i> {{profile.email}}</p>  
                     <p><i class="bi bi-calendar3"></i> Joined {{formatDate profile.created_at}}</p>
+                    {{#if profile.is_premium}}
+                       <span class="badge badge-warning">
+                            <i class="bi bi-star-fill"></i> Premium User
+                       </span>
+                    {{/if}}
                     {{#if this.isOwnUser}}  
                         <button class="btn btn-outline-primary mt-3 edit-profile" data-toggle="modal" data-target="#editProfileModal"
                         data-id="{{profile.id}}" data-penname="{{profile.pen_name}}" data-fullname="{{profile.fullname}}">  
