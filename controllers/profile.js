@@ -4,7 +4,11 @@ import { comparePassword, hashPassword} from "../utils/cryptography.js";
 
 export const viewProfile = async (req, res) => {
     const { username } = req.params;
-    console.log(req.session)
+
+    if (!username || !req.session.authUser) {
+        res.redirect('/');
+        return;
+    }
 
     const currentUsername = req.session.authUser.username;
     const profile = await getUserByUsername(username);
