@@ -72,6 +72,8 @@ export const postArticle = async (req, res) => {
         const { hashtags, ...article } = req.body;
         const author_id = req.session.authUser.id;
 
+        article.is_premium = req.body.is_premium === "true";
+
         const result = await createArticle({ ...article, author_id });
         const articleId = result[0].id;
 
@@ -84,6 +86,15 @@ export const postArticle = async (req, res) => {
     }
 };
 
+export const publishNow = async (req, res) => {
+    const { id } = req.query;
+    const article = await getArticleById(id);
+
+    await updateArticleById(article.id, { ...article, status: 'published', published_at: new Date() });
+
+    res.redirect('/admin/articles');
+}
+
 export const createArticleView = async (req, res) => {
     const hashtags = await getAllHashtags();
     res.render("admin/create_article", {
@@ -95,10 +106,15 @@ export const createArticleView = async (req, res) => {
 
 export const editArticle = async (req, res) => {
     const article = req.body;
+  
+    // Nếu is_premium không tồn tại trong req.body, mặc định là false
+    article.is_premium = article.is_premium === "true";
+  
     await updateArticleById(article.id, article);
-
+  
     res.redirect("/admin/articles");
-}
+  };
+  
 
 export const editArticleView = async (req, res) => {
     const { id } = req.query;

@@ -1,4 +1,5 @@
 import database from "../config/database.js";
+import moment from 'moment';
 import { createHashtags, addArticleTag } from "./hashtags.js";
 import { getEditorCategories } from "./editor_category.js";
 
@@ -80,7 +81,8 @@ export const getArticleInfoById = async (id) => {
             "category_groups.id as group_id",
             "category_groups.name as group_name",
             "users.id as author_id",
-            "users.fullname as author_name"
+            "users.fullname as author_name",
+            "users.username as author_username"
         )
         .join("categories", "articles.category_id", "categories.id")
         .join("category_groups", "categories.group_id", "category_groups.id")
@@ -90,36 +92,36 @@ export const getArticleInfoById = async (id) => {
 }
 
 export const getArticleByEditors = async (searchTerm = "", limit, offset) => {
-    const result =  await database("articles")
-                .select(
-                    "articles.*",
-                    "hashtags.tag_name as hashtags",
-                    "users.fullname as fullname",
-                    "categories.name as category",
-                )
-                .join("editor_category", "articles.category_id", "editor_category.category_id")
-                .join("users", "editor_category.editor_id", "users.id")
-                .join("article_tag", "articles.id", "article_tag.article_id")
-                .join("hashtags", "article_tag.tag_id", "hashtags.id")
-                .leftJoin("categories", "articles.category_id", "categories.id")
-                .where(builder => {  
-                    builder  
-                        .where("articles.status", "draft")  
-                        .andWhere(subBuilder => {  
-                            subBuilder  
-                                .whereLike("articles.abstract", `%${searchTerm}%`)  
-                                .orWhereLike("users.fullname", `%${searchTerm}%`)  
-                        });  
-                })  
-                .offset(offset)
-                .limit(limit);
+    const result = await database("articles")
+        .select(
+            "articles.*",
+            "hashtags.tag_name as hashtags",
+            "users.fullname as fullname",
+            "categories.name as category",
+        )
+        .join("editor_category", "articles.category_id", "editor_category.category_id")
+        .join("users", "editor_category.editor_id", "users.id")
+        .join("article_tag", "articles.id", "article_tag.article_id")
+        .join("hashtags", "article_tag.tag_id", "hashtags.id")
+        .leftJoin("categories", "articles.category_id", "categories.id")
+        .where(builder => {
+            builder
+                .where("articles.status", "draft")
+                .andWhere(subBuilder => {
+                    subBuilder
+                        .whereLike("articles.abstract", `%${searchTerm}%`)
+                        .orWhereLike("users.fullname", `%${searchTerm}%`)
+                });
+        })
+        .offset(offset)
+        .limit(limit);
     return result;
 }
 
 export const getArticlesByWriterUsername = async (username) => {
     const result = await database("articles").select("articles.title", "articles.id")
-                                        .join("users", "users.id", "articles.author_id")
-                                        .where("users.username", username);
+        .join("users", "users.id", "articles.author_id")
+        .where("users.username", username);
     return result;
 }
 
@@ -134,6 +136,8 @@ export const getArticlesByCategory = async (category_id, current_article_id, lim
         .join("categories", "articles.category_id", "categories.id")
         .where("articles.category_id", category_id)
         .andWhere("articles.id", "!=", current_article_id)
+        .andWhere("articles.published_at", "<=", database.fn.now())
+        .orderBy(database.raw('RANDOM()'))
         .limit(limit)
 
 };
@@ -165,7 +169,7 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
         }
 
         let results, count;
-      
+
         // Conditions for categoryGroup and category filters
         const categoryGroupCondition = categoryGroup ? "category_groups.name" : null;
         const categoryCondition = category ? "categories.name" : null;
@@ -196,11 +200,14 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
                     "category_groups.id as group_id",
                     "category_groups.name as group_name",
                     "users.id as author_id",
-                    "users.fullname as author_name"
+                    "users.fullname as author_name",
+                    database.raw("json_agg(json_build_object('id', hashtags.id, 'tag_name', hashtags.tag_name)) as hashtags")
                 )
                 .join("categories", "articles.category_id", "categories.id")
                 .join("category_groups", "categories.group_id", "category_groups.id")
                 .join("users", "articles.author_id", "users.id")
+                .join("article_tag", "articles.id", "article_tag.article_id")
+                .join("hashtags", "article_tag.tag_id", "hashtags.id")
                 .modify((queryBuilder) => {
                     if (categoryGroupCondition) {
                         queryBuilder.where(categoryGroupCondition, categoryGroup);
@@ -210,6 +217,12 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
                     }
                 })
                 .andWhere("articles.status", "published") // Ensure only published articles
+                .groupBy(
+                    "articles.id",
+                    "categories.id",
+                    "category_groups.id",
+                    "users.id"
+                ) // Group by unique columns
                 .orderByRaw('is_premium DESC, articles.published_at DESC') // Sort by premium first, then newest
                 .limit(k)
                 .offset(s);
@@ -224,9 +237,9 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
                             "search_vector @@ plainto_tsquery('vietnamese', immutable_unaccent(?))",
                             [searchQuery]
                         )
-                        .orWhereRaw("immutable_unaccent(title) ILIKE ?", [`%${searchQuery}%`])
-                        .orWhereRaw("immutable_unaccent(abstract) ILIKE ?", [`%${searchQuery}%`])
-                        .orWhereRaw("immutable_unaccent(content) ILIKE ?", [`%${searchQuery}%`]);
+                            .orWhereRaw("immutable_unaccent(title) ILIKE ?", [`%${searchQuery}%`])
+                            .orWhereRaw("immutable_unaccent(abstract) ILIKE ?", [`%${searchQuery}%`])
+                            .orWhereRaw("immutable_unaccent(content) ILIKE ?", [`%${searchQuery}%`]);
                     });
                     if (categoryGroupCondition) {
                         queryBuilder.andWhere(categoryGroupCondition, categoryGroup);
@@ -248,20 +261,23 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
                     "category_groups.id as group_id",
                     "category_groups.name as group_name",
                     "users.id as author_id",
-                    "users.fullname as author_name"
+                    "users.fullname as author_name",
+                    database.raw("json_agg(json_build_object('id', hashtags.id, 'tag_name', hashtags.tag_name)) as hashtags")
                 )
                 .join("categories", "articles.category_id", "categories.id")
                 .join("category_groups", "categories.group_id", "category_groups.id")
                 .join("users", "articles.author_id", "users.id")
+                .join("article_tag", "articles.id", "article_tag.article_id")
+                .join("hashtags", "article_tag.tag_id", "hashtags.id")
                 .modify((queryBuilder) => {
                     queryBuilder.where(function () {
                         this.whereRaw(
                             "search_vector @@ plainto_tsquery('vietnamese', immutable_unaccent(?))",
                             [searchQuery]
                         )
-                        .orWhereRaw("immutable_unaccent(title) ILIKE ?", [`%${searchQuery}%`])
-                        .orWhereRaw("immutable_unaccent(abstract) ILIKE ?", [`%${searchQuery}%`])
-                        .orWhereRaw("immutable_unaccent(content) ILIKE ?", [`%${searchQuery}%`]);
+                            .orWhereRaw("immutable_unaccent(title) ILIKE ?", [`%${searchQuery}%`])
+                            .orWhereRaw("immutable_unaccent(abstract) ILIKE ?", [`%${searchQuery}%`])
+                            .orWhereRaw("immutable_unaccent(content) ILIKE ?", [`%${searchQuery}%`]);
                     });
                     if (categoryGroupCondition) {
                         queryBuilder.andWhere(categoryGroupCondition, categoryGroup);
@@ -271,6 +287,12 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
                     }
                 })
                 .andWhere("articles.status", "published") // Ensure only published articles
+                .groupBy(
+                    "articles.id",
+                    "categories.id",
+                    "category_groups.id",
+                    "users.id"
+                ) // Group by unique columns
                 .orderByRaw('is_premium DESC, articles.published_at DESC') // Sort by premium first, then newest
                 .limit(k)
                 .offset(s);
@@ -307,11 +329,19 @@ export const getArticlesByCategoryID = async (id, k, s) => {
             .select(
                 "articles.*",
                 "categories.name as category_name",
-                "categories.description as category_description"
+                "categories.description as category_description",
+                database.raw("json_agg(json_build_object('id', hashtags.id, 'tag_name', hashtags.tag_name)) as hashtags")
             )
             .join("categories", "articles.category_id", "categories.id")
+            .join("article_tag", "articles.id", "article_tag.article_id")
+            .join("hashtags", "article_tag.tag_id", "hashtags.id")
             .where("categories.id", id)
             .andWhere("articles.status", "published") // Ensure only published articles
+            .groupBy(
+                "articles.id",
+                "categories.name",
+                "categories.description"
+            ) // Group by unique columns
             .orderByRaw('is_premium DESC, articles.published_at DESC') // Sort by premium first, then newest
             .limit(k)
             .offset(s);
@@ -320,7 +350,7 @@ export const getArticlesByCategoryID = async (id, k, s) => {
         return { total: count.total, articles };
     } catch (error) {
         console.error("Error fetching articles by category ID:", error);
-        
+
         throw error;
     }
 };
@@ -392,4 +422,72 @@ export const fetchArticlesByRole = async (role, userId, searchTerm) => {
         default:
             return [];
     }
+};
+
+export const getLatestPublishedArticles = async (limit = 10) => {
+    const now = moment().toDate();
+    return await database("articles")
+        .select("articles.*", "categories.name as category")
+        .join("categories", "articles.category_id", "categories.id")
+        .where("articles.status", "published")
+        .andWhere("articles.published_at", "<", now)
+        .orderBy("articles.published_at", "desc")
+        .limit(limit);
+};
+
+export const getFeaturedArticles = async (limit = 5) => {
+    const startOfWeek = moment().startOf('isoWeek').toDate();
+    const endOfWeek = moment().endOf('isoWeek').toDate();
+    const now = moment().toDate();
+
+    return await database("articles")
+        .select("articles.*", "categories.name as category")
+        .join("categories", "articles.category_id", "categories.id")
+        .where("articles.status", "published")
+        .andWhere("articles.published_at", ">=", startOfWeek)
+        .andWhere("articles.published_at", "<=", endOfWeek)
+        .andWhere("articles.published_at", "<", now)
+        .orderBy("articles.view_count", "desc")
+        .limit(limit);
+};
+
+export const getMostViewedPublishedArticles = async (limit = 5) => {
+    const now = moment().toDate();
+    return await database("articles")
+        .select("articles.*", "categories.name as category")
+        .join("categories", "articles.category_id", "categories.id")
+        .where("articles.status", "published")
+        .andWhere("articles.published_at", "<", now)
+        .orderBy("articles.view_count", "desc")
+        .limit(limit);
+};
+
+export const getTopCategoriesWithLatestArticle = async (limit = 5) => {
+    const now = moment().toDate();
+    const categories = await database("categories")
+        .select("categories.id", "categories.name")
+        .join("articles", "categories.id", "articles.category_id")
+        .where("articles.status", "published")
+        .andWhere("articles.published_at", "<", now)
+        .groupBy("categories.id")
+        .orderByRaw("SUM(articles.view_count) DESC")
+        .limit(limit);
+
+    const topCategories = await Promise.all(categories.map(async (category) => {
+        const latestArticle = await database("articles")
+            .select("articles.*")
+            .where("articles.category_id", category.id)
+            .andWhere("articles.status", "published")
+            .andWhere("articles.published_at", "<", now)
+            .orderBy("articles.published_at", "desc")
+            .first();
+
+        return {
+            category: category.name,
+            category_id: category.id, // Add category ID
+            latestPost: latestArticle
+        };
+    }));
+
+    return topCategories;
 };

@@ -1,6 +1,7 @@
-import { getAllArticles, getArticleInfoById, getArticlesByCategory, addComment, getCommentsByArticleId, getHashtagsByArticleId, fullTextSearchArticles, increaseArticleViewCount } from "../models/articles.js";
+import { getAllArticles, getArticleInfoById, getArticlesByCategory, addComment, getCommentsByArticleId, getHashtagsByArticleId, fullTextSearchArticles, increaseArticleViewCount, } from "../models/articles.js";
 import { getAllCategoryGroups } from "../models/category_group.js";
 import { getAllCategories } from "../models/category.js";
+import { getUserByUsername } from "../models/user.js";
 import moment from "moment";
 import { createPDF } from "../utils/pdf.js";
 
@@ -67,17 +68,34 @@ export const showArticle = async (req, res) => {
         let view = article.view_count;
         
         if (!req.session.viewCount || moment().diff(req.session.viewCount, 'minutes') > 60) {
-            req.session.viewCount = moment().format('YYYY-MM-DD hh:mm:ss');
+            req.session.viewCount = moment().format('YYYY-MM-DD HH:mm:ss');
             view = await increaseArticleViewCount(article.id);
         }
 
         const guest = !req.session.auth;
+        if (guest) {
+            res.render('articles/detail', {
+                title: article.title,
+                article: { ...article, view_count: view},
+                isPremiumUser: true,
+                category_articles,
+                comments,
+                redirectUrl: '/auth/login',
+                guest
+            });
+            return;
+        }
+
+        const currentUsername = req.session.authUser.username;
+        const userInfo = await getUserByUsername(currentUsername);
 
         res.render('articles/detail', {
             title: article.title,
             article: { ...article, view_count: view},
+            isPremiumUser: (!userInfo.is_premium && userInfo.role == "subscriber"),
             category_articles,
             comments,
+            redirectUrl: `/profile/${currentUsername}`,
             guest
         });
     } else {

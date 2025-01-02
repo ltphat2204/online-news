@@ -399,3 +399,6 @@ VALUES
 	(gen_random_uuid(), 
 	(SELECT id FROM articles WHERE title='Giới trẻ Việt theo đuổi mốt trang điểm "bling bling"'),
 	(SELECT id FROM hashtags WHERE tag_name='thoitrang'));
+
+
+INSERT INTO settings DEFAULT VALUES;
