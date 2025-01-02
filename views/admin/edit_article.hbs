@@ -28,7 +28,7 @@
         </div>
         <div class="form-group">
             <label for="youtube_url">Đường dẫn Youtube</label>
-            <input type="text" class="form-control" id="youtube_url" name="youtube_url" required>
+            <input type="text" class="form-control" id="youtube_url" name="youtube_url">
         </div>
         <div class="form-group">
             <label for="categoryDescription">Chuyên mục</label>
@@ -43,6 +43,10 @@
             <input type="hidden" id="prefill-content" value="{{this.article.content}}">
             <textarea id="summernote" name="content"></textarea>
         </div>
+        <div class="form-group form-check" id="createIsPremiumGroup">
+          <input type="checkbox" class="form-check-input" id="createIsPremium" name="is_premium" value="true" {{#if this.article.is_premium}}checked{{/if}}>
+          <label class="form-check-label" for="createIsPremium"><b>Premium</b></label>
+        </div>        
         <div class="form-group">
             <button type="submit" class="btn btn-primary ml-auto">Sửa</button>
         </div>
