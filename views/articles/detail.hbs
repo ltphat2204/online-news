@@ -12,12 +12,13 @@
                             class="text-primary text-uppercase">{{article.category_name}}</a>
                     </strong>
                 </span>
-                <span class="float-right text-muted"><strong>Published at:</strong> {{formatDate
+                <span class="float-right text-muted"><strong>Ngày đăng:</strong> {{formatDate
                     article.published_at}}</span>
             </div>
             <h1 class="mt-3">{{article.title}}</h1>
             <p><strong>Author:</strong> <a href="/users/{{article.author_id}}"
                     class="text-primary">{{article.author_name}}</a></p>
+            <p><strong>{{article.view_count}}</strong> lượt xem</p>
             <hr>
             <div class="mb-3">
                 <strong>{{article.abstract}}</strong>
