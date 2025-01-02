@@ -45,6 +45,24 @@
                                         <i class="bi-person-circle"></i> &nbsp;
                                         Hồ sơ
                                     </a>
+                                    {{#if (or (eq authUser.role 'admin') (eq authUser.role 'editor') (eq authUser.role 'writer'))}}
+                                        <a class="dropdown-item" href="/editor">
+                                            <i class="bi bi-upload"></i> &nbsp;
+                                            Đăng tải bài viết
+                                        </a>
+                                    {{/if}}
+                                    {{#if (or (eq authUser.role 'admin') (eq authUser.role 'editor'))}}
+                                        <a class="dropdown-item" href="/writer">
+                                            <i class="bi bi-pencil-square"></i> &nbsp;
+                                            Quản lý bài viết
+                                        </a>                                        
+                                    {{/if}}
+                                    {{#if (eq authUser.role 'admin')}}
+                                        <a class="dropdown-item" href="/admin">
+                                            <i class="bi bi-gear"></i> &nbsp;
+                                            Quản lý trang báo
+                                        </a>
+                                    {{/if}}
                                     <form id="frmLogout" action="/auth/logout" method="post"></form>
                                     <a class="dropdown-item" href="javascript: $('#frmLogout').submit()">
                                         <i class="bi-box-arrow-right" href="/auth/logout"></i> &nbsp; 
