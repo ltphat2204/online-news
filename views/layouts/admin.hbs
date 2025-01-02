@@ -58,14 +58,14 @@
                                             <i class="bi-person-circle"></i> &nbsp;
                                             Hồ sơ
                                         </a>
-                                        {{#if (or (eq authUser.role 'admin') (eq authUser.role 'editor') (eq authUser.role 'writer'))}}
-                                            <a class="dropdown-item" href="/editor">
+                                        {{#if (eq authUser.role 'writer')}}
+                                            <a class="dropdown-item" href="/admin/articles/create">
                                                 <i class="bi bi-upload"></i> &nbsp;
                                                 Đăng tải bài viết
                                             </a>
                                         {{/if}}
-                                        {{#if (or (eq authUser.role 'admin') (eq authUser.role 'editor'))}}
-                                            <a class="dropdown-item" href="/writer">
+                                        {{#if (eq authUser.role 'editor')}}
+                                            <a class="dropdown-item" href="/admin/articles">
                                                 <i class="bi bi-pencil-square"></i> &nbsp;
                                                 Quản lý bài viết
                                             </a>                                        
