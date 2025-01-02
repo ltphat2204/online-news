@@ -196,11 +196,14 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
                     "category_groups.id as group_id",
                     "category_groups.name as group_name",
                     "users.id as author_id",
-                    "users.fullname as author_name"
+                    "users.fullname as author_name",
+                    database.raw("json_agg(json_build_object('id', hashtags.id, 'tag_name', hashtags.tag_name)) as hashtags")
                 )
                 .join("categories", "articles.category_id", "categories.id")
                 .join("category_groups", "categories.group_id", "category_groups.id")
                 .join("users", "articles.author_id", "users.id")
+                .join("article_tag", "articles.id", "article_tag.article_id")
+                .join("hashtags", "article_tag.tag_id", "hashtags.id")
                 .modify((queryBuilder) => {
                     if (categoryGroupCondition) {
                         queryBuilder.where(categoryGroupCondition, categoryGroup);
@@ -210,6 +213,12 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
                     }
                 })
                 .andWhere("articles.status", "published") // Ensure only published articles
+                .groupBy(
+                    "articles.id",
+                    "categories.id",
+                    "category_groups.id",
+                    "users.id"
+                ) // Group by unique columns
                 .orderByRaw('is_premium DESC, articles.published_at DESC') // Sort by premium first, then newest
                 .limit(k)
                 .offset(s);
@@ -248,11 +257,14 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
                     "category_groups.id as group_id",
                     "category_groups.name as group_name",
                     "users.id as author_id",
-                    "users.fullname as author_name"
+                    "users.fullname as author_name",
+                    database.raw("json_agg(json_build_object('id', hashtags.id, 'tag_name', hashtags.tag_name)) as hashtags")
                 )
                 .join("categories", "articles.category_id", "categories.id")
                 .join("category_groups", "categories.group_id", "category_groups.id")
                 .join("users", "articles.author_id", "users.id")
+                .join("article_tag", "articles.id", "article_tag.article_id")
+                .join("hashtags", "article_tag.tag_id", "hashtags.id")
                 .modify((queryBuilder) => {
                     queryBuilder.where(function () {
                         this.whereRaw(
@@ -271,6 +283,12 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
                     }
                 })
                 .andWhere("articles.status", "published") // Ensure only published articles
+                .groupBy(
+                    "articles.id",
+                    "categories.id",
+                    "category_groups.id",
+                    "users.id"
+                ) // Group by unique columns
                 .orderByRaw('is_premium DESC, articles.published_at DESC') // Sort by premium first, then newest
                 .limit(k)
                 .offset(s);
@@ -307,11 +325,19 @@ export const getArticlesByCategoryID = async (id, k, s) => {
             .select(
                 "articles.*",
                 "categories.name as category_name",
-                "categories.description as category_description"
+                "categories.description as category_description",
+                database.raw("json_agg(json_build_object('id', hashtags.id, 'tag_name', hashtags.tag_name)) as hashtags")
             )
             .join("categories", "articles.category_id", "categories.id")
+            .join("article_tag", "articles.id", "article_tag.article_id")
+            .join("hashtags", "article_tag.tag_id", "hashtags.id")
             .where("categories.id", id)
             .andWhere("articles.status", "published") // Ensure only published articles
+            .groupBy(
+                "articles.id",
+                "categories.name",
+                "categories.description"
+            ) // Group by unique columns
             .orderByRaw('is_premium DESC, articles.published_at DESC') // Sort by premium first, then newest
             .limit(k)
             .offset(s);
