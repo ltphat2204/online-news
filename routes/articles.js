@@ -1,5 +1,5 @@
 import express from 'express';
-import { showArticle,searchArticles } from '../controllers/articles.js';
+import { showArticle, searchArticles, exportToPdf } from '../controllers/articles.js';
 import { searchCategoryByCategoryGroup } from '../controllers/category.js';
 const router = express.Router();
 
@@ -7,4 +7,5 @@ const router = express.Router();
 router.get('/', showArticle);
 router.get('/search', searchArticles);
 router.get('/searchCategory', searchCategoryByCategoryGroup);
+router.get('/:id/export', exportToPdf);
 export default router;

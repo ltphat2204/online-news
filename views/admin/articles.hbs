@@ -87,17 +87,28 @@
               </button>
               {{/if}}
               {{#if (eq ../authUser.role 'editor')}}
-              <button class="btn btn-success btn-sm"
-                style="width: 80px; text-align: center; padding: 5px 10px; font-size: 14px; background-color: #28a745; border-color: #28a745; color: white;"
-                data-toggle="modal" data-target="#editReviewModal" data-id="{{id}}" data-category="{{category}}"
-                data-hashtags="{{hashtags}}">
-                Duyệt
-              </button>
-              <button class="btn btn-warning btn-sm"
-                style="width: 80px; text-align: center; padding: 5px 10px; font-size: 14px; background-color: #ffc107; border-color: #ffc107; color: black;"
-                data-toggle="modal" data-target="#disapproveReviewModal" data-id="{{id}}">
-                Từ chối
-              </button>
+              
+                    <button class="btn btn-sm btn-primary edit-review"
+                            style="width: 80px;" 
+                            data-id="{{id}}"
+                            data-hashtag-id = "{{hashtag}}"
+                            data-toggle="modal" 
+                            data-target="#editReviewModal"
+                            data-category = "{{category}}"
+                            data-hashtags = "{{hashtags}}"
+                            data-editor = "{{../authUser.username}}"
+                            data-status = "{{status}}">
+                        Duyệt
+                    </button>
+                    <button class="btn btn-sm btn-danger disapprove-review"
+                            style="width: 80px;"
+                            data-id = "{{id}}"
+                            data-toggle = "modal"
+                            data-target = "#disapproveReviewModal"
+                            data-editor = "{{../authUser.username}}"
+                            data-status = "{{status}}">
+                        Từ chối
+                    </button>
               {{/if}}
             </td>
           </tr>
