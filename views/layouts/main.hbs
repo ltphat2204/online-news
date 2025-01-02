@@ -22,9 +22,6 @@
             <a class="navbar-brand" href="/">
                 <img src="/statics/assets/LogoFinal.png" style="height: 40px; width: auto" class="d-inline-block align-top" alt="">
             </a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
             <span class="navbar-text">
                 {{ today }}
             </span>
@@ -39,20 +36,22 @@
                     </li>
                     {{#if auth}}
                         <li class="nav-item nav-item-group" style="font-size: 1.2rem;">
-                            <a class="nav-link dropdown-toggle" href="/" role="button" data-toggle="dropdown"><i class="bi bi-person-circle"></i> 
-                                Hello, {{authUser.username}}
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <a class="dropdown-item" href="/">
-                                    <i class="bi-person-circle"></i>
-                                    Profile
+                            <div class="dropdown">
+                                <a class="nav-link dropdown-toggle" href="/" role="button" data-toggle="dropdown"><i class="bi bi-person-circle"></i> 
+                                    Xin chào, {{authUser.fullname}}
                                 </a>
-                                <form id="frmLogout" action="/auth/logout" method="post"></form>
-                                <a class="dropdown-item" href="javascript: $('#frmLogout').submit()">
-                                    <i class="bi-box-arrow-right" href="/auth/logout"></i>
-                                    Logout
-                                </a>
-                            </div>
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <a class="dropdown-item" href="/">
+                                        <i class="bi-person-circle"></i> &nbsp;
+                                        Hồ sơ
+                                    </a>
+                                    <form id="frmLogout" action="/auth/logout" method="post"></form>
+                                    <a class="dropdown-item" href="javascript: $('#frmLogout').submit()">
+                                        <i class="bi-box-arrow-right" href="/auth/logout"></i> &nbsp; 
+                                        Đăng xuất
+                                    </a>
+                                </div>
+                            </div>                            
                             <form class="search-form" action="/articles/search" method="GET">
                                 <div class="search-container">
                                     <input type="text" class="search-input" placeholder="Tìm kiếm..." name = "search">
