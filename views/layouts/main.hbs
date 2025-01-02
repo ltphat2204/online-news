@@ -1,28 +1,32 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+        integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
     <link rel="stylesheet" href="/statics/styles/global.css">
+    <link rel="stylesheet" href="/statics/styles/home.css">
     <link rel="icon" type="image/x-icon" href="/statics/assets/favicon.ico">
-    <script
-      src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
-      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-      crossorigin="anonymous"
-    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <title>{{ title }} {{#if title}}|{{/if}} Báo điện tử Cripsy Chicken Rice</title>
 </head>
+
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light" style="background-color: white !important">
         <div class="container">
             <a class="navbar-brand" href="/">
-                <img src="/statics/assets/LogoFinal.png" style="height: 40px; width: auto" class="d-inline-block align-top" alt="">
+                <img src="/statics/assets/LogoFinal.png" style="height: 40px; width: auto"
+                    class="d-inline-block align-top" alt="">
             </a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <span class="navbar-text">
@@ -38,38 +42,39 @@
                         <img src="/statics/assets/LogoPremium.png" alt="Logo premium" style="height: 30px; width: auto">
                     </li>
                     {{#if auth}}
-                        <li class="nav-item nav-item-group" style="font-size: 1.2rem;">
-                            <a class="nav-link dropdown-toggle" href="/" role="button" data-toggle="dropdown"><i class="bi bi-person-circle"></i> 
-                                Hello, {{authUser.username}}
+                    <li class="nav-item nav-item-group" style="font-size: 1.2rem;">
+                        <a class="nav-link dropdown-toggle" href="/" role="button" data-toggle="dropdown"><i
+                                class="bi bi-person-circle"></i>
+                            Hello, {{authUser.username}}
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <a class="dropdown-item" href="/">
+                                <i class="bi-person-circle"></i>
+                                Profile
                             </a>
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <a class="dropdown-item" href="/">
-                                    <i class="bi-person-circle"></i>
-                                    Profile
-                                </a>
-                                <form id="frmLogout" action="/auth/logout" method="post"></form>
-                                <a class="dropdown-item" href="javascript: $('#frmLogout').submit()">
-                                    <i class="bi-box-arrow-right" href="/auth/logout"></i>
-                                    Logout
-                                </a>
+                            <form id="frmLogout" action="/auth/logout" method="post"></form>
+                            <a class="dropdown-item" href="javascript: $('#frmLogout').submit()">
+                                <i class="bi-box-arrow-right" href="/auth/logout"></i>
+                                Logout
+                            </a>
+                        </div>
+                        <form class="search-form" action="/articles/search" method="GET">
+                            <div class="search-container">
+                                <input type="text" class="search-input" placeholder="Tìm kiếm..." name="search">
+                                <i class="nav-link bi bi-search search-icon" style="cursor: pointer"></i>
                             </div>
-                            <form class="search-form" action="/articles/search" method="GET">
-                                <div class="search-container">
-                                    <input type="text" class="search-input" placeholder="Tìm kiếm..." name = "search">
-                                    <i class="nav-link bi bi-search search-icon" style="cursor: pointer"></i>
-                                </div>
-                            </form>
-                        </li>
+                        </form>
+                    </li>
                     {{else}}
-                        <li class="nav-item nav-item-group" style="font-size: 1.2rem;">
-                            <a class="nav-link" href="/auth/login"><i class="bi bi-person-circle"></i> Đăng nhập</a>
-                            <form class="search-form" action="/articles/search" method="GET">
-                                <div class="search-container">
-                                    <input type="text" class="search-input" placeholder="Tìm kiếm..." name = "search">
-                                    <i class="nav-link bi bi-search search-icon" style="cursor: pointer"></i>
-                                </div>
-                            </form>
-                        </li>
+                    <li class="nav-item nav-item-group" style="font-size: 1.2rem;">
+                        <a class="nav-link" href="/auth/login"><i class="bi bi-person-circle"></i> Đăng nhập</a>
+                        <form class="search-form" action="/articles/search" method="GET">
+                            <div class="search-container">
+                                <input type="text" class="search-input" placeholder="Tìm kiếm..." name="search">
+                                <i class="nav-link bi bi-search search-icon" style="cursor: pointer"></i>
+                            </div>
+                        </form>
+                    </li>
                     {{/if}}
                 </ul>
             </div>
@@ -105,7 +110,7 @@
         {{{ body }}}
     </div>
 
-    <div class="container mb-4" style="background-color: white; min-height: 35svh;">
+    <div class="container-fluid" style="background-color: white; min-height: 35svh;">
         <div class="container p-4">
             <div class="row">
                 <div class="col-lg-6 col-md-12 mb-4 mb-md-0">
@@ -154,9 +159,9 @@
         </div>
         <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
             © 2025 Bản quyền thuộc về Báo điện tử Cripsy Chicken Rice
-        </div>        
+        </div>
     </div>
-{{!-- 
+    {{!--
     <footer class="bg-light text-center text-lg-start mb-4">
         <div class="container p-4">
             <div class="row">
