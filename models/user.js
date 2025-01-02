@@ -113,3 +113,8 @@ export const approveUserPremium = async (id, action) => {
         return result;
     }
 }
+
+export const setPendingPremiumStatus = async (id) => {
+    const result = await database("users").where("id", id).update({ pending_premium: true });
+    return result;
+}
