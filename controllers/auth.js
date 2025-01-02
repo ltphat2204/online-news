@@ -3,6 +3,7 @@ import { comparePassword, hashPassword } from "../utils/cryptography.js";
 import { getSocialNetworkByUserId } from "../models/social_network.js";
 import { sendOTP } from "../utils/mailSender.js";
 import { numberHelpers } from "../utils/numberHelpers.js";
+import { editUser } from "../models/user.js";
 
 export const handleLogin = async (req, res) => {
     const user = req.body;
@@ -136,8 +137,8 @@ export const handleForgotPassword = async (req, res) => {
         else {
             res.render("auth/changePassword", { 
                 title: "Đổi mật khẩu",
-                fromTo: "forgotPassword",
-                user: user
+                // fromTo: "forgotPassword",
+                email: user.email
             });
         }
     }
@@ -167,40 +168,21 @@ export const handleForgotPassword = async (req, res) => {
 }
 
 export const handleChangePassword = async (req, res) => {
-    const { fromTo, text, newPassword } = req.body;
-    if (fromTo === "forgotPassword") {
-        const email = text;
-        const user = getUserByEmail(email);
-        const hashedPassword = await hashPassword(newPassword);
-        await updateUserPassword(user.id, hashedPassword);
-        return res.status(200).json({ success: true, message: 'Đổi mật khẩu thành công' });
-    }
-    const currentPassword = text;
-    const userId = req.session.userId; // Lấy userId từ session (phải đảm bảo người dùng đã đăng nhập)
+    const user = await getUserByEmail(req.body.email);
+    const hashedPassword = await hashPassword(req.body.newPassword);
+
+    const newUser = {
+        id: user.id,
+        fullname: user.fullname,
+        pen_name: user.pen_name,
+        password: hashedPassword
+    };
 
     try {
-        // Bước 1: Lấy thông tin user từ database
-        const user = await getUserById(userId);
-        if (!user) {
-            return res.status(404).json({ success: false, message: 'Người dùng không tồn tại' });
-        }
-
-        // Bước 2: Kiểm tra mật khẩu hiện tại
-        const isPasswordValid = await comparePasswords(currentPassword, user.password);
-        if (!isPasswordValid) {
-            return res.status(400).json({ success: false, message: 'Mật khẩu hiện tại không chính xác' });
-        }
-
-        // Bước 3: Hash mật khẩu mới
-        const hashedPassword = await hashPassword(newPassword);
-
-        // Bước 4: Cập nhật mật khẩu mới vào database
-        await updateUserPassword(userId, hashedPassword);
-
-        // Bước 5: Phản hồi thành công
+        await editUser(user.id, newUser);
         res.status(200).json({ success: true, message: 'Đổi mật khẩu thành công' });
     } catch (error) {
         console.error(error.message);
         res.status(500).json({ success: false, message: 'Đã xảy ra lỗi không mong muốn' });
     }
-};
+}
