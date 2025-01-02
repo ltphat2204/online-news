@@ -12,6 +12,7 @@ import AdminRoutes from './routes/admin/index.js';
 import AuthRoutes from './routes/auth/index.js';
 import ProfileRoutes from './routes/profile.js';
 import CategoryRoutes from './routes/category.js';
+import CommentRoutes from './routes/comments.js';
 import setLayout from './middlewares/setLayout.js';
 import preloadNavBar from './middlewares/preloadCategoryGroups.js'; 
 
@@ -40,6 +41,12 @@ app.use(preloadNavBar);
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(express.json({ limit: '50mb' }));
 
+app.use((req, res, next) => {
+    res.locals.authUser = req.session.authUser;
+    res.locals.auth = req.session.auth || false;
+    next();
+});
+
 // Config route for static files
 app.use('/statics', express.static(join(__dirname, 'public')));
 
@@ -51,6 +58,7 @@ app.use('/auth', AuthRoutes);
 app.use('/category_group', category_groupRoutes);
 app.use('/category', CategoryRoutes);
 app.use('/profile', ProfileRoutes);
+app.use('/comments', CommentRoutes)
 
 // Xử lý lỗi 404
 app.use((req, res) => {

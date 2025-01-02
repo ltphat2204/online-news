@@ -1,5 +1,6 @@
 import database from "../config/database.js";
 import { createHashtags, addArticleTag } from "./hashtags.js";
+import { getEditorCategories } from "./editor_category.js";
 
 export const getAllArticles = async (search = "", offset = 0, limit = 5) => {
     if (search) {
@@ -50,6 +51,7 @@ export const getArticleById = async (id) => {
 }
 
 export const deleteArticleById = async (id) => {
+    await database("article_tag").where("article_id", id).del();
     await database("articles").where("id", id).del();
 }
 
@@ -121,6 +123,11 @@ export const getArticlesByWriterUsername = async (username) => {
     return result;
 }
 
+export const increaseArticleViewCount = async (articleId) => {
+    const result = await database.raw('SELECT increment_view_count(?) AS view', [articleId]);
+    return result.rows[0].view;
+}
+
 export const getArticlesByCategory = async (category_id, current_article_id, limit = 5) => {
     return await database("articles")
         .select("articles.*", "categories.name as category_name")
@@ -151,18 +158,21 @@ export const getHashtagsByArticleId = async (article_id) => {
 };
 
 export const fullTextSearchArticles = async (searchQuery, categoryGroup, category, k, s) => {
-    // k is limit and s is offset
     try {
         if (k === undefined || s === undefined) {
-            k = total;
-            s = 0;
+            k = 5; // Default limit
+            s = 0;  // Default offset
         }
+
         let results, count;
-        const categoryGroupCondition = categoryGroup !== '' ? "category_groups.name" : null;
-        const categoryCondition = category !== '' ? "categories.name" : null;
-        
+      
+        // Conditions for categoryGroup and category filters
+        const categoryGroupCondition = categoryGroup ? "category_groups.name" : null;
+        const categoryCondition = category ? "categories.name" : null;
+
         if (searchQuery === "") {
-            count = await database('articles')
+            // Count total articles without search query
+            count = await database("articles")
                 .join("categories", "articles.category_id", "categories.id")
                 .join("category_groups", "categories.group_id", "category_groups.id")
                 .modify((queryBuilder) => {
@@ -173,9 +183,12 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
                         queryBuilder.andWhere(categoryCondition, category);
                     }
                 })
-                .count("* as total").first();
+                .andWhere("articles.status", "published") // Ensure only published articles
+                .count("* as total")
+                .first();
 
-                results = await database('articles')
+            // Fetch articles without search query
+            results = await database("articles")
                 .select(
                     "articles.*",
                     "categories.id as category_id",
@@ -196,24 +209,38 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
                         queryBuilder.andWhere(categoryCondition, category);
                     }
                 })
-                .limit(k).offset(s);
-        }
-        else {
-            count = await database('articles')
-                .whereRaw("to_tsvector('simple', title || ' ' || abstract || ' ' || content) @@ plainto_tsquery('simple', ?)", [searchQuery])
+                .andWhere("articles.status", "published") // Ensure only published articles
+                .orderByRaw('is_premium DESC, articles.published_at DESC') // Sort by premium first, then newest
+                .limit(k)
+                .offset(s);
+        } else {
+            // Count total articles with search query
+            count = await database("articles")
                 .join("categories", "articles.category_id", "categories.id")
                 .join("category_groups", "categories.group_id", "category_groups.id")
                 .modify((queryBuilder) => {
+                    queryBuilder.where(function () {
+                        this.whereRaw(
+                            "search_vector @@ plainto_tsquery('vietnamese', immutable_unaccent(?))",
+                            [searchQuery]
+                        )
+                        .orWhereRaw("immutable_unaccent(title) ILIKE ?", [`%${searchQuery}%`])
+                        .orWhereRaw("immutable_unaccent(abstract) ILIKE ?", [`%${searchQuery}%`])
+                        .orWhereRaw("immutable_unaccent(content) ILIKE ?", [`%${searchQuery}%`]);
+                    });
                     if (categoryGroupCondition) {
-                        queryBuilder.where(categoryGroupCondition, categoryGroup);
+                        queryBuilder.andWhere(categoryGroupCondition, categoryGroup);
                     }
                     if (categoryCondition) {
                         queryBuilder.andWhere(categoryCondition, category);
                     }
                 })
-                .count("* as total").first();
+                .andWhere("articles.status", "published") // Ensure only published articles
+                .count("* as total")
+                .first();
 
-            results = await database('articles')
+            // Fetch articles with search query
+            results = await database("articles")
                 .select(
                     "articles.*",
                     "categories.id as category_id",
@@ -223,40 +250,80 @@ export const fullTextSearchArticles = async (searchQuery, categoryGroup, categor
                     "users.id as author_id",
                     "users.fullname as author_name"
                 )
-                .whereRaw("to_tsvector('simple', title || ' ' || abstract || ' ' || content) @@ plainto_tsquery('simple', ?)", [searchQuery])
                 .join("categories", "articles.category_id", "categories.id")
                 .join("category_groups", "categories.group_id", "category_groups.id")
                 .join("users", "articles.author_id", "users.id")
                 .modify((queryBuilder) => {
+                    queryBuilder.where(function () {
+                        this.whereRaw(
+                            "search_vector @@ plainto_tsquery('vietnamese', immutable_unaccent(?))",
+                            [searchQuery]
+                        )
+                        .orWhereRaw("immutable_unaccent(title) ILIKE ?", [`%${searchQuery}%`])
+                        .orWhereRaw("immutable_unaccent(abstract) ILIKE ?", [`%${searchQuery}%`])
+                        .orWhereRaw("immutable_unaccent(content) ILIKE ?", [`%${searchQuery}%`]);
+                    });
                     if (categoryGroupCondition) {
-                        queryBuilder.where(categoryGroupCondition, categoryGroup);
+                        queryBuilder.andWhere(categoryGroupCondition, categoryGroup);
                     }
                     if (categoryCondition) {
                         queryBuilder.andWhere(categoryCondition, category);
                     }
                 })
-                .limit(k).offset(s);
+                .andWhere("articles.status", "published") // Ensure only published articles
+                .orderByRaw('is_premium DESC, articles.published_at DESC') // Sort by premium first, then newest
+                .limit(k)
+                .offset(s);
         }
-        return { total: count.total, results: results }
+
+        // Return results
+        return { total: count.total, results };
     } catch (error) {
-        console.error('Error searching articles:', error);
+        console.error("Error searching articles:", error);
         throw error;
     }
 };
 
+
+
+
 export const getArticlesByCategoryID = async (id, k, s) => {
-    const count = await database("articles")
-        .join("categories", "articles.category_id", "categories.id")
-        .where("categories.id", id)
-        .count("* as total").first();
-    
-    const articles = await database("articles")
-        .select("articles.*", "categories.name as category_name", "categories.description as category_description")
-        .join("categories", "articles.category_id", "categories.id")
-        .where("categories.id", id)
-        .limit(k).offset(s);
-        return { total: count.total, articles: articles };
-}
+    try {
+        if (k === undefined || s === undefined) {
+            k = 5; // Default limit
+            s = 0;  // Default offset
+        }
+
+        // Count total articles by category ID
+        const count = await database("articles")
+            .join("categories", "articles.category_id", "categories.id")
+            .where("categories.id", id)
+            .andWhere("articles.status", "published") // Ensure only published articles
+            .count("* as total")
+            .first();
+
+        // Fetch articles by category ID
+        const articles = await database("articles")
+            .select(
+                "articles.*",
+                "categories.name as category_name",
+                "categories.description as category_description"
+            )
+            .join("categories", "articles.category_id", "categories.id")
+            .where("categories.id", id)
+            .andWhere("articles.status", "published") // Ensure only published articles
+            .orderByRaw('is_premium DESC, articles.published_at DESC') // Sort by premium first, then newest
+            .limit(k)
+            .offset(s);
+
+        // Return total count and articles
+        return { total: count.total, articles };
+    } catch (error) {
+        console.error("Error fetching articles by category ID:", error);
+        
+        throw error;
+    }
+};
 
 export const addArticleHashtags = async (articleId, hashtags) => {
     const existingHashtags = hashtags.filter(tag => !tag.startsWith('new-'));
@@ -275,5 +342,54 @@ export const addArticleHashtags = async (articleId, hashtags) => {
     // Insert into the article_tag table
     for (const tagId of allHashtagIds) {
         await addArticleTag(articleId, tagId);
+    }
+};
+
+export const getArticlesByAuthor = async (authorId, search = "", offset = 0, limit = 5) => {
+    let query = database("articles")
+        .select("articles.*", "categories.name as category")
+        .join("categories", "articles.category_id", "categories.id")
+        .where("articles.author_id", authorId);
+
+    if (search) {
+        query = query.andWhere(builder => {
+            builder.whereLike("title", `%${search}%`)
+                .orWhereLike("abstract", `%${search}%`)
+                .orWhereLike("content", `%${search}%`);
+        });
+    }
+
+    return await query.offset(offset).limit(limit);
+};
+
+export const getArticlesByCategoryIds = async (categoryIds, search = "", offset = 0, limit = 5) => {
+    let query = database("articles")
+        .select("articles.*", "categories.name as category")
+        .join("categories", "articles.category_id", "categories.id")
+        .whereIn("articles.category_id", categoryIds);
+
+    if (search) {
+        query = query.andWhere(builder => {
+            builder.whereLike("title", `%${search}%`)
+                .orWhereLike("abstract", `%${search}%`)
+                .orWhereLike("content", `%${search}%`);
+        });
+    }
+
+    return await query.offset(offset).limit(limit);
+};
+
+export const fetchArticlesByRole = async (role, userId, searchTerm) => {
+    switch (role) {
+        case 'admin':
+            return await getAllArticles(searchTerm, 0, Number.MAX_SAFE_INTEGER);
+        case 'writer':
+            return await getArticlesByAuthor(userId, searchTerm, 0, Number.MAX_SAFE_INTEGER);
+        case 'editor':
+            const editorCategories = await getEditorCategories(userId);
+            const categoryIds = editorCategories.map(category => category.category_id);
+            return await getArticlesByCategoryIds(categoryIds, searchTerm, 0, Number.MAX_SAFE_INTEGER);
+        default:
+            return [];
     }
 };

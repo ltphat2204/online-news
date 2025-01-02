@@ -7,7 +7,8 @@ import {
     countCategories,
     countSearchCategories,
     searchCategoryByName,
-    getCategoryByCategoryGroup} from "../models/category.js";
+    getCategoryByCategoryGroup,
+    getCategoryById} from "../models/category.js";
     import { getArticlesByCategoryID } from "../models/articles.js";
 export const getRender = async (req, res) => {
     res.render('admin/category')
@@ -95,10 +96,12 @@ export const getArticlesByCategoryIDController = async (req, res) => {
     const data = await getArticlesByCategoryID(id, limit, offset);
     const articles = data.articles;
     const totalPages = Math.ceil(data.total / limit);
+    const category = await getCategoryById(id);
+
     res.render('category/detail',
         {
-            title: articles[0].category_name,
-            description: articles[0].category_description,
+            title: category.name,
+            description: category.description,
             ID: id, 
             articles: articles,
             empty: articles.length === 0,
