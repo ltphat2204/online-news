@@ -19,7 +19,12 @@
                                 <span class="news-card-category">{{featuredPosts.[0].category}}</span>
                             </a>
                             <a href="/articles?id={{featuredPosts.[0].id}}" class="text-dark text-decoration-none">
-                                <h5 class="news-card-title mt-2">{{featuredPosts.[0].title}}</h5>
+                                <h5 class="news-card-title mt-2">
+                                    {{#if featuredPosts.[0].is_premium}}
+                                    <i class="bi bi-gem" style="color: #bb29bb;"></i>
+                                    {{/if}}
+                                    {{featuredPosts.[0].title}}
+                                </h5>
                             </a>
                         </div>
                         <p class="news-card-text date-position"><small class="text-muted">{{formatDate
@@ -42,7 +47,12 @@
                                 <span class="news-card-category">{{this.category}}</span>
                             </a>
                             <a href="/articles?id={{this.id}}" class="text-dark text-decoration-none">
-                                <h6 class="news-card-title-three-lines mt-2">{{limitCharacters this.title 100}}</h6>
+                                <h6 class="news-card-title-three-lines mt-2">
+                                    {{#if this.is_premium}}
+                                    <i class="bi bi-gem" style="color: #bb29bb;"></i>
+                                    {{/if}}
+                                    {{limitCharacters this.title 100}}
+                                </h6>
                             </a>
                         </div>
                         <p class="news-card-text date-position"><small class="text-muted">{{formatDate
@@ -71,7 +81,12 @@
                             </a>
                             <div class="card-body p-4">
                                 <a href="/articles?id={{this.latestPost.id}}" class="text-dark text-decoration-none">
-                                    <h6 class="news-card-title">{{this.latestPost.title}}</h6>
+                                    <h6 class="news-card-title">
+                                        {{#if this.latestPost.is_premium}}
+                                        <i class="bi bi-gem" style="color: #bb29bb;"></i>
+                                        {{/if}}
+                                        {{this.latestPost.title}}
+                                    </h6>
                                 </a>
                                 <p class="news-card-text date-position"><small class="text-muted">{{formatDate
                                         this.latestPost.published_at}}</small></p>
@@ -119,8 +134,11 @@
                                                 </a>
                                                 <a href="/articles?id={{this.id}}"
                                                     class="text-dark text-decoration-none">
-                                                    <h6 class="news-card-title-small mt-1">{{limitCharacters this.title
-                                                        45}}
+                                                    <h6 class="news-card-title-small mt-1">
+                                                        {{#if this.is_premium}}
+                                                        <i class="bi bi-gem" style="color: #bb29bb;"></i>
+                                                        {{/if}}
+                                                        {{limitCharacters this.title 45}}
                                                     </h6>
                                                 </a>
                                                 <p class="news-card-text date-position"><small
@@ -154,8 +172,11 @@
                                                     <span class="news-card-category">{{this.category}}</span>
                                                 </a>
                                                 <a href="/articles?id={{this.id}}" class="text-dark">
-                                                    <h6 class="news-card-title-small mt-1">{{limitCharacters this.title
-                                                        45}}
+                                                    <h6 class="news-card-title-small mt-1">
+                                                        {{#if this.is_premium}}
+                                                        <i class="bi bi-gem" style="color: #bb29bb;"></i>
+                                                        {{/if}}
+                                                        {{limitCharacters this.title 45}}
                                                     </h6>
                                                 </a>
                                                 <p class="news-card-text date-position"><small
