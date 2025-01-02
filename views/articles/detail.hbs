@@ -43,6 +43,13 @@
                 </a>
                 {{/each}}
             </div>
+            {{#if article.is_premium}}
+            <div class="mt-3 d-flex justify-content-end">
+                <button id="download-pdf-btn" class="btn btn-primary" data-article-id="{{article.id}}">
+                    <i class="bi bi-download"></i> Download PDF
+                </button>
+            </div>
+            {{/if}}
             <hr>
             <div class="mt-4">
                 <h5>TIN NỔI BẬT</h5>
@@ -129,3 +136,38 @@
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+        $('#download-pdf-btn').click(function () {
+            const articleId = $('#download-pdf-btn').attr('data-article-id');
+            const url = `/articles/${articleId}/export`;
+
+            $.ajax({
+                url: url,
+                method: 'GET',
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: function (data, status, xhr) {
+                    const filename = xhr.getResponseHeader('Content-Disposition')
+                        ?.split('filename=')[1]?.split(';')[0]?.replace(/"/g, '') || 'download.pdf';
+
+                    const link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(data);
+                    link.download = filename;
+
+                    document.body.appendChild(link);
+                    link.click();
+
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(link.href);
+                },
+                error: function (xhr, status, error) {
+                    alert('Failed to download the PDF. Please try again.');
+                    console.error('Error:', error);
+                }
+            });
+        });
+    });
+</script>
