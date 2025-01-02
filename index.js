@@ -13,6 +13,7 @@ import AuthRoutes from './routes/auth/index.js';
 import ProfileRoutes from './routes/profile.js';
 import CategoryRoutes from './routes/category.js';
 import CommentRoutes from './routes/comments.js';
+import HashtagRoutes from './routes/hashtags.js';
 import setLayout from './middlewares/setLayout.js';
 import preloadNavBar from './middlewares/preloadCategoryGroups.js'; 
 
@@ -58,7 +59,8 @@ app.use('/auth', AuthRoutes);
 app.use('/category_group', category_groupRoutes);
 app.use('/category', CategoryRoutes);
 app.use('/profile', ProfileRoutes);
-app.use('/comments', CommentRoutes)
+app.use('/comments', CommentRoutes);
+app.use('/hashtags', HashtagRoutes);
 
 // Xử lý lỗi 404
 app.use((req, res) => {
