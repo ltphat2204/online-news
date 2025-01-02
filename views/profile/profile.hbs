@@ -72,6 +72,14 @@
                         <input type="text" class="form-control" id="editProfilePenname" name="pen_name">  
                     </div>  
                 {{/if}}
+                <div class="form-group">
+                    <label for="editProfilePassword">Mật khẩu cũ (nếu muốn đổi mật khẩu)</label>
+                    <input type="password" class="form-control" id="editProfileOldPassword" name="old_password">
+                </div>
+                <div class="form-group">
+                    <label for="editProfilePassword">Mật khẩu mới (nếu muốn đổi mật khẩu)</label>
+                    <input type="password" class="form-control" id="editProfileNewPassword" name="new_password">
+                </div>
             </div>  
             <div class="modal-footer">  
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>  
@@ -81,6 +89,7 @@
     </div>  
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function() {
         $('#editProfileModal').on('show.bs.modal', function (event) {
@@ -95,4 +104,88 @@
             modal.find('#editProfileFullname').val(fullname);
         });
     });
+    $('#editProfileForm').on('submit', async function(e) {  
+        e.preventDefault();  
+
+        const oldPassword = $('#editProfileOldPassword').val();  
+        const newPassword = $('#editProfileNewPassword').val();  
+        if (!oldPassword && !newPassword) {  
+            submitForm(this, false);  
+            return;  
+        }   
+        if ((!oldPassword && newPassword) || (oldPassword && !newPassword)) {  
+            await Swal.fire({  
+                icon: 'error',  
+                title: 'Lỗi',  
+                text: 'Vui lòng điền cả mật khẩu cũ và mới nếu bạn muốn thay đổi mật khẩu'  
+            });  
+            return;  
+        }    
+        if (newPassword.length < 8) {  
+            await Swal.fire({  
+                icon: 'error',  
+                title: 'Mật khẩu không hợp lệ',  
+                text: 'Mật khẩu mới phải có ít nhất 8 ký tự'  
+            });  
+            return;  
+        }   
+        try {  
+            const response = await fetch(`/profile/${profile.username}/verify-password`);  
+
+            const data = await response.json();  
+
+            if (!data.isValid) {  
+                await Swal.fire({  
+                    icon: 'error',  
+                    title: 'Mật khẩu không đúng',  
+                    text: 'Mật khẩu cũ không chính xác'  
+                });  
+                return;  
+            }  
+            submitForm(this, true);  
+
+        } catch (error) {  
+            await Swal.fire({  
+                icon: 'error',  
+                title: 'Lỗi',  
+                text: 'Đã có lỗi xảy ra. Vui lòng thử lại sau'  
+            });  
+        }  
+        submitForm(this, true);   
+    });  
+
+    async function submitForm(form, includePassword) {  
+        const formData = {  
+            id: $('#editProfileID').val(),  
+            fullname: $('#editProfileFullname').val(),  
+            pen_name: $('#editProfilePenname').val()  
+        };  
+
+        if (includePassword) {  
+            formData.password = $('#editProfileNewPassword').val();  
+        }  
+
+        const response = await fetch(form.action, {  
+            method: 'POST',  
+            headers: {  
+                'Content-Type': 'application/json'  
+            },  
+            body: JSON.stringify(formData)  
+        });  
+        if (response.ok) {  
+            await Swal.fire({  
+                icon: 'success',  
+                title: 'Thành công',  
+                text: 'Cập nhật thông tin thành công'  
+            });  
+            window.location.reload();  
+        } else {  
+            const data = await response.json();  
+            await Swal.fire({  
+                icon: 'error',  
+                title: 'Lỗi',  
+                text: data.message || 'Đã có lỗi xảy ra'  
+            });  
+        }  
+    }  
 </script>
