@@ -15,9 +15,15 @@
                     </span>
                     {{else}}
                     {{#if (eq profile.role "subscriber")}}
-                    <button class="btn btn-outline-primary mt-3 premium-register" data-id="{{profile.id}}">
-                        <i class="bi bi-star-fill"></i> Nâng cấp Premium
-                    </button>
+                        {{#if profile.pending_premium}}
+                            <button class="btn btn-outline-primary mt-3" data-id="{{profile.id}}" disabled>
+                                <i class="bi bi-star-fill"></i> Chờ duyệt
+                            </button>
+                        {{else}}
+                            <button class="btn btn-outline-primary mt-3 premium-register" data-id="{{profile.id}}">
+                                <i class="bi bi-star-fill"></i> Nâng cấp Premium
+                            </button>
+                        {{/if}}
                     {{/if}}
 
                     {{/if}}
