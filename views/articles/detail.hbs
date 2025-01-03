@@ -157,8 +157,6 @@
 <script>
 
     $(document).ready(function () {
-        { { #if article.is_premium } }
-        { { #if isPremiumUser } }
         const contentElements = ['.article-content', '#download-pdf-btn'];
         let hasShownOverlay = false;
 
@@ -187,8 +185,7 @@
         contentElements.forEach(selector => {
             $(selector).addClass('blur-content');
         });
-        { {/if } }
-        { {/if } }
+
         $('#download-pdf-btn').click(function () {
             const articleId = $('#download-pdf-btn').attr('data-article-id');
             const url = `/articles/${articleId}/export`;
