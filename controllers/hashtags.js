@@ -34,39 +34,41 @@ export const getHashtagArticlesPage = async (req, res) => {
 }
 
 export const getHashtags = async (req, res) => {
-    const limit = 4;
+    const limit = 5;
     const searchTerm = req.query.search || '';
-    const page = req.query.page || 1;
+    const page = parseInt(req.query.page) || 1;
+    const offset = (page - 1) * limit;
 
     const n = await countHashtags(searchTerm);
-    const nPages = Math.ceil(n.total / limit);
-    const pageItems = [];
+    const totalPages = Math.ceil(n.total / limit);
+    const pageItems = Array.from({ length: totalPages }, (_, i) => ({
+        value: i + 1,
+        status: i + 1 === page ? "active" : "",
+        searchTerm: searchTerm
+    }));
 
-    const offset = (page - 1) * limit;
-    const hashtags = await searchHashtags(searchTerm, limit, offset)
+    const hashtags = await searchHashtags(searchTerm, limit, offset);
 
-    for (let i = 1; i <= nPages; i++) {
-        const item = {
-            value: i,
-            isActive: i === page,
-            searchTerm: searchTerm
-        }
-        pageItems.push(item);
+    // Count articles for each hashtag
+    for (const hashtag of hashtags) {
+        hashtag.usage = (await countHashtagArticles(hashtag.id)).total;
     }
 
     res.render('admin/hashtags', {
         title: 'Thẻ',
         empty: hashtags.length === 0,
         hashtags,
-        pageItems: pageItems,
-        searchTerm: searchTerm
+        pageItems,
+        searchTerm,
+        currentPage: page,
+        totalPages
     });
-}
+};
 
 export const postHashtag = async (req, res) => {
     const hashtag = req.body;
     await createHashtags(hashtag);
-    
+
     res.redirect('/admin/hashtags');
 }
 
