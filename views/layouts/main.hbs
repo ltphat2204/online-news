@@ -245,6 +245,35 @@
                 this.querySelector('.dropdown-menu').classList.remove('show');
             });
         });
+
+        // Back to top button
+        const backToTopButton = document.createElement('button');
+        backToTopButton.innerHTML = '↑';
+        backToTopButton.id = 'back-to-top';
+        backToTopButton.style.position = 'fixed';
+        backToTopButton.style.bottom = '20px';
+        backToTopButton.style.right = '20px';
+        backToTopButton.style.display = 'none';
+        backToTopButton.style.backgroundColor = 'white';
+        backToTopButton.style.color = '#E51636';
+        backToTopButton.style.border = ' 1px solid #E51636';
+        backToTopButton.style.borderRadius = '50%';
+        backToTopButton.style.width = '50px';
+        backToTopButton.style.height = '50px';
+        backToTopButton.style.cursor = 'pointer';
+        document.body.appendChild(backToTopButton);
+
+        window.addEventListener('scroll', function () {
+            if (window.scrollY > 300) {
+                backToTopButton.style.display = 'block';
+            } else {
+                backToTopButton.style.display = 'none';
+            }
+        });
+
+        backToTopButton.addEventListener('click', function () {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
     </script>
 </body>
 
