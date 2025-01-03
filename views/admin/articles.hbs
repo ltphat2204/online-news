@@ -98,7 +98,7 @@
               {{/if}}
               {{#if (eq ../authUser.role 'editor')}}
 
-              <button class="btn btn-sm btn-primary edit-review" style="width: 80px;" data-id="{{id}}"
+              <button class="btn btn-sm btn-success edit-review" style="width: 80px;" data-id="{{id}}"
                 data-hashtag-id="{{hashtag}}" data-toggle="modal" data-target="#editReviewModal"
                 data-category="{{category}}" data-hashtags="{{hashtags}}" data-editor="{{../authUser.username}}"
                 data-status="{{status}}">
@@ -489,14 +489,6 @@
           <select class="custom-select" name="category_id" id="editCategoryGroup" required>
             {{#each this.categories}}
             <option value="{{id}}">{{name}}</option>
-            {{/each}}
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="editHashtags">Tên thẻ</label>
-          <select class="custom-select" name="hashtags" id="editHashtags" required>
-            {{#each this.allHashtags}}
-            <option value="{{id}}">{{tag_name}}</option>
             {{/each}}
           </select>
         </div>
