@@ -66,7 +66,7 @@ body {
 /* Top Category Card Styling */
 .top-category-card {
     height: 380px;
-    border: 2px solid #ff6666;
+    border: 2px solid #E51636;
 }
 
 .top-category-card .card-header {
@@ -153,21 +153,21 @@ body {
 }
 
 /* Sidebar Tabs */
-.nav-tabs .nav-link {
+.custom-nav-tab .nav-link {
     font-size: 16px;
     font-weight: bold;
-    color: #333;
+    color: #3B1A22;
     border: none;
 }
 
-.nav-tabs .nav-link.active {
-    color: #007bff;
-    border-bottom: 3px solid #007bff;
+.custom-nav-tab .nav-link.active {
+    color: #E51636;
+    border-bottom: 3px solid #E51636;
     background: none;
 }
 
-.nav-tabs .nav-link:hover {
-    color: #0056b3;
+.custom-nav-tab .nav-link:hover {
+    color: #E51636;
     background: none;
 }
 
