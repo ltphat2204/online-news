@@ -94,7 +94,7 @@
                         <!-- Hiển thị các trang -->
                         {{#each (range 1 pagination.totalPages) as |page|}}
                         <li class="page-item {{#if (eq page ../pagination.currentPage)}}active{{/if}}">
-                            <a class="page-link {{#if (eq page ../pagination.currentPage)}}text-white bg-primary{{/if}}"
+                            <a class="page-link {{#if (eq page ../pagination.currentPage)}}text-white{{/if}}"
                                 href="/category/{{../ID}}?page={{page}}">
                                 {{page}}
                             </a>
