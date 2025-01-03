@@ -254,7 +254,7 @@
           //create modal button
           var functionBox = document.createElement('td');
           var editBtn = document.createElement('button');
-          editBtn.setAttribute('class', 'btn btn-primary edit-category');
+          editBtn.setAttribute('class', 'btn btn-edit edit-category');
           editBtn.setAttribute('data-toggle', 'modal');
           editBtn.setAttribute('data-target', '#editCategoryModal');
           editBtn.setAttribute('data-id', category.id);
@@ -265,7 +265,7 @@
           functionBox.appendChild(editBtn);
 
           var deleteBtn = document.createElement('button');
-          deleteBtn.setAttribute('class', 'btn btn-danger delete-category');
+          deleteBtn.setAttribute('class', 'btn btn-primary delete-category');
           deleteBtn.setAttribute('data-toggle', 'modal');
           deleteBtn.setAttribute('data-target', '#deleteCategoryModal');
           deleteBtn.setAttribute('data-id', category.id);

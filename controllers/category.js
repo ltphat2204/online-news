@@ -94,7 +94,7 @@ export const searchCategoryByCategoryGroup = async (req, res) => {
 export const getArticlesByCategoryIDController = async (req, res) => {
     const { id } = req.params;
     const page = req.query.page||1;
-    const limit = req.query.limit || 5;
+    const limit = req.query.limit || 3;
     const offset = (page-1) * limit || 0;
     const data = await getArticlesByCategoryID(id, limit, offset);
     const articles = data.articles;
