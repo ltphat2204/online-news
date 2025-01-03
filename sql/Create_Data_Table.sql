@@ -12,7 +12,8 @@ CREATE TABLE "users" (
   "email" varchar UNIQUE NOT NULL,
   "fullname" varchar NOT NULL,
   "pen_name" varchar,
-  "dob" date
+  "dob" date,
+  "pending_premium" boolean DEFAULT false
 );
 
 CREATE TABLE "social_networks" (
@@ -85,6 +86,12 @@ CREATE TABLE "editor_category" (
   "category_id" UUID
 );
 
+CREATE TABLE settings (
+    id SERIAL PRIMARY KEY,
+    premium_extension_minutes INTERVAL NOT NULL DEFAULT '10080 minutes',
+    CONSTRAINT single_row_constraint CHECK (id = 1)
+);
+
 -- Indexes
 CREATE INDEX ON "users" ("username");
 CREATE INDEX ON "users" ("email");
@@ -150,3 +157,25 @@ CREATE TRIGGER trg_update_search_vector
 BEFORE INSERT OR UPDATE ON articles
 FOR EACH ROW
 EXECUTE FUNCTION update_search_vector();
+
+-- Create function to increase view count
+CREATE OR REPLACE FUNCTION increment_view_count(p_article_id UUID)
+RETURNS INT
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    new_count INT;
+BEGIN
+    UPDATE articles
+    SET view_count = view_count + 1,
+        updated_at = NOW()
+    WHERE id = p_article_id
+    RETURNING view_count INTO new_count;
+    
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Article with ID % does not exist.', p_article_id;
+    END IF;
+    
+    RETURN new_count;
+END;
+$$;

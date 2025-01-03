@@ -44,35 +44,83 @@
             </div>
             <div class="d-flex align-items-center position-relative">
                 <!-- Notification Panel -->
-                <div class="position-relative">
-                    <a class="nav-link text-dark" href="#" id="notificationBell">
-                        <i class="bi bi-bell"></i>
-                    </a>
-                    <div id="notificationPanel" class="notification-panel position-absolute bg-white shadow-sm p-3 m-0"
-                        style="display: none;">
-                        <a class="dropdown-item" href="#">Thông báo 1</a>
-                        <a class="dropdown-item" href="#">Thông báo 2</a>
-                        <a class="dropdown-item" href="#">Thông báo 3</a>
-                    </div>
+                <div class="collapse navbar-collapse" id="navbar">
+                    <ul class="navbar-nav ml-auto align-items-md-center">
+                        {{#if auth}}
+                            <li class="nav-item nav-item-group" style="font-size: 1.2rem;">
+                                <div class="dropdown">
+                                    <a class="nav-link dropdown-toggle" href="/" role="button" data-toggle="dropdown">
+                                        <i class="bi bi-person-circle"></i> &nbsp;
+                                        Xin chào, {{authUser.fullname}}
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right">
+                                        <a class="dropdown-item" href="/">
+                                            <i class="bi-person-circle"></i> &nbsp;
+                                            Hồ sơ
+                                        </a>
+                                        {{#if (eq authUser.role 'writer')}}
+                                            <a class="dropdown-item" href="/admin/articles/create">
+                                                <i class="bi bi-upload"></i> &nbsp;
+                                                Đăng tải bài viết
+                                            </a>
+                                        {{/if}}
+                                        {{#if (eq authUser.role 'editor')}}
+                                            <a class="dropdown-item" href="/admin/articles">
+                                                <i class="bi bi-pencil-square"></i> &nbsp;
+                                                Quản lý bài viết
+                                            </a>                                        
+                                        {{/if}}
+                                        {{#if (eq authUser.role 'admin')}}
+                                            <a class="dropdown-item" href="/admin">
+                                                <i class="bi bi-gear"></i> &nbsp;
+                                                Quản lý trang báo
+                                            </a>
+                                        {{/if}}
+                                        <form id="frmLogout" action="/auth/logout" method="post"></form>
+                                        <a class="dropdown-item" href="javascript: $('#frmLogout').submit()">
+                                            <i class="bi-box-arrow-right" href="/auth/logout"></i> &nbsp; 
+                                            Đăng xuất
+                                        </a>
+                                    </div>
+                                </div>     
+                            </li>
+                        {{else}}
+                            <li class="nav-item nav-item-group" style="font-size: 1.2rem;">
+                                <a class="nav-link" href="/auth/login">
+                                    <i class="bi bi-person-circle"></i> &nbsp;
+                                    Đăng nhập 
+                                </a>
+                                <form class="search-form" action="/articles/search" method="GET">
+                                    <div class="search-container">
+                                        <input type="text" class="search-input" placeholder="Tìm kiếm..." name = "search">
+                                        <i class="nav-link bi bi-search search-icon" style="cursor: pointer"></i>
+                                    </div>
+                                </form>
+                            </li>
+                        {{/if}}
+                    </ul>
                 </div>
-                <div class="dropdown ml-3 position-relative">
-                    <a class="nav-link dropdown-toggle user-info d-flex align-items-center text-dark" href="#"
-                        role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
-                        aria-expanded="false">
-                        <span>Nguyễn Văn A</span>
-                        <i class="bi bi-person-circle ml-2"></i>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right position-absolute m-0"
-                        aria-labelledby="dropdownMenuLink">
-                        <a class="dropdown-item" href="#">Thông tin tài khoản</a>
-                        <a class="dropdown-item" href="#">Đổi mật khẩu</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item text-danger" href="#">Đăng xuất</a>
-                    </div>
+                <div class="collapse navbar-collapse" id="navbar">
+                    <ul class="navbar-nav ml-auto align-items-md-center">
+                        <li class="nav-item nav-item-group" style="font-size: 1.2rem;">
+                            <div class="dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" id="notificationBell">
+                                    <i class="bi bi-bell text-dark noti-icon" style="cursor: pointer"></i>
+                                    <span class="badge badge-danger" id="notificationCount">3</span>
+                                </a>
+                                <div id="notificationPanel" class="dropdown-menu dropdown-menu-right notification-panel position-absolute bg-white shadow-sm p-3 m-0" style="display: none;">
+                                    <a class="dropdown-item" href="#">Thông báo 1</a>
+                                    <a class="dropdown-item" href="#">Thông báo 2</a>
+                                    <a class="dropdown-item" href="#">Thông báo 3</a>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
     </nav>
+
     <!-- Sidebar -->
     <div id="sidebar" class="bg-dark text-white position-fixed d-flex flex-column justify-content-between">
         <ul class="list-unstyled p-0 m-0 flex-grow-1 text-white text-decoration-none">
@@ -125,11 +173,17 @@
                     Phân công
                 </a>
             </li>
+            <li class="p-3 border-bottom">
+                <a href="/admin/premium" class="d-flex align-items-center">
+                    <i class="bi bi-person-check mr-2"></i>
+                    Yêu cầu Premium
+                </a>
+            </li>
             {{/if}}
         </ul>
         <ul class="list-unstyled p-0 m-0 text-white text-decoration-none">
             <li class="p-3 border-top">
-                <a href="#" class="d-flex align-items-center">
+                <a href="/admin/setting" class="d-flex align-items-center">
                     <i class="bi bi-gear mr-2"></i>
                     Cài đặt
                 </a>

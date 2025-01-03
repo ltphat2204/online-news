@@ -1,6 +1,9 @@
-import { getAllArticles, getArticleInfoById, getArticlesByCategory, addComment, getCommentsByArticleId, getHashtagsByArticleId, fullTextSearchArticles } from "../models/articles.js";
+import { getAllArticles, getArticleInfoById, getArticlesByCategory, addComment, getCommentsByArticleId, getHashtagsByArticleId, fullTextSearchArticles, increaseArticleViewCount, } from "../models/articles.js";
 import { getAllCategoryGroups } from "../models/category_group.js";
 import { getAllCategories } from "../models/category.js";
+import { getUserByUsername } from "../models/user.js";
+import moment from "moment";
+import { createPDF } from "../utils/pdf.js";
 
 export const getArticles = async (req, res) => {
     const articles = await getAllArticles();
@@ -10,20 +13,41 @@ export const getArticles = async (req, res) => {
     });
 }
 
-export const getArticle = async (req, res) => {
-    const article = await getArticleBySlug(req.params.slug);
-    res.render('articles/detail', {
-        title: article.title,
-        article
-    });
-}
-
 const addInlineStylesToMedia = (content) => {
     return content
         .replace(/<img /g, '<img class="img-fluid mx-auto d-block" ')
         .replace(/<video /g, '<video class="embed-responsive-item" ')
         .replace(/<iframe /g, '<iframe class="embed-responsive-item" ');
 };
+
+export const exportToPdf = async (req, res) => {
+    const articleId = req.params.id;
+    if (articleId) {
+        const article = await getArticleInfoById(articleId);
+        if (!article) {
+            res.render('404', {
+                title: 'Không tìm thấy trang',
+                message: 'Rất tiếc, bài báo bạn tìm kiếm không tồn tại.'
+            });
+            return;
+        }
+
+        article.content = addInlineStylesToMedia(article.content);
+        const hashtags = await getHashtagsByArticleId(article.id);
+        article.hashtags = hashtags;
+
+        const pdf = await createPDF(article);
+        res.set({
+            'Content-Encoding': 'identity',
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': `attachment; filename="${encodeURIComponent(article.title.replace(/[^a-z0-9]/gi, '_').toLowerCase())}.pdf"`,
+            'Content-Length': pdf.length,
+        });
+        res.end(pdf, 'binary');
+    } else {
+        res.redirect('/');
+    }
+}
 
 export const showArticle = async (req, res) => {
     if (req.query.id) {
@@ -40,12 +64,39 @@ export const showArticle = async (req, res) => {
         const category_articles = await getArticlesByCategory(article.category_id, article.id);
         const comments = await getCommentsByArticleId(article.id);
         const hashtags = await getHashtagsByArticleId(article.id);
-        article.hashtags = hashtags; 
+        article.hashtags = hashtags;
+        let view = article.view_count;
+        
+        if (!req.session.viewCount || moment().diff(req.session.viewCount, 'minutes') > 60) {
+            req.session.viewCount = moment().format('YYYY-MM-DD HH:mm:ss');
+            view = await increaseArticleViewCount(article.id);
+        }
+
+        const guest = !req.session.auth;
+        if (guest) {
+            res.render('articles/detail', {
+                title: article.title,
+                article: { ...article, view_count: view},
+                isPremiumUser: true,
+                category_articles,
+                comments,
+                redirectUrl: '/auth/login',
+                guest
+            });
+            return;
+        }
+
+        const currentUsername = req.session.authUser.username;
+        const userInfo = await getUserByUsername(currentUsername);
+
         res.render('articles/detail', {
             title: article.title,
-            article,
+            article: { ...article, view_count: view},
+            isPremiumUser: (!userInfo.is_premium && userInfo.role == "subscriber"),
             category_articles,
-            comments
+            comments,
+            redirectUrl: `/profile/${currentUsername}`,
+            guest
         });
     } else {
         res.redirect('/');

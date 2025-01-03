@@ -1,13 +1,7 @@
 import express from 'express';
+import { getHomePage } from '../controllers/index.js';
 const router = express.Router();
 
-router.get('/', async (req, res) => {
-  if (!req.session.auth) {
-    req.session.auth = false;
-  }
-  res.render('home', {
-    title: 'Trang chủ',
-  });
-});
+router.get('/', getHomePage);
 
 export default router;

@@ -7,6 +7,8 @@ import authorizeRole from '../../middlewares/authorizeRole.js';
 import articleRouter from './articles.js';
 import assignRouter from './assign.js';
 import reviewRouter from './review.js';
+import settingRouter from './setting.js';
+import premiumRouter from './premium.js';
 
 const router = express.Router();
 router.use('/', authorizeRole(['admin','writer','editor']));
@@ -25,5 +27,6 @@ router.use('/category-group', categoryGroupRouter)
 router.use('/category', categoryRouter)
 router.use('/hashtags', hashtagRouter)
 router.use('/articles', articleRouter)
-
+router.use('/setting', settingRouter)
+router.use('/premium', premiumRouter)
 export default router;
