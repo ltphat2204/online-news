@@ -8,6 +8,8 @@ import {
     searchUsersByKey,
     getUserById
 } from "../models/user.js";
+import { hashPassword } from "../utils/cryptography.js";
+import { deleteEditorCategories } from "../models/editor_category.js";
 
 // Hàm lấy người dùng với phân trang
 export const getUsers = async (req, res) => {
@@ -114,6 +116,7 @@ export const postUsers = async (req, res) => {
     if (!user.premium_expired) {
         user.premium_expired = null;
     }
+    user.password = await hashPassword(user.password);
     await createUser(user);
     res.redirect('/admin/user');
 }
@@ -148,6 +151,10 @@ export const patchUser = async (req, res) => {
 
 export const deleteUserById = async (req, res) => {
     const { id } = req.body;
+    const user = await getUserById(id);
+    if (user.role == 'editor') {
+        await deleteEditorCategories(id);
+    }
     await deleteUser(id);
 
     res.redirect('/admin/user');
