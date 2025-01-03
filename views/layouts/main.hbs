@@ -41,48 +41,49 @@
                         <img src="/statics/assets/LogoPremium.png" alt="Logo premium" style="height: 30px; width: auto">
                     </li>
                     {{#if auth}}
-                        <li class="nav-item nav-item-group" style="font-size: 1.2rem;">
-                            <div class="dropdown">
-                                <a class="nav-link dropdown-toggle" href="/" role="button" data-toggle="dropdown"><i class="bi bi-person-circle"></i> 
-                                    Xin chào, {{authUser.fullname}}
+                    <li class="nav-item nav-item-group" style="font-size: 1.2rem;">
+                        <div class="dropdown">
+                            <a class="nav-link dropdown-toggle" href="/" role="button" data-toggle="dropdown"><i
+                                    class="bi bi-person-circle"></i>
+                                Xin chào, {{authUser.fullname}}
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item" href="/profile/{{authUser.username}}">
+                                    <i class="bi-person-circle"></i> &nbsp;
+                                    Hồ sơ
                                 </a>
-                                <div class="dropdown-menu dropdown-menu-right">
-                                    <a class="dropdown-item" href="/profile/{{authUser.username}}">
-                                        <i class="bi-person-circle"></i> &nbsp;
-                                        Hồ sơ
-                                    </a>
-                                    {{#if (eq authUser.role 'writer')}}
-                                        <a class="dropdown-item" href="/admin/articles/create">
-                                            <i class="bi bi-upload"></i> &nbsp;
-                                            Đăng tải bài viết
-                                        </a>
-                                    {{/if}}
-                                    {{#if (eq authUser.role 'editor')}}
-                                        <a class="dropdown-item" href="/admin/articles">
-                                            <i class="bi bi-pencil-square"></i> &nbsp;
-                                            Quản lý bài viết
-                                        </a>                                        
-                                    {{/if}}
-                                    {{#if (eq authUser.role 'admin')}}
-                                        <a class="dropdown-item" href="/admin">
-                                            <i class="bi bi-gear"></i> &nbsp;
-                                            Quản lý trang báo
-                                        </a>
-                                    {{/if}}
-                                    <form id="frmLogout" action="/auth/logout" method="post"></form>
-                                    <a class="dropdown-item" href="javascript: $('#frmLogout').submit()">
-                                        <i class="bi-box-arrow-right" href="/auth/logout"></i> &nbsp; 
-                                        Đăng xuất
-                                    </a>
-                                </div>
-                            </div>                            
-                            <form class="search-form" action="/articles/search" method="GET">
-                                <div class="search-container">
-                                    <input type="text" class="search-input" placeholder="Tìm kiếm..." name = "search">
-                                    <i class="nav-link bi bi-search search-icon" style="cursor: pointer"></i>
-                                </div>
-                            </form>
-                        </li>
+                                {{#if (eq authUser.role 'writer')}}
+                                <a class="dropdown-item" href="/admin/articles/create">
+                                    <i class="bi bi-upload"></i> &nbsp;
+                                    Đăng tải bài viết
+                                </a>
+                                {{/if}}
+                                {{#if (eq authUser.role 'editor')}}
+                                <a class="dropdown-item" href="/admin/articles">
+                                    <i class="bi bi-pencil-square"></i> &nbsp;
+                                    Quản lý bài viết
+                                </a>
+                                {{/if}}
+                                {{#if (eq authUser.role 'admin')}}
+                                <a class="dropdown-item" href="/admin">
+                                    <i class="bi bi-gear"></i> &nbsp;
+                                    Quản lý trang báo
+                                </a>
+                                {{/if}}
+                                <form id="frmLogout" action="/auth/logout" method="post"></form>
+                                <a class="dropdown-item" href="javascript: $('#frmLogout').submit()">
+                                    <i class="bi-box-arrow-right" href="/auth/logout"></i> &nbsp;
+                                    Đăng xuất
+                                </a>
+                            </div>
+                        </div>
+                        <form class="search-form" action="/articles/search" method="GET">
+                            <div class="search-container">
+                                <input type="text" class="search-input" placeholder="Tìm kiếm..." name="search">
+                                <i class="nav-link bi bi-search search-icon" style="cursor: pointer"></i>
+                            </div>
+                        </form>
+                    </li>
                     {{else}}
                     <li class="nav-item nav-item-group" style="font-size: 1.2rem;">
                         <a class="nav-link" href="/auth/login"><i class="bi bi-person-circle"></i> Đăng nhập</a>
@@ -100,12 +101,12 @@
     </nav>
     <div style="border-top: 1px solid black; border-bottom: 1px solid black; background-color: white;">
         <ul class="container nav nav-bottom justify-content-start">
-            <li class="nav-item mr-md-4">
-                <a class="nav-link active" href="/"><i style="color: #E51636" class="bi bi-house-door-fill"></i></a>
+            <li class="nav-item">
+                <a class="nav-link active" href="/"><i style="color: #3A7CC4" class="bi bi-house-door-fill"></i></a>
             </li>
             {{#each categoryGroupsWithCategories}}
-            <li class="nav-item dropdown nav-item-category mr-md-4 ml-md-4">
-                <a class="nav-link font-weight-bold" href="/category_group/{{this.id}}" role="button"
+            <li class="nav-item dropdown nav-item-category mr-md-2 ml-md-2">
+                <a class="nav-link" href="/category_group/{{this.id}}" role="button"
                     aria-expanded="false">{{this.name}}</a>
                 <div class="dropdown-menu m-0 p-0">
                     {{#each this.categories}}
@@ -119,7 +120,7 @@
     <div class="container shadow mb-4" style="background-color: white; min-height: 75svh;">
         {{{ body }}}
     </div>
-    
+
     <div class="container mb-4 py-4" style="background-color: white;">
         <div class="container pb-4">
             <div class="row">

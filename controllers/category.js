@@ -1,5 +1,4 @@
 import {
-    getAllCategories,
     createCategory,
     editCategory,
     deleteCategory,
@@ -10,9 +9,13 @@ import {
     getCategoryByCategoryGroup,
     getCategoryById} from "../models/category.js";
     import { getArticlesByCategoryID } from "../models/articles.js";
+
 export const getRender = async (req, res) => {
-    res.render('admin/category')
+    res.render('admin/category', {
+        categoryGroups: res.locals.categoryGroupsWithCategories
+    })
 }
+
 export const getCategory = async (req, res) => {
     try {
         const type = req.query.type;
@@ -51,7 +54,7 @@ export const getCategory = async (req, res) => {
             pageArray,
             limit,
             empty: categories.length === 0,
-            categoryGroups: res.locals.categoryGroups,
+            categoryGroups: res.locals.categoryGroupsWithCategories,
         });
     }
     catch (error) {

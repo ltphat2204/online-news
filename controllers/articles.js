@@ -1,7 +1,7 @@
 import { getAllArticles, getArticleInfoById, getArticlesByCategory, addComment, getCommentsByArticleId, getHashtagsByArticleId, fullTextSearchArticles, increaseArticleViewCount, } from "../models/articles.js";
 import { getAllCategoryGroups } from "../models/category_group.js";
 import { getAllCategories } from "../models/category.js";
-import { getUserByUsername } from "../models/user.js";
+import { getUserByUsername, getUserById } from "../models/user.js";
 import moment from "moment";
 import { createPDF } from "../utils/pdf.js";
 
@@ -88,6 +88,7 @@ export const showArticle = async (req, res) => {
 
         const currentUsername = req.session.authUser.username;
         const userInfo = await getUserByUsername(currentUsername);
+        const author = await getUserById(article.author_id);
 
         res.render('articles/detail', {
             title: article.title,
@@ -95,6 +96,7 @@ export const showArticle = async (req, res) => {
             isPremiumUser: (!userInfo.is_premium && userInfo.role == "subscriber"),
             category_articles,
             comments,
+            author,
             redirectUrl: `/profile/${currentUsername}`,
             guest
         });

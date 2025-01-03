@@ -8,8 +8,6 @@ export const getEditorLists = async (req, res) => {
 
     const n = await countEditors(searchTerm);
     const totalPages = Math.ceil(n.total / limit);
-    const pageItems = [];
-
     const offset = (page - 1) * limit;
     const editors = await getEditors(searchTerm, limit, offset);
 
@@ -22,20 +20,12 @@ export const getEditorLists = async (req, res) => {
         };
     }));
 
-    for (let i = 1; i <= totalPages; i++) {
-        const item = {
-            value: i,
-            isActive: i === page,
-            searchTerm: searchTerm
-        }
-        pageItems.push(item);
-    }
-
     res.render("admin/assign", {
         title: 'Phân công',
         empty: editorsCategories.length === 0,
         editorsCategories,
-        pageItems: pageItems,
+        currentPage: page,
+        totalPages: totalPages,
         searchTerm: searchTerm,
         categories: res.locals.categories
     });

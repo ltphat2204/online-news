@@ -1,13 +1,9 @@
-import {
-    getUserByEmail,
-    getUserByUsername,
-    createUser
-} from "../models/user.js";
-import {
-    comparePassword,
-    hashPassword
-} from "../utils/cryptography.js";
+import { getUserByEmail, getUserByUsername, createUser } from "../models/user.js";
+import { comparePassword, hashPassword } from "../utils/cryptography.js";
 import { getSocialNetworkByUserId } from "../models/social_network.js";
+import { sendOTP } from "../utils/mailSender.js";
+import { numberHelpers } from "../utils/numberHelpers.js";
+import { editUser } from "../models/user.js";
 
 export const handleLogin = async (req, res) => {
     const user = req.body;
@@ -121,5 +117,72 @@ export const checkAvailable = async (req, res) => {
     } catch (error) {
         console.error(error.message);
         res.status(500).send('Lỗi khi xác minh reCAPTCHA.');
+    }
+}
+
+export const handleForgotPassword = async (req, res) => {
+    const user = req.body;
+
+    if (user.otp) {
+        if (parseInt(user.otp) !== parseInt(user.realotp)) {
+            res.render("auth/forgotPassword", {
+                title: "Sai mã OTP",
+                user: user,
+                userFound: true,
+                wrongOTP: true,
+                otp: user.realotp,
+            });
+            return;
+        }
+        else {
+            res.render("auth/changePassword", { 
+                title: "Đổi mật khẩu",
+                // fromTo: "forgotPassword",
+                email: user.email
+            });
+        }
+    }
+    else {
+        const old_user = await getUserByEmail(user.email);
+
+        if (!old_user) {
+            res.render("auth/forgotPassword", {
+                title: "Quên mật khẩu",
+                userNotFound: true
+            });
+            return;
+        }
+        else {
+            const otp = numberHelpers.generateOTP(6);
+            await sendOTP(user.email, otp);
+    
+            res.render("auth/forgotPassword", {
+                title: "Quên mật khẩu",
+                otp: otp,
+                user: old_user,
+                userFound: true
+            });
+            return;
+        }
+    }
+}
+
+export const handleChangePassword = async (req, res) => {
+    const user = await getUserByEmail(req.body.email);
+    const hashedPassword = await hashPassword(req.body.newPassword);
+
+    const newUser = {
+        id: user.id,
+        fullname: user.fullname,
+        pen_name: user.pen_name,
+        password: hashedPassword
+    };
+
+    try {
+        await editUser(user.id, newUser);
+        res.status(200).json({ success: true, message: 'Đổi mật khẩu thành công' });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ success: false, message: 'Đã xảy ra lỗi không mong muốn' });
     }
 }
