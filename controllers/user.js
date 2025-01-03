@@ -101,7 +101,6 @@ export const searchUsers = async (req, res) => {
     });
 }
 
-
 export const postUsers = async (req, res) => {
     const user = req.body;
     if (!user.dob) {
