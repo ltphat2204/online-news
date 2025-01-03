@@ -166,25 +166,24 @@
                 $(selector).addClass('blur-content');
             });
         }
+        
+        // Initially blur premium content
+        if ($('#premiumOverlay').length) {
+            $(window).scroll(function () {
+                if (!hasShownOverlay) {
+                    const contentTop = $('.article-content').offset().top;
+                    const scrollPosition = $(window).scrollTop() + ($(window).height() / 2);
 
-
-        // Show overlay when scrolling to premium content  
-        $(window).scroll(function () {
-            if (!hasShownOverlay) {
-                const contentTop = $('.article-content').offset().top;
-                const scrollPosition = $(window).scrollTop() + ($(window).height() / 2);
-
-                if (scrollPosition > contentTop) {
-                    hasShownOverlay = true;
-                    showPremiumOverlay();
+                    if (scrollPosition > contentTop) {
+                        hasShownOverlay = true;
+                        showPremiumOverlay();
+                    }
                 }
-            }
-        });
-
-        // Initially blur premium content  
-        contentElements.forEach(selector => {
-            $(selector).addClass('blur-content');
-        });
+            });
+            contentElements.forEach(selector => {
+                $(selector).addClass('blur-content');
+            });
+        }
 
         $('#download-pdf-btn').click(function () {
             const articleId = $('#download-pdf-btn').attr('data-article-id');
