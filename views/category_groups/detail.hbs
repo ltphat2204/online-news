@@ -1,11 +1,11 @@
 <div class="container-fluid mt-4 p-4" style="border-radius: 12px;">
     <!-- Tiêu đề danh mục -->
     <div class="text-center mb-4">
-        <h1
-            style="color: #0056b3; font-weight: bold; margin-bottom: 10px; font-size: 3rem; text-transform: uppercase; letter-spacing: 1.5px;">
+        <h1 class="text-primary font-weight-bold mb-3"
+            style=" font-size: 3rem; text-transform: uppercase; letter-spacing: 1.5px;">
             {{categoryGroup.name}}
         </h1>
-        <p class="text-center" style="color: #343a40; font-size: 1.2rem; margin: 0; font-style: italic; text">
+        <p class="text-center text-secondary" style="font-size: 1.2rem; margin: 0; font-style: italic; ">
             {{categoryGroup.description}}
         </p>
     </div>
@@ -14,12 +14,15 @@
     <div class="row d-flex justify-content-center">
         {{#each categoryGroup.categories}}
         <a href="/category/{{this.id}}" class="col-md-5 col-sm-12 mb-4" style="margin: 10px; text-decoration: none;">
-            <div class="card" style="background-color: #e3f2fd; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); min-height: 140px;">
+            <div class="card"
+                style="background-color: #e3f2fd; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); min-height: 140px;">
                 <div class="card-body d-flex flex-column">
-                    <h3 class="card-title" style="color: #1a237e; font-weight: bold; font-size: 1.4rem; margin-bottom: 10px;">
+                    <h3 class="card-title text-primary font-weight-bold mb-2" style="font-size: 1.4rem;">
                         {{this.name}}
                     </h3>
-                    <p class="card-text mt-2" style="color: #4e342e; font-size: 1rem; margin: 0; flex-grow: 1; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">{{this.description}}</p>
+                    <p class="card-text mt-2 text-secondary m-0"
+                        style="font-size: 1rem;flex-grow: 1; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                        {{this.description}}</p>
                 </div>
             </div>
         </a>
