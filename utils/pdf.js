@@ -1,6 +1,7 @@
-import puppeteer from 'puppeteer';
+import html_to_pdf from 'html-pdf-node';
 import moment from 'moment';
 import fs from 'fs';
+import path from 'path';
 
 export const createPDF = async (article) => {
     const formatDate = (dateString) => {
@@ -114,27 +115,10 @@ export const createPDF = async (article) => {
 </html>
     `;
 
-    const browser = await puppeteer.launch({
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    });
-    const page = await browser.newPage();
+    const options = { format: 'A4', args: ['--no-sandbox', '--disable-setuid-sandbox'] };
+    const file = { content: html };
 
-    await page.setContent(html, { waitUntil: 'networkidle0' });
+    const buffer = await html_to_pdf.generatePdf(file, options);
 
-    const pdfBuffer = await page.pdf({
-        format: 'A4',
-        printBackground: true,
-        margin: {
-            top: '20mm',
-            right: '15mm',
-            bottom: '20mm',
-            left: '15mm',
-        },
-    });
-
-    await browser.close();
-
-    fs.writeFileSync('debug.pdf', pdfBuffer);
-
-    return pdfBuffer;
+    return buffer;
 };
