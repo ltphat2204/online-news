@@ -333,8 +333,8 @@ export const getArticlesByCategoryID = async (id, k, s) => {
                 database.raw("json_agg(json_build_object('id', hashtags.id, 'tag_name', hashtags.tag_name)) as hashtags")
             )
             .join("categories", "articles.category_id", "categories.id")
-            .join("article_tag", "articles.id", "article_tag.article_id")
-            .join("hashtags", "article_tag.tag_id", "hashtags.id")
+            .leftJoin("article_tag", "articles.id", "article_tag.article_id")
+            .leftJoin("hashtags", "article_tag.tag_id", "hashtags.id")
             .where("categories.id", id)
             .andWhere("articles.status", "published") // Ensure only published articles
             .groupBy(
@@ -345,7 +345,7 @@ export const getArticlesByCategoryID = async (id, k, s) => {
             .orderByRaw('is_premium DESC, articles.published_at DESC') // Sort by premium first, then newest
             .limit(k)
             .offset(s);
-
+        
         // Return total count and articles
         return { total: count.total, articles };
     } catch (error) {
