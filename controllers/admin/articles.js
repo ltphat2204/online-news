@@ -109,6 +109,12 @@ export const editArticle = async (req, res) => {
   
     // Nếu is_premium không tồn tại trong req.body, mặc định là false
     article.is_premium = article.is_premium === "true";
+
+    const old_article = await getArticleById(article.id);
+    if (old_article.status === 'rejected') {
+        article.status = "draft";
+        article.reject_reason = null;
+    }
   
     await updateArticleById(article.id, article);
   
