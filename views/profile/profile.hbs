@@ -10,7 +10,7 @@
                     <p><i class="bi bi-envelope"></i> {{profile.email}}</p>
                     <p><i class="bi bi-calendar3"></i> Đã tham gia vào {{formatDate profile.created_at}}</p>
                     {{#if profile.is_premium}}
-                    <span class="badge badge-warning">
+                    <span class="badge badge-warning" id="show-premium">
                         <i class="bi bi-star-fill"></i> Độc giả Premium
                     </span>
                     {{else}}
@@ -100,45 +100,63 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function () {
-        $('#editProfileModal').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget);
-            var id = button.data('id');
-            var pen_name = button.data('penname');
-            var fullname = button.data('fullname');
+        if ({{ profile.is_premium }
+    })
+    {
+        const premiumExpired = moment(profile.premium_expired);
+        const now = moment().utc(); // Thời gian hiện tại
+        // Tính số ngày còn lại
+        const diffDays = premiumExpired.diff(now, 'minutes'); // Hiệu số theo đơn vị ngày
 
-            var modal = $(this);
-            modal.find('#editProfileID').val(id);
-            modal.find('#editProfilePenname').val(pen_name);
-            modal.find('#editProfileFullname').val(fullname);
-        });
-
-        $('.premium-register').on('click', async function () {
-            var userId = $(this).attr('data-id');
-            const username = '{{profile.username}}';
-            const response = await fetch(`/profile/${username}/premium-request`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    id: userId
-                })
-            });
-            if (response.ok) {
-                await Swal.fire({
-                    icon: 'success',
-                    title: 'Thành công',
-                    text: 'Đã gửi yêu cầu nâng cấp Premium'
-                });
-                window.location.reload();
+        const premiumContent = $('#show-premium');
+        if (badgeElement) {
+            if (diffMinutes > 0) {
+                badgeElement.innerHTML += ` (Còn ${diffMinutes} phút)`;
             } else {
-                await Swal.fire({
-                    icon: 'error',
-                    title: 'Lỗi',
-                    text: data.message || 'Đã có lỗi xảy ra'
-                });
+                badgeElement.innerHTML += ` (Hết hạn)`;
             }
+        }
+
+    }
+    $('#editProfileModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var id = button.data('id');
+        var pen_name = button.data('penname');
+        var fullname = button.data('fullname');
+
+        var modal = $(this);
+        modal.find('#editProfileID').val(id);
+        modal.find('#editProfilePenname').val(pen_name);
+        modal.find('#editProfileFullname').val(fullname);
+    });
+
+    $('.premium-register').on('click', async function () {
+        var userId = $(this).attr('data-id');
+        const username = '{{profile.username}}';
+        const response = await fetch(`/profile/${username}/premium-request`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id: userId
+            })
         });
+        if (response.ok) {
+            await Swal.fire({
+                icon: 'success',
+                title: 'Thành công',
+                text: 'Đã gửi yêu cầu nâng cấp Premium'
+            });
+            window.location.reload();
+        } else {
+            await Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: data.message || 'Đã có lỗi xảy ra'
+            });
+        }
+    });
     });
     $('#editProfileForm').on('submit', async function (e) {
         e.preventDefault();

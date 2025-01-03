@@ -1,5 +1,7 @@
 import database from "../config/database.js";
-
+import { dateHelpers } from "../utils/dateHelpers.js";
+import moment from 'moment';
+import 'moment/locale/vi.js';
 // Lấy tất cả người dùng
 export const getAllUsers = async (limit, offset) => {
     const users = await database("users")
@@ -105,7 +107,16 @@ export const getPendingPremiumUser = async (query,limit, offset) => {
 
 export const approveUserPremium = async (id, action) => {
     if (action === "approve") {
-        const result = await database("users").where("id", id).update({ pending_premium: false, is_premium: true });
+        // Lấy giá trị premium_extension_minutes từ cơ sở dữ liệu
+        const premium_extension_time = await database("settings")
+            .select("*")
+            .first()
+            .then((settings) => settings.premium_extension_minutes);
+        // Thiết lập locale và tính toán ngày hết hạn premium
+        moment.locale('vi');
+        const premium_expired = moment().utc()
+            .add(premium_extension_time, 'minutes')
+        const result = await database("users").where("id", id).update({ pending_premium: false, is_premium: true, premium_expired: premium_expired });
         return result;
     }
     else {
