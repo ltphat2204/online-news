@@ -103,6 +103,8 @@ a.text-white {
     background-color: #28a745 !important;
 }
 
+
+
 .bg-danger {
     background-color: #E51636 !important;
 }
@@ -129,6 +131,66 @@ a.text-white {
 
 .bg-transparent {
     background-color: transparent !important;
+}
+
+.btn-primary {
+    background-color: #E51636 !important;
+    border: 1px solid #E51636 !important;
+    color: white !important;
+}
+
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary:focus {
+    background-color: #bc122b !important;
+    border-color: #E51636 !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.btn-outline-primary {
+    background-color: white !important;
+    color: #E51636 !important;
+    border: 1px solid #E51636 !important;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:active,
+.btn-outline-primary:focus {
+    background-color: #E51636 !important;
+    color: white !important;
+    border-color: #E51636 !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.btn-outline-primary:active {
+    background-color: #a10e24 !important;
+    border-color: #a10e24 !important;
+}
+
+.btn-edit {
+    background-color: #007bff !important;
+    border-color: #007bff !important;
+    color: white !important;
+}
+
+.btn-edit:hover,
+.btn-edit:active,
+.btn-edit:focus {
+    background-color: #0056b3 !important;
+    border-color: #004085 !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.btn-success:hover,
+.bt-success:active,
+.btn-success:focus {
+    background-color: #218838 !important;
+    border-color: #1e7e34 !important;
+    outline: none !important;
+    box-shadow: none !important;
 }
 
 body {
@@ -207,4 +269,23 @@ p {
 .blur-content {
     filter: blur(5px);
     pointer-events: none;
+}
+
+.nav-item-category:hover>.nav-link {
+    color: #E51636;
+}
+
+.nav-item-category .dropdown-menu {
+    border-color: #E51636;
+}
+
+.nav-item-category .dropdown-item {
+    border: 1px solid transparent;
+    transition: all 0.3s ease-in-out;
+}
+
+.nav-item-category .dropdown-item:hover {
+    border-color: #E51636;
+    background-color: rgba(255, 69, 0, 0.1);
+    transform: translateY(-2px);
 }

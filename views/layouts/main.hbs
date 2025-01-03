@@ -27,7 +27,7 @@
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            
+
             <span class="navbar-text">
                 {{ today }}
             </span>
@@ -99,29 +99,21 @@
         </div>
     </nav>
     <div style="border-top: 1px solid black; border-bottom: 1px solid black; background-color: white;">
-        <ul class="container nav nav-bottom justify-content-center">
-            <li class="nav-item">
-                <a class="nav-link active" href="/"><i style="color: #3A7CC4" class="bi bi-house-door-fill"></i></a>
+        <ul class="container nav nav-bottom justify-content-start">
+            <li class="nav-item mr-md-4">
+                <a class="nav-link active" href="/"><i style="color: #E51636" class="bi bi-house-door-fill"></i></a>
             </li>
             {{#each categoryGroupsWithCategories}}
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="/category_group/{{this.id}}" role="button"
+            <li class="nav-item dropdown nav-item-category mr-md-4 ml-md-4">
+                <a class="nav-link font-weight-bold" href="/category_group/{{this.id}}" role="button"
                     aria-expanded="false">{{this.name}}</a>
-                <div class="dropdown-menu">
+                <div class="dropdown-menu m-0 p-0">
                     {{#each this.categories}}
-                    <a class="dropdown-item" href="/category/{{this.id}}">{{this.name}}</a>
+                    <a class="dropdown-item mt-0 px-4 py-2" href="/category/{{this.id}}">{{this.name}}</a>
                     {{/each}}
                 </div>
             </li>
             {{/each}}
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" aria-expanded="false">
-                    <i class="bi bi-list"></i></a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">something</a>
-                    <a class="dropdown-item" href="#">some some some</a>
-                </div>
-            </li>
         </ul>
     </div>
     <div class="container shadow mb-4" style="background-color: white; min-height: 75svh;">
@@ -251,6 +243,35 @@
                 this.classList.remove('show');
                 this.querySelector('.dropdown-menu').classList.remove('show');
             });
+        });
+
+        // Back to top button
+        const backToTopButton = document.createElement('button');
+        backToTopButton.innerHTML = '↑';
+        backToTopButton.id = 'back-to-top';
+        backToTopButton.style.position = 'fixed';
+        backToTopButton.style.bottom = '20px';
+        backToTopButton.style.right = '20px';
+        backToTopButton.style.display = 'none';
+        backToTopButton.style.backgroundColor = 'white';
+        backToTopButton.style.color = '#E51636';
+        backToTopButton.style.border = ' 1px solid #E51636';
+        backToTopButton.style.borderRadius = '50%';
+        backToTopButton.style.width = '50px';
+        backToTopButton.style.height = '50px';
+        backToTopButton.style.cursor = 'pointer';
+        document.body.appendChild(backToTopButton);
+
+        window.addEventListener('scroll', function () {
+            if (window.scrollY > 300) {
+                backToTopButton.style.display = 'block';
+            } else {
+                backToTopButton.style.display = 'none';
+            }
+        });
+
+        backToTopButton.addEventListener('click', function () {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     </script>
 </body>
