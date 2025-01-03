@@ -21,3 +21,18 @@ services:
     depends_on:
       - nodejs
     container_name: online-news-nginx-server
+
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: online-news
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    container_name: local-postgres
+
+volumes:
+  postgres_data:
