@@ -528,6 +528,7 @@
         <div class="form-group">
           <input type="hidden" id="disapproveReviewId" name="id">
           <input type="hidden" id="disapproveStatus" name="status">
+          <input type="hidden" id="disapproveEditorUsername" name="editor_username">
           <label for="categoryName">Lý do từ chối</label>
           <textarea class="form-control" id="disapproveRejectReason" name="reject_reason"></textarea>
         </div>
@@ -584,19 +585,23 @@
       var button = $(event.relatedTarget);
 
       var id = button.data('id');
+      var username = button.data('editor')
 
       var status = "rejected";
       var modal = $(this);
 
       modal.find('#disapproveReviewId').val(id);
       modal.find('#disapproveStatus').val(status);
+      modal.find('#disapproveEditorUsername').val(username)
     });
     // Preserve search term when switching tabs
     $('#articleTabs a').on('click', function (e) {
       e.preventDefault();
       const searchTerm = $('input[name="search"]').val();
-      const tab = $(this).attr('href').substring(1);
-      window.location.href = `/admin/articles?tab=${tab}&search=${searchTerm}`;
+      if (searchTerm) {
+        const tab = $(this).attr('href').substring(1);
+        window.location.href = `/admin/articles?tab=${tab}&search=${searchTerm}`;
+      }
     });
   });
 </script>

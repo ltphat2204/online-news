@@ -82,15 +82,14 @@ export const updateArticle = async (req, res) => {
 
 export const disapproveArticle = async (req, res) => {
     const article = req.body;
-    const editorID = await getEditorByUsername(article.editor_id);
+    const editorID = await getEditorByUsername(article.editor_username);
     const newArticle = {
         id: article.id,
         status: article.status,
         editor_id: editorID.id,
-        category_id: article.category_id,
         reject_reason: article.reject_reason
     };
 
     await updateArticleById(newArticle.id, newArticle);
-    res.redirect("/admin/review");
+    res.redirect("/admin/articles");
 }
