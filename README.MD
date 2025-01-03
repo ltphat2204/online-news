@@ -25,7 +25,7 @@
 
 Trong đó:
 
-- DB_URL: nếu không thay đổi gì ở cấu hình database trong file `docker-compose.yml` thì đường dẫn mặc định sẽ là `DB_URL=postgres://postgres:root@localhost:5432/online-news`
+- DB_URL: nếu không thay đổi gì ở cấu hình database trong file `docker-compose.yml` thì đường dẫn mặc định sẽ là `DB_URL=postgres://postgres:root@postgres:5432/online-news`
 - GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET: được lấy từ [Google Cloud Console Project](https://console.cloud.google.com/)
 - GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET: được lấy từ [Github App](https://github.com/settings/applications/new)
 - FACEBOOK_APP_ID, GITHUB_CLIENT_SECRET: được lấy từ [Facebook for developer](https://developers.facebook.com/apps)

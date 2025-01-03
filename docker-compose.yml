@@ -10,7 +10,10 @@ services:
     volumes:
       - .:/usr/ltphat/src/webproj
       - /usr/ltphat/src/webproj
+    depends_on:
+      - postgres
     container_name: online-news-app
+    restart: always
 
   nginx:
     image: nginx:latest
@@ -21,6 +24,7 @@ services:
     depends_on:
       - nodejs
     container_name: online-news-nginx-server
+    restart: always
 
   postgres:
     image: postgres:17-alpine
@@ -33,6 +37,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     container_name: local-postgres
+    restart: always
 
 volumes:
   postgres_data:
